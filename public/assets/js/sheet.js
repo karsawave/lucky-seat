@@ -1,4 +1,4 @@
-// OPSI 1 — baca Google Sheet langsung (sheet dibagikan "Siapa saja yang memiliki link = Pelihat").
+// OPSI 1: baca Google Sheet langsung (sheet dibagikan "Siapa saja yang memiliki link = Pelihat").
 // Pengundian dihitung di browser, hasilnya berbentuk sama persis dengan Apps Script (opsi 2).
 // Hanya nama depan yang ditampilkan.
 (function () {
@@ -49,8 +49,8 @@
     }
   };
   const E = (k, v = {}) => {
-    const l = (window.I18N && window.I18N.lang) || "id";
-    return new Error((PESAN[l] || PESAN.id)[k].replace(/\{(\w+)\}/g, (_, x) => v[x] ?? ""));
+    const l = (window.I18N && window.I18N.lang) || "en";
+    return new Error((PESAN[l] || PESAN.en)[k].replace(/\{(\w+)\}/g, (_, x) => v[x] ?? ""));
   };
   const pad = (x) => String(x).padStart(2, "0");
   const parseTgl = (s) => new Date(s + "T00:00:00Z");
@@ -195,7 +195,7 @@
       else if (k === "caraambil" || k === "ambil") S.caraAmbil = /oto|auto/i.test(s) ? "otomatis" : "manual";
       else if (k === "kursitetap" || k === "tetap") S.kursiTetap = bacaTetap(s);
       else if (k === "zonawaktu" || k === "zona") S.zona = s;
-      else if (k === "bahasa") S.bahasa = /^(en|eng|english|inggris)/i.test(s) ? "en" : "id";
+      else if (k === "bahasa") S.bahasa = /^(id|ind|indonesia|bahasa)/i.test(s) ? "id" : "en";
     });
     if (!S.tanggalMulai) throw E("startEmpty");
     if (!S.kunci) S.kunci = id;
@@ -312,7 +312,7 @@
       ok: true,
       info: {
         judul: S.judul, subjudul: S.subjudul, jamUndian: S.jamUndian, menitUndian: S.menitUndian, caraAmbil: S.caraAmbil, bahasa: S.bahasa,
-        hariIni, aktif, serverMs: nowMs,
+        versi: window.APP_VERSION || "", hariIni, aktif, serverMs: nowMs,
         bukaBerikutMs: msZona(S.Z, berikut, S.jamUndian, S.menitUndian),
         zonaLabel: labelZona(S.Z, msZona(S.Z, berikut, S.jamUndian, S.menitUndian)),
         zonaOffset: offsetMenit(S.Z, msZona(S.Z, berikut, S.jamUndian, S.menitUndian)),

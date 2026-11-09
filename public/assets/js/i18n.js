@@ -4,7 +4,7 @@
   const D = {
     id: {
       locale: "id-ID",
-      fileBlocked: "Halaman dibuka langsung dari file, jadi browser memblokir {src}. Buka lewat GitHub Pages atau server lokal (npx serve).", scriptNoNet: "Tidak bisa terhubung. Cek internet, atau pastikan Web App di-deploy dengan akses \"Siapa saja\".", scriptNoData: "Server tidak memberi data. Pastikan link Web App benar & akses \"Siapa saja\".", serverError: "Terjadi kesalahan di server.", lang: "Bahasa", themeDark: "Mode gelap", themeLight: "Mode terang",
+      fileBlocked: "Halaman dibuka langsung dari file, jadi browser memblokir {src}. Buka lewat GitHub Pages atau server lokal (npx serve).", scriptNoNet: "Tidak bisa terhubung. Cek internet, atau pastikan Web App di-deploy dengan akses \"Siapa saja\".", scriptNoData: "Server tidak memberi data. Pastikan link Web App benar & akses \"Siapa saja\".", serverError: "Terjadi kesalahan di server.", lang: "Bahasa", scriptOutdated: "Apps Script v{s} tidak sama dengan website v{v}. Tempel Code.gs terbaru, lalu Kelola deployment → Versi baru.", themeDark: "Mode gelap", themeLight: "Mode terang",
       prevDay: "Hari sebelumnya", nextDay: "Hari berikutnya",
       yourName: "Nama kamu", pickOpt: "Pilih nama", seat: "Kursi", draw: "Ambil nomor",
       mPos: "Posisi", mWkt: "Diundi", mKode: "Kode undian",
@@ -40,7 +40,7 @@
       sheetLabel: "Link Google Sheet", sheetWrong: "Bukan link Google Sheet. Salin dari tombol Bagikan di Google Sheet.",
       sheetNote: "Paling mudah. Pemegang link bisa membuka isi sheet, jadi isi kolom nama saja.",
       sheetSteps: [
-        "Buat tab <b>Anggota</b> berisi kolom <code>nama</code> (lihat template/id).",
+        "Buat tab <b>Anggota</b> berisi kolom <code>nama</code> (lihat templates/id).",
         "Buat tab <b>Pengaturan</b> untuk judul, jam, dan tanggal mulai.",
         "Klik Bagikan, ubah akses umum menjadi <b>Siapa saja yang memiliki link</b> sebagai Pelihat.",
         "Salin link sheet, lalu tempel di bawah.",
@@ -64,7 +64,7 @@
     },
     en: {
       locale: "en-GB",
-      fileBlocked: "The page was opened directly from a file, so the browser blocks {src}. Open it via GitHub Pages or a local server (npx serve).", scriptNoNet: "Can't connect. Check your internet, or make sure the Web App is deployed with access \"Anyone\".", scriptNoData: "The server returned no data. Make sure the Web App link is right and access is \"Anyone\".", serverError: "Something went wrong on the server.", lang: "Language", themeDark: "Dark mode", themeLight: "Light mode",
+      fileBlocked: "The page was opened directly from a file, so the browser blocks {src}. Open it via GitHub Pages or a local server (npx serve).", scriptNoNet: "Can't connect. Check your internet, or make sure the Web App is deployed with access \"Anyone\".", scriptNoData: "The server returned no data. Make sure the Web App link is right and access is \"Anyone\".", serverError: "Something went wrong on the server.", lang: "Language", scriptOutdated: "Apps Script v{s} doesn't match the website v{v}. Paste the latest Code.gs, then Manage deployments → New version.", themeDark: "Dark mode", themeLight: "Light mode",
       prevDay: "Previous day", nextDay: "Next day",
       yourName: "Your name", pickOpt: "Select name", seat: "Seat", draw: "Draw number",
       mPos: "Position", mWkt: "Drawn", mKode: "Draw code",
@@ -100,7 +100,7 @@
       sheetLabel: "Google Sheet link", sheetWrong: "Not a Google Sheet link. Copy it from the Share button in Google Sheets.",
       sheetNote: "Easiest. Anyone with the link can open the sheet, so only fill in the name column.",
       sheetSteps: [
-        "Create a <b>Members</b> tab with a <code>name</code> column (see template/en).",
+        "Create a <b>Members</b> tab with a <code>name</code> column (see templates/en).",
         "Create a <b>Settings</b> tab for title, time, and start date.",
         "Click Share and set general access to <b>Anyone with the link</b> as Viewer.",
         "Copy the sheet link and paste it below.",
@@ -124,7 +124,7 @@
     },
   };
 
-  let lang = "id";
+  let lang = "en";
   try { const s = localStorage.getItem("ls-lang"); if (D[s]) lang = s; } catch {}
 
   const t = (k, v = {}) => {
@@ -185,7 +185,7 @@
 
   // Tombol tema + ID | EN (dipakai di semua layar).
   const toggle = () => `<div class="tools">${themeBtn()}<div class="seg lang" role="group" data-i18n-aria="lang" aria-label="${t("lang")}">` +
-    ["id", "en"].map((l) => `<button type="button" data-lang="${l}" aria-pressed="${l === lang}">${l.toUpperCase()}</button>`).join("") + `</div></div>`;
+    ["en", "id"].map((l) => `<button type="button" data-lang="${l}" aria-pressed="${l === lang}">${l.toUpperCase()}</button>`).join("") + `</div></div>`;
 
   window.I18N = { t, apply, set, bawaan, toggle, themeBtn, get lang() { return lang; } };
 })();

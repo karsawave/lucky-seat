@@ -1,5 +1,5 @@
 /**
- * LUCKY SEAT — server undian (Google Apps Script)
+ * LUCKY SEAT: server undian (Google Apps Script)
  * Sheet tetap PRIVAT. Script ini satu-satunya pintu keluar data, dan hanya mengirim:
  *   - pengaturan tampilan (judul, subjudul, jam, hari kerja)
  *   - NAMA DEPAN anggota + nomor kursi, hanya untuk hari yang SUDAH dibuka
@@ -17,6 +17,8 @@
  *   Riwayat    : dibuat & disembunyikan otomatis. Arsip hasil (jangan diedit).
  */
 
+// Versi skrip ini (SemVer), dikirim ke website agar admin tahu bila perlu deploy ulang. Sama dengan version.js.
+const VERSI = '1.0.0';
 const TAB_ANGGOTA = 'Anggota';
 const TAB_PENGATURAN = 'Pengaturan';
 const TAB_RIWAYAT = 'Riwayat';
@@ -28,7 +30,7 @@ const HARI = { minggu: 0, senin: 1, selasa: 2, rabu: 3, kamis: 4, jumat: 5, sabt
 const ALIAS = { title: 'judul', subtitle: 'subjudul', team: 'subjudul', drawtime: 'jamundian', time: 'jamundian',
   timezone: 'zonawaktu', drawmode: 'caraambil', mode: 'caraambil', fixedseats: 'kursitetap', startdate: 'tanggalmulai',
   start: 'tanggalmulai', workdays: 'harikerja', seats: 'jumlahkursi', numberofseats: 'jumlahkursi', key: 'kunci', language: 'bahasa' };
-// Bahasa pesan: ?lang= dari website, lalu baris "Bahasa" di Pengaturan, default Indonesia.
+// Bahasa pesan: ?lang= dari website, lalu baris "Bahasa" di Pengaturan, default English.
 let LANG = '';
 const PESAN = {
   "id": {
@@ -70,7 +72,7 @@ const PESAN = {
 };
 function E(k, v) {
   v = v || {};
-  const p = PESAN[LANG] || PESAN.id;
+  const p = PESAN[LANG] || PESAN.en;
   return new Error(p[k].replace(/\{(\w+)\}/g, (_, x) => (v[x] == null ? '' : v[x])));
 }
 const GELAR = /^(ir|dr|drs|dra|h|hj|prof|st|s\.?t|mr|mrs|ms|bpk|bapak|ibu|bu|pak)\.?$/i;
@@ -140,7 +142,7 @@ function handle(p) {
     ok: true,
     info: {
       judul: S.judul, subjudul: S.subjudul, jamUndian: S.jamUndian, menitUndian: S.menitUndian, caraAmbil: S.caraAmbil, bahasa: S.bahasa,
-      hariIni: hariIni, aktif: aktif, bukaBerikutMs: bukaBerikutMs, serverMs: now.getTime(),
+      versi: VERSI, hariIni: hariIni, aktif: aktif, bukaBerikutMs: bukaBerikutMs, serverMs: now.getTime(),
       zonaLabel: labelZona(new Date(bukaBerikutMs)), zonaOffset: offsetMenit(new Date(bukaBerikutMs)),
       anggota: Object.values(namaDepan(anggota)).sort(), jumlahKursi: N,
     },
@@ -265,7 +267,7 @@ function pengaturan() {
       else if (k === 'caraambil' || k === 'ambil') S.caraAmbil = /oto|auto/i.test(s) ? 'otomatis' : 'manual';
       else if (k === 'kursitetap' || k === 'tetap') S.kursiTetap = bacaTetap(s);
       else if (k === 'zonawaktu' || k === 'zona') S.zona = s;
-      else if (k === 'bahasa') S.bahasa = /^(en|eng|english|inggris)/i.test(s) ? 'en' : 'id';
+      else if (k === 'bahasa') S.bahasa = /^(id|ind|indonesia|bahasa)/i.test(s) ? 'id' : 'en';
     });
   }
   if (!LANG && S.bahasa) LANG = S.bahasa;

@@ -1,4 +1,4 @@
-// LUCKY SEAT — tampilan. Dua sumber data, hasilnya berbentuk sama:
+// LUCKY SEAT: tampilan. Dua sumber data, hasilnya berbentuk sama:
 //   Opsi 1 (utama) : link Google Sheet (dibagikan Pelihat) → dihitung di browser (sheet.js)
 //   Opsi 2 (privat): URL Web App Apps Script → dihitung di server (apps-script/Code.gs)
 // Yang ditampilkan hanya nama depan + nomor kursi.
@@ -13,6 +13,11 @@ function scriptId(u) {
 // Kenali link apa pun (Sheet atau Apps Script) → ID untuk ?s=
 const apiId = (u) => scriptId(u) || window.SheetSumber.sheetId(u);
 const apiUrl = (id) => scriptId(id) ? `https://script.google.com/macros/s/${id}/exec` : `https://docs.google.com/spreadsheets/d/${id}/edit`;
+
+// Versi: website (version.js) vs Apps Script (info.versi). Beda MAJOR.MINOR → Code.gs perlu di-deploy ulang.
+const APP_VERSION = window.APP_VERSION || "";
+const mm = (v) => String(v || "0").split(".").slice(0, 2).join(".");
+const scriptKuno = (id, I) => !!scriptId(id) && mm(I.versi) !== mm(APP_VERSION);
 
 async function panggil(id, tgl) {
   if (!scriptId(id)) return window.SheetSumber.panggilSheet(id, tgl);
@@ -89,7 +94,7 @@ async function panggilScript(id, tgl) {
     const ic = (d, c = "") => `<svg class="ic ${c}"width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
     main.innerHTML = `
       <header class="top">
-        <div class="brand"><img src="icon.svg" width="40" height="40" alt=""><span>Lucky Seat</span></div>
+        <div class="brand"><img src="assets/img/icon.svg" width="40" height="40" alt=""><span>Lucky Seat</span></div>
         ${T.toggle()}
       </header>
       <div class="hero">
@@ -193,8 +198,8 @@ async function panggilScript(id, tgl) {
         <button class="btn-primary" id="bt" type="submit">${esc(t("testConnect"))}</button>
       </div></form>
       <div class="links">
-        <a class="btn-link" href="panduan.html#unduh"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>${t("downloadTpl")}</a>
-        <a class="btn-link" href="panduan.html"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/></svg>${t("guide")}</a>
+        <a class="btn-link" href="guide.html#unduh"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>${t("downloadTpl")}</a>
+        <a class="btn-link" href="guide.html"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/></svg>${t("guide")}</a>
       </div>`);
 
     function setMode(m) {
@@ -241,6 +246,7 @@ async function panggilScript(id, tgl) {
     const pesanWA = t("waMsg", { judul: I.judul + (I.subjudul ? " " + I.subjudul : ""), jam, url });
     layar(t("connected"), t("ready"), `
       <article class="ticket"><div class="ticket-main stack">
+        ${scriptKuno(id, I) ? `<p class="callout is-warn">${esc(t("scriptOutdated", { s: I.versi || "?", v: APP_VERSION }))}</p>` : ""}
         <div class="label">${esc(I.judul)}${I.subjudul ? " · " + esc(I.subjudul) : ""}</div>
         <p class="lead">${t("summary", { a: I.anggota.length, k: I.jumlahKursi, jam, m: t(I.caraAmbil === "otomatis" ? "auto" : "manual") })}</p>
         <div class="field">
@@ -291,6 +297,8 @@ async function panggilScript(id, tgl) {
   const fmtPanjang = (s) => fmt(s, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   // ---------- Gambar JPG ----------
+  // Sengaja SELALU tema terang (tidak ikut mode gelap): gambar dibagikan ke WhatsApp dan harus tampil sama
+  // untuk semua penerima. Nilai = token terang di style.css (:root); ubah keduanya bersamaan.
   const PAPER = "#f4efe6", SURF = "#fffdf8", INK = "#1c1a17", MUTE = "#7a7266", LINE = "#e2d9c8", ACC = "#d9432f";
   const FD = '"Bricolage Grotesque", sans-serif', FM = '"JetBrains Mono", monospace';
   const situs = () => (location.host + location.pathname).replace(/\/(index\.html)?$/, "") || "lucky seat";
@@ -479,7 +487,7 @@ async function panggilScript(id, tgl) {
 
   // ---------- Share ----------
   const link = () => `${linkUndangan(ID)}#${H.tgl}`;
-  const teksDaftar = () => `*${I.judul}${I.subjudul ? " " + I.subjudul : ""}* — ${fmtPanjang(H.tgl)}\n\n` +
+  const teksDaftar = () => `*${I.judul}${I.subjudul ? " " + I.subjudul : ""}* · ${fmtPanjang(H.tgl)}\n\n` +
     H.kursi.filter((s) => s.nama).map((s) => `${pad2(s.no)}  ${s.nama}`).join("\n") + "\n\n" + t("listText", { link: link() });
   const teksKartu = () => t("cardText", { judul: I.judul, tgl: fmtPanjang(H.tgl), nama, no: pad2(kursiSaya()) }) + "\n" + link();
 
@@ -525,7 +533,13 @@ async function panggilScript(id, tgl) {
     if (e.key === "ArrowLeft" && !$("prev").disabled) $("prev").click();
     if (e.key === "ArrowRight" && !$("next").disabled) $("next").click();
   };
-  ulang = () => { isiNama(); render(); tick(); };
+  const tulisVersi = () => {
+    const kuno = scriptKuno(ID, I);
+    $("ver").className = "ver" + (kuno ? " is-warn" : "");
+    $("ver").textContent = `Lucky Seat v${APP_VERSION}` + (kuno ? " · " + t("scriptOutdated", { s: I.versi || "?", v: APP_VERSION }) : "");
+  };
+  ulang = () => { isiNama(); render(); tick(); tulisVersi(); };
+  tulisVersi();
   render();
   tick(); setInterval(tick, 1000);
   siap();
