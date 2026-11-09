@@ -1,0 +1,6 @@
+# Simpan semua teks dengan akhir baris LF di repo (konsisten lintas Windows/Mac/Linux).
+* text=auto eol=lf
+
+*.svg text eol=lf
+*.png binary
+*.jpg binary
