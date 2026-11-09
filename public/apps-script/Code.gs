@@ -18,7 +18,7 @@
  */
 
 // Versi skrip ini (SemVer), dikirim ke website agar admin tahu bila perlu deploy ulang. Sama dengan version.js.
-const VERSI = '1.0.0';
+const VERSI = '1.0.1';
 const TAB_ANGGOTA = 'Anggota';
 const TAB_PENGATURAN = 'Pengaturan';
 const TAB_RIWAYAT = 'Riwayat';

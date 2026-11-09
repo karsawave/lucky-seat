@@ -6,6 +6,11 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-09
+
+### Added
+- MIT license (`LICENSE`), with a License section in both READMEs.
+
 ## [1.0.0] - 2026-11-09
 
 ### Added
