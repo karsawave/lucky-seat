@@ -406,8 +406,9 @@ async function panggilScript(id, tgl) {
     return x.slice(0, 4) + "·" + x.slice(4);
   }
   // Peta kursi mini: jumlah sel = jumlah kursi (tetap) → tinggi kartu tidak berubah.
-  // Setelah hasil terbuka, tiap nomor bisa diketuk untuk melihat siapa yang duduk di sana ("intip"),
-  // tanpa mengganti "Nama kamu". Baris yang sama di daftar kursi ikut ditandai.
+  // Setelah hasil terbuka, tiap nomor bisa diketuk: kursi berisi → "Nama kamu" ikut berganti ke orang itu
+  // (tampilan sama seperti memilih dari combobox). Kursi kosong → hanya "intip" (teks + baris ditandai).
+  // Pilihan lewat ketukan tidak disimpan; pilihan tersimpan hanya dari combobox.
   let intip = null;
   const teksKursi = (k) => k.nama ? t("seatOf", { no: pad2(k.no), nama: k.nama }) : t("seatEmpty", { no: pad2(k.no) });
   function renderMap(no) {
@@ -419,9 +420,17 @@ async function panggilScript(id, tgl) {
       const cls = [i + 1 === no ? "me" : "", k && k.tetap ? "t" : "", i + 1 === intip ? "peek" : ""].filter(Boolean).join(" ");
       return `<button type="button" data-no="${i + 1}" class="${cls}"${buka ? ` aria-label="${esc(teksKursi(k))}" aria-pressed="${i + 1 === intip}"` : " disabled"}>${pad2(i + 1)}</button>`;
     }).join("");
-    $("mapInfo").textContent = !buka ? "" : intip ? teksKursi(H.kursi[intip - 1]) : t("mapHint");
+    $("mapInfo").textContent = !buka ? "" : intip ? teksKursi(H.kursi[intip - 1]) : no ? teksKursi(H.kursi[no - 1]) : t("mapHint");
   }
   function pilihIntip(no) {
+    const k = H.kursi[no - 1];
+    if (k.nama) {
+      intip = null;
+      if (k.nama === nama) return;
+      nama = k.nama; $("nama").value = nama;
+      render(); renderKursi(true);
+      return;
+    }
     intip = intip === no ? null : no;
     renderMap(kursiSaya() && terbuka() ? kursiSaya() : null);
     renderDaftar();
