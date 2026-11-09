@@ -1,6 +1,6 @@
 {
   "name": "lucky-seat",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "license": "MIT",
   "description": "Fair daily seat draws for teams, powered by Google Sheets.",

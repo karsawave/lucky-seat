@@ -6,6 +6,13 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-09
+
+### Changed
+- License copyright holder is now Karsa Wave (https://github.com/karsawave).
+- The repository moved to the Karsa Wave organization. The site is live at https://karsawave.github.io/lucky-seat/, linked from both READMEs.
+- CI uses the current GitHub Actions versions (checkout v7, setup-node v7, configure-pages v6, upload-pages-artifact v5, deploy-pages v5), all on Node.js 24.
+
 ## [1.0.1] - 2026-11-09
 
 ### Added
