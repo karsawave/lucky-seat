@@ -74,9 +74,11 @@ header.top>div:first-child{min-width:0}
 .ticket{margin-top:var(--s5);background:var(--surface);border:1px solid var(--line);border-radius:8px}
 .ticket-main{padding:var(--pad)}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:var(--s2)}
-.nav button{width:40px;height:40px;border-radius:6px;display:grid;place-items:center;border:1px solid var(--line)}
-.nav button:disabled{opacity:.4}
-.nav button:not(:disabled):hover{border-color:var(--ink)}
+/* Panah hari: aktif = terisi + garis jelas + ikon terang; nonaktif = tanpa isi, ikon pudar. Beda jelas di kedua tema. */
+.nav button{width:40px;height:40px;border-radius:6px;display:grid;place-items:center;
+  color:var(--ink);background:var(--field);border:1px solid color-mix(in srgb,var(--ink) 35%,var(--surface))}
+.nav button:disabled{color:var(--mute);background:none;border-color:var(--line);opacity:.45}
+.nav button:not(:disabled):hover{border-color:var(--ink);background:color-mix(in srgb,var(--ink) 8%,var(--field))}
 .date{flex:1;min-width:0;text-align:center;font-weight:500}
 .date small{display:block;height:16px;font:500 12px/16px var(--mono);color:var(--mute);letter-spacing:.06em}
 .date span{display:block;height:24px;line-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -102,15 +104,20 @@ select{width:100%;background:var(--field);border:1px solid var(--line);border-ra
 .meta dt{color:var(--mute);font-size:13px}
 .meta dd{margin:0;font-weight:800;font-size:14px;white-space:nowrap}
 .meta dd.mono{font:700 13px var(--mono);letter-spacing:.04em}
-.map{display:grid;grid-template-columns:repeat(var(--kol,12),1fr);gap:var(--s1);margin-top:var(--s4)}
+/* Target sentuh: 36px di layar lebar; di HP 6 kolom × 40px (ukuran minimum jari yang disarankan). */
+.map{display:grid;grid-template-columns:repeat(var(--kol,12),1fr);gap:6px;margin-top:var(--s4)}
 /* Sel peta = tombol: ketuk untuk "intip" siapa yang duduk di kursi itu. Nonaktif sebelum hasil terbuka. */
-.map button{height:24px;padding:0;border-radius:3px;background:var(--field);border:1px solid var(--line);display:grid;place-items:center;font:500 10px var(--mono);color:var(--mute)}
+.map button{height:36px;padding:0;border-radius:4px;background:var(--field);border:1px solid var(--line);display:grid;place-items:center;font:500 13px var(--mono);color:var(--mute)}
 .map button:disabled{cursor:default;color:var(--mute)}
 .map button:not(:disabled):hover{border-color:var(--ink);color:var(--ink)}
 .map button.t{border-style:dashed}
 .map button.peek{border-color:var(--info);color:var(--info);background:color-mix(in srgb,var(--info) 10%,var(--surface));font-weight:700}
 .map button.me{background:var(--accent);border-color:var(--accent);color:var(--on-color);font-weight:700}
 .map button.me.peek{outline:2px solid var(--info);outline-offset:1px}
+@media (max-width:520px){
+  .map{grid-template-columns:repeat(var(--kol-sm,6),1fr)}
+  .map button{height:40px;font-size:14px}
+}
 /* Satu baris tetap (20px) → kartu tidak melompat saat teks berganti. */
 .map-info{margin:var(--s2) 0 0;min-height:20px;font-size:13px;line-height:20px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .seats .tag{margin-left:auto;font:500 11px var(--mono);color:var(--mute);border:1px solid var(--line);border-radius:3px;padding:2px var(--s1)}

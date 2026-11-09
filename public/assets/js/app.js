@@ -418,6 +418,7 @@ async function panggilScript(id, tgl) {
     const N = I.jumlahKursi, map = $("map"), buka = !!H.kursi && terbuka();
     if (!buka) intip = null;
     map.style.setProperty("--kol", Math.min(12, N));
+    map.style.setProperty("--kol-sm", Math.min(6, N));
     map.innerHTML = Array.from({ length: N }, (_, i) => {
       const k = buka ? H.kursi[i] : null;
       const cls = [i + 1 === no ? "me" : "", k && k.tetap ? "t" : "", i + 1 === intip ? "peek" : ""].filter(Boolean).join(" ");
