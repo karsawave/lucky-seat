@@ -6,6 +6,8 @@
 
 <p align="center"><a href="../README.md">English</a> · <b>Bahasa Indonesia</b></p>
 
+<p align="center"><a href="https://karsawave.github.io/lucky-seat/"><b>Coba langsung</b></a> · <a href="https://karsawave.github.io/lucky-seat/guide.html">Panduan pemasangan</a></p>
+
 <p align="center">
   Undian nomor kursi harian untuk tim kerja, adil, otomatis, dan cukup dibagikan lewat satu link WhatsApp.
 </p>
@@ -121,7 +123,7 @@ Versi bahasa Inggris (`-EN`) ada di [`templates/en/`](../public/templates/en/).
 
 1. Di Google Sheet, klik **Bagikan** → **Akses umum**: **Siapa saja yang memiliki link** sebagai **Pelihat**.
 2. Klik **Salin link**.
-3. Buka website Lucky Seat dengan akhiran `?admin` (contoh: `https://nama-kamu.github.io/lucky-seat/?admin`).
+3. Buka website Lucky Seat dengan akhiran `?admin` (contoh: `https://karsawave.github.io/lucky-seat/?admin`, atau salinan milikmu sendiri).
 4. Pilih **Google Sheet**, tempel link, klik **Uji & hubungkan**.
 5. Muncul tulisan **"Link undangan siap"**.
 
@@ -282,7 +284,7 @@ Hasil dihitung dari **Kunci** rahasia dan tanggal, sehingga sama untuk semua ora
 
 ## Lisensi
 
-[MIT](../LICENSE) © 2026 Romadhon. Kamu boleh memakai, mengubah, dan membagikan proyek ini, termasuk untuk kantor atau komersial, asalkan tetap menyertakan pemberitahuan hak cipta dan teks lisensinya.
+[MIT](../LICENSE) © 2026 [Karsa Wave](https://github.com/karsawave). Kamu boleh memakai, mengubah, dan membagikan proyek ini, termasuk untuk kantor atau komersial, asalkan tetap menyertakan pemberitahuan hak cipta dan teks lisensinya.
 
 ---
 

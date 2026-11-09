@@ -6,6 +6,8 @@
 
 <p align="center"><b>English</b> · <a href="docs/README.id.md">Bahasa Indonesia</a></p>
 
+<p align="center"><a href="https://karsawave.github.io/lucky-seat/"><b>Live demo</b></a> · <a href="https://karsawave.github.io/lucky-seat/guide.html">Setup guide</a></p>
+
 <p align="center">
   Fair, automatic daily seat draws for your team, shared with a single WhatsApp link.
 </p>
@@ -121,7 +123,7 @@ Indonesian versions (`-ID`) are in [`templates/id/`](public/templates/id/).
 
 1. In Google Sheets, click **Share** → **General access**: **Anyone with the link** as **Viewer**.
 2. Click **Copy link**.
-3. Open the Lucky Seat website with `?admin` at the end (e.g. `https://your-name.github.io/lucky-seat/?admin`).
+3. Open the Lucky Seat website with `?admin` at the end (e.g. `https://karsawave.github.io/lucky-seat/?admin`, or your own copy).
 4. Choose **Google Sheet**, paste the link, and click **Test & connect**.
 5. You see **"Invite link ready"**.
 
@@ -283,7 +285,7 @@ Results are calculated from the secret **Key** and the date, so they're the same
 
 ## License
 
-[MIT](LICENSE) © 2026 Romadhon. You may use, change and share this project, including for work or commercial use, as long as you keep the copyright notice and the license text.
+[MIT](LICENSE) © 2026 [Karsa Wave](https://github.com/karsawave). You may use, change and share this project, including for work or commercial use, as long as you keep the copyright notice and the license text.
 
 ---
 
