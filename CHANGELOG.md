@@ -6,6 +6,15 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-09
+
+### Added
+- Seat map numbers can be tapped to see who sits there ("Seat 05: Eka"); the same row is highlighted in the seat list. "Your name" stays unchanged.
+
+### Changed
+- The seat list is now a card, like the ticket above it.
+- "Change data source" on the admin screen moved into the link row under the WhatsApp button.
+
 ## [1.0.2] - 2026-11-09
 
 ### Changed
