@@ -1,0 +1,272 @@
+/* Lucky Seat — gaya bersama (index.html & panduan.html) */
+:root{
+  --paper:#f4efe6; --surface:#fffdf8; --ink:#1c1a17; --mute:#7a7266; --line:#e2d9c8;
+  --accent:#d9432f; --wa:#1f8f4e; --field:#f8f3ea;
+  /* Warna aksi: info = tautan/navigasi, danger = kesalahan (beda dari accent merek). */
+  --info:#2763c9; --danger:#c42b2b;
+  /* Skala jarak 4-poin. Dekat = berkaitan (label→isian 8), kelompok 24, antar-bagian 48. */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+  --pad:var(--s5); /* padding dalam kartu, kiri-kanan selalu sama */
+  --display:"Bricolage Grotesque",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+/* Tema: ikut sistem, kecuali pengguna memilih sendiri (html[data-theme]). */
+:root{color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --paper:#16140f; --surface:#201d17; --ink:#f1ebe0; --mute:#9a9183; --line:#36312a;
+  --accent:#ef6a4f; --wa:#2f9e5e; --field:#2a2620; --info:#6ea2f5; --danger:#f2726a;
+}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --paper:#16140f; --surface:#201d17; --ink:#f1ebe0; --mute:#9a9183; --line:#36312a;
+  --accent:#ef6a4f; --wa:#2f9e5e; --field:#2a2620; --info:#6ea2f5; --danger:#f2726a;
+}
+/* Tombol tema & ganti bahasa: satu baris setinggi 40px, keduanya mengisi penuh tinggi itu. */
+.tools{--th:40px;flex:none;display:flex;align-items:stretch;gap:var(--s2);height:var(--th);margin-top:var(--s1)}
+.tools>*{box-sizing:border-box;height:var(--th);margin:0}
+.tools .seg.lang{margin:0;padding:2px;align-items:stretch}
+/* Tiap tombol bahasa = kotak dalam tombol tema (40 − 2×border − 2×padding = 34px). */
+.tools .seg.lang button{height:auto;width:calc(var(--th) - 6px);min-width:0;padding:0;line-height:1}
+/* Tombol tema memakai bingkai yang sama persis dengan .seg (border 1px + padding 2px + tombol dalam). */
+.btn-theme{flex:none;width:var(--th);padding:2px;border:1px solid var(--line);border-radius:6px;display:grid;color:var(--mute)}
+.btn-theme>svg{grid-area:1/1;place-self:center}
+.btn-theme::before{content:"";grid-area:1/1;border-radius:4px}
+.btn-theme:hover{color:var(--ink)}
+.btn-theme:hover::before{background:var(--field)}
+.btn-theme .sun{display:none}
+:root[data-theme-now="dark"] .btn-theme .sun{display:block}
+:root[data-theme-now="dark"] .btn-theme .moon{display:none}
+*{box-sizing:border-box}
+html{scrollbar-gutter:stable}
+main[aria-busy="true"]{visibility:hidden}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--display);-webkit-font-smoothing:antialiased}
+main{max-width:760px;margin:0 auto;padding:var(--s6) var(--s4) var(--s7)}
+@media (max-width:480px){:root{--pad:var(--s4)}}
+button,select{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:disabled{cursor:not-allowed;color:var(--mute)}
+/* Kursor & status nonaktif: tangan = bisa diklik, dilarang = nonaktif, tunggu = sedang memproses */
+/* Urutan penting: tangan → aktif-terpilih → nonaktif → memproses (yang terakhir menang). */
+a[href],.seg button,.btn-link,.foot button{cursor:pointer}
+.seg button[aria-pressed="true"]{cursor:default}
+.input[readonly]{cursor:text}
+select:disabled,.input:disabled{opacity:.55}
+:is(button,select,input):disabled{cursor:not-allowed}
+[aria-busy="true"],[aria-busy="true"] :is(button,select):disabled,:is(button,select)[aria-busy="true"]:disabled{cursor:progress}
+.btn-draw:disabled{background:var(--line);color:var(--mute);opacity:1}
+.btn-draw:disabled:hover{opacity:1}
+.seg button:disabled{opacity:.5}
+.map span,.meta,.num{cursor:default}
+/* Ikon garis inline: ukuran tetap, ikut warna teks */
+.ic{flex:none;display:block}
+.ico,.btn-link,.foot a,.foot button{display:inline-flex;align-items:center;gap:var(--s2)}
+
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+header h1{font-size:32px;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.1}
+.sub{margin:var(--s2) 0 0;color:var(--mute);font-size:15px}
+.label{display:block;font-size:14px;font-weight:800}
+/* Header: judul kiri, pilihan bahasa kanan (sejajar baris judul) */
+header.top{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s4)}
+header.top>div:first-child{min-width:0}
+.seg.lang{flex:none;margin-top:var(--s1)}
+.seg.lang button{min-width:40px;font:700 12px var(--mono);letter-spacing:.04em}
+
+.ticket{margin-top:var(--s5);background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.ticket-main{padding:var(--pad)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:var(--s2)}
+.nav button{width:40px;height:40px;border-radius:6px;display:grid;place-items:center;border:1px solid var(--line)}
+.nav button:disabled{opacity:.4}
+.nav button:not(:disabled):hover{border-color:var(--ink)}
+.date{flex:1;min-width:0;text-align:center;font-weight:500}
+.date small{display:block;height:16px;font:500 12px/16px var(--mono);color:var(--mute);letter-spacing:.06em}
+.date span{display:block;height:24px;line-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.who{margin-top:var(--s5)}
+.who label{margin-bottom:var(--s2)}
+select{width:100%;background:var(--field);border:1px solid var(--line);border-radius:6px;height:48px;padding:0 40px 0 var(--s4);font-weight:800;font-size:18px;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--mute) 50%),linear-gradient(-45deg,transparent 50%,var(--mute) 50%);
+  background-position:calc(100% - 22px) 55%,calc(100% - 16px) 55%;background-size:6px 6px;background-repeat:no-repeat}
+
+.seat{display:grid;grid-template-columns:auto 1fr;align-items:end;gap:var(--s4);margin-top:var(--s5)}
+.seat .num{font:700 clamp(84px,26vw,120px)/.85 var(--mono);color:var(--accent);letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.seat .num.dim{color:var(--line)}
+/* Angka ber-line-height .85 → puncak glyph menempel ke label; beri jarak 12px. */
+.seat .eyebrow{margin-bottom:var(--s3)}
+.seat-act{display:grid;justify-items:end;align-items:end;min-width:0}
+.seat-act>*{grid-area:1/1}
+.seat .msg{color:var(--mute);font-size:15px;text-align:right}
+.seat:not(.mode-btn) .btn-draw,.seat:not(.mode-info) .meta,.seat.mode-btn .msg,.seat.mode-info .msg{visibility:hidden}
+.meta{margin:0;width:100%;max-width:300px;display:grid}
+.meta div{display:flex;justify-content:space-between;align-items:center;gap:var(--s3);height:40px;border-bottom:1px solid var(--line)}
+.meta div:last-child{border-bottom:0}
+.meta dt{color:var(--mute);font-size:13px}
+.meta dd{margin:0;font-weight:800;font-size:14px;white-space:nowrap}
+.meta dd.mono{font:700 13px var(--mono);letter-spacing:.04em}
+.map{display:grid;grid-template-columns:repeat(var(--kol,12),1fr);gap:var(--s1);margin-top:var(--s4)}
+.map span{height:24px;border-radius:3px;background:var(--field);border:1px solid var(--line);display:grid;place-items:center;font:500 10px var(--mono);color:var(--mute)}
+.map span.t{border-style:dashed}
+.map span.me{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.seats .tag{margin-left:auto;font:500 11px var(--mono);color:var(--mute);border:1px solid var(--line);border-radius:3px;padding:2px var(--s1)}
+.btn-draw{background:var(--ink);color:var(--paper);font-weight:800;height:48px;padding:0 var(--s5);border-radius:6px;white-space:nowrap}
+.btn-draw:hover{opacity:.85} .btn-draw:active{transform:translateY(1px)}
+.pop{animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.85)}}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}}
+
+.perf{border-top:1px solid var(--line)}
+.stub{display:flex;justify-content:space-between;align-items:center;gap:var(--s4);padding:var(--s4) var(--pad);font-size:14px;color:var(--mute)}
+.stub b{font:700 15px var(--mono);font-variant-numeric:tabular-nums;color:var(--ink)}
+
+.actions{margin-top:var(--s4);display:grid;gap:var(--s2)}
+.btn-primary{position:relative;background:var(--wa);color:#fff;font-weight:800;height:48px;padding:0 var(--s4);border-radius:6px;display:flex;gap:var(--s2);justify-content:center;align-items:center;width:100%}
+.btn-primary[aria-busy="true"]::after{content:"";position:absolute;right:var(--s4);top:50%;width:16px;height:16px;margin-top:-8px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+[hidden]{display:none!important}
+.btn-primary:disabled{background:var(--line);color:var(--mute)}
+.btn-primary:not(:disabled):hover{filter:brightness(1.06)}
+.btn-primary:not(:disabled):active{transform:translateY(1px)}
+.links{display:flex;justify-content:center;gap:var(--s4)}
+.btn-link{min-height:40px;padding:0 var(--s2);color:var(--mute);font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.btn-link:not(:disabled):hover{color:var(--ink)}
+.btn-link:disabled{text-decoration:none;opacity:.6}
+
+section{margin-top:var(--s7)}
+.sec-head{display:flex;justify-content:space-between;align-items:center;gap:var(--s4);margin-bottom:var(--s3)}
+.sec-head h2{margin:0;font-size:14px;font-weight:800}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;padding:2px;font-size:14px}
+.seg button{height:32px;padding:0 var(--s3);border-radius:4px;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.seats{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:var(--s5)}
+.seats li{display:flex;gap:var(--s3);align-items:center;height:44px;padding:0;border-bottom:1px solid var(--line);min-width:0}
+.seats li.ph .nm{display:block;width:55%;height:10px;border-radius:2px;background:var(--line)}
+.seats .no{font:700 14px var(--mono);color:var(--mute);min-width:24px}
+.seats .nm{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seats .kosong .nm{color:var(--mute);font-weight:500}
+.seats li.me .no,.seats li.me .nm{color:var(--accent)}
+.empty{color:var(--mute);padding:var(--s3) 0;grid-column:1/-1}
+.note{margin:var(--s6) 0 0;font-size:14px;color:var(--mute);max-width:60ch}
+.note+.note{margin-top:var(--s2)}
+/* Alert: ikon + judul + daftar. Varian lewat token warna (--al), tanpa garis tebal di kiri. */
+.alert{--al:var(--mute);display:grid;grid-template-columns:20px 1fr;gap:var(--s3);margin-top:var(--s6);padding:var(--s4);
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;font-size:14px;line-height:1.5}
+.alert-ic{color:var(--al);margin-top:1px}
+.alert-title{margin:0 0 var(--s1);font-weight:800;color:var(--ink)}
+.alert-list{margin:0;padding:0;list-style:none;display:grid;gap:var(--s1);color:var(--mute)}
+.alert-list>li{display:grid;grid-template-columns:12px 1fr}
+.alert-list>li::before{content:"";width:4px;height:4px;margin-top:9px;border-radius:50%;background:currentColor}
+.alert.info{--al:var(--accent)}
+.alert.ok{--al:var(--wa)}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid var(--line);font-size:14px}
+.foot a,.foot button{min-height:40px;color:var(--mute);padding:0;text-decoration:underline;text-underline-offset:3px}
+.foot a:hover,.foot button:hover{color:var(--ink)}
+.note a{color:inherit}
+/* Komponen bersama (layar admin & status) */
+.stack{display:grid;gap:var(--s4)}
+.seg.full{display:grid;grid-template-columns:1fr 1fr;font-size:14px;padding:var(--s1)}
+.seg.full button{height:40px;text-align:center}
+.field{display:grid;gap:var(--s2)}
+.input{font:inherit;height:48px;padding:0 var(--s4);border-radius:6px;border:1px solid var(--line);background:var(--field);color:var(--ink);width:100%;min-width:0}
+.input:focus-visible{outline:2px solid var(--accent);outline-offset:-1px}
+.input.mono{font:500 13px var(--mono)}
+.lead{margin:0;font-size:20px;font-weight:800;line-height:1.3}
+.muted{margin:0;color:var(--mute);overflow-wrap:anywhere}
+.callout.pane{display:flex;align-items:center;min-height:calc(3em + 2 * var(--s3));line-height:1.5}
+.callout.neutral{color:var(--mute)}
+.callout.is-error{border-color:var(--accent);color:var(--accent)}
+.panes{display:grid}
+.pane{grid-area:1/1;display:grid;gap:var(--s4);align-content:start}
+.pane.field{gap:var(--s2)}
+.pane[aria-hidden="true"]{visibility:hidden}
+.callout{margin:0;padding:var(--s3) var(--s4);border:1px solid var(--line);background:var(--field);border-radius:6px;font-size:14px}
+.divider{height:1px;background:var(--line)}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:var(--s3)}
+.steps>li{counter-increment:s;display:grid;grid-template-columns:28px 1fr;gap:var(--s3);align-items:start;font-size:15px;line-height:1.6}
+.steps>li::before{content:counter(s);display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);border-radius:6px;font:700 13px var(--mono);color:var(--mute)}
+.steps b{font-weight:800}
+.steps code{font:500 13px var(--mono);background:var(--field);padding:2px var(--s1);border-radius:4px}
+
+.toast{position:fixed;left:50%;bottom:var(--s5);transform:translate(-50%,var(--s5));background:var(--ink);color:var(--paper);padding:var(--s3) var(--s4);border-radius:6px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 2 * var(--s4))}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- Panduan (panduan.html) ---------- */
+/* Bahasa: konten ID/EN ditulis berdampingan, yang tampil mengikuti <html lang>. */
+html[lang="id"] [data-l="en"],html[lang="en"] [data-l="id"]{display:none!important}
+.guide h2{margin:var(--s7) 0 var(--s2);font-size:22px;font-weight:800;line-height:1.25}
+.guide h3{margin:var(--s6) 0 var(--s3);font-size:17px;font-weight:800}
+.guide p{margin:0 0 var(--s3);max-width:68ch}
+.guide .muted{margin-bottom:var(--s4)}
+.dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--s3);margin:var(--s4) 0}
+.dl a{display:grid;grid-template-columns:20px 1fr;gap:var(--s1) var(--s3);align-items:center;padding:var(--s3) var(--s4);border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);text-decoration:none}
+.dl a:hover{border-color:var(--ink)}
+.dl b{font-weight:800}
+.dl small{grid-column:2;color:var(--mute);font-size:13px}
+.guide .steps{margin:var(--s4) 0}
+.check{display:block;margin-top:var(--s1);color:var(--wa);font-size:14px}
+.check::before{content:"";display:inline-block;width:5px;height:10px;margin:0 var(--s3) 2px 2px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.guide .alert{margin:var(--s4) 0}
+kbd{font:600 13px var(--mono);padding:1px var(--s1);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;background:var(--surface)}
+.ui{font-weight:800;white-space:nowrap}
+.guide details{border:1px solid var(--line);border-radius:6px;background:var(--surface);margin-bottom:var(--s2)}
+.guide summary{min-height:48px;display:flex;align-items:center;padding:0 var(--s4);font-weight:800;cursor:pointer}
+.guide details>div{padding:0 var(--s4) var(--s4);color:var(--mute)}
+.back{display:inline-flex;align-items:center;gap:var(--s2);min-height:40px;color:var(--mute);font-size:14px}
+.back:hover{color:var(--ink)}
+
+/* ===== Panduan: pola layar admin (ticket + stack + seg + callout) ===== */
+.guide section{margin-top:var(--s6);scroll-margin-top:var(--s4)}
+.guide section>h2{margin:0 0 var(--s3);font-size:18px}
+.guide .ticket{margin-top:0}
+.guide .ticket-main p,.guide .steps,.guide .dl{margin:0;max-width:none}
+.guide .steps>li{font-size:15px}
+.guide .steps>li>span{min-width:0;padding-top:2px;overflow-wrap:anywhere}
+.guide :is(p,li) a:not([class]){color:inherit;text-decoration:underline;text-underline-offset:3px}
+.dl a>.ic{grid-row:1/3}
+.ui{white-space:normal}
+.guide .faq{display:grid;gap:var(--s2)}
+.guide details{margin:0}
+.guide summary{list-style:none;justify-content:space-between;gap:var(--s3);padding:var(--s3) var(--s4)}
+.guide summary::-webkit-details-marker{display:none}
+.guide summary::after{content:"";width:8px;height:8px;margin-right:var(--s1);border:solid var(--mute);border-width:0 2px 2px 0;transform:rotate(45deg);flex:none}
+.guide details[open] summary::after{transform:rotate(-135deg)}
+.guide details:hover,.guide details[open]{border-color:var(--ink)}
+.guide .note{margin-top:var(--s3)}
+@media (max-width:480px){.guide header h1{font-size:28px}}
+body[data-mode="sheet"] [data-only="script"],body[data-mode="script"] [data-only="sheet"]{display:none!important}
+.guide .links{margin-top:var(--s6)}
+.guide>.ticket{margin-top:var(--s5)}
+/* ---------- Layar "Butuh link undangan" ---------- */
+header.top:has(.brand){align-items:center}
+.brand{display:flex;align-items:center;gap:var(--s3);font-weight:800;font-size:17px;letter-spacing:-.01em}
+.brand img{display:block;border-radius:6px}
+.hero{margin-top:var(--s7)}
+.hero h1{margin:0;font-size:clamp(30px,6vw,40px);font-weight:800;letter-spacing:-.025em;line-height:1.1}
+/* Tinggi teks dikunci agar ganti bahasa (ID ↔ EN beda panjang) tidak menggeser komponen di bawahnya. */
+.hero h1{min-height:1.1em}
+.hero .sub{margin-top:var(--s3);font-size:17px;line-height:1.5;min-height:1.5em}
+@media (max-width:640px){.hero h1{min-height:2.2em}.hero .sub{min-height:3em}}
+.hero+.ticket{margin-top:var(--s6)}
+/* Baris ikon: satu pola untuk langkah & admin — kotak ikon 40px + judul (20px) + keterangan (20px), tengah vertikal. */
+.row-ic>li,span.row-ic{display:grid;grid-template-columns:40px 1fr;gap:var(--s4);align-items:center;position:relative;min-width:0}
+/* Kotak ikon diwarnai sesuai aksinya lewat --c: WhatsApp = hijau, tautan = biru, kursi = merek. */
+.row-ic .ic{--c:var(--accent);width:40px;height:40px;padding:10px;border-radius:8px;box-sizing:border-box;color:var(--c);
+  background:color-mix(in srgb,var(--c) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--c) 28%,var(--surface))}
+.c-wa{--c:var(--wa)!important}.c-info{--c:var(--info)!important}.c-mute{--c:var(--mute)!important}
+.row-ic b{display:block;font-weight:800;font-size:15px;line-height:20px;color:var(--ink)}
+.row-ic small{display:block;color:var(--mute);font-size:14px;line-height:20px}
+.howto{list-style:none;margin:0;padding:0;display:grid;gap:var(--s5)}
+/* Garis penghubung: dari bawah ikon ke atas ikon berikutnya, tepat di tengah. */
+.howto li:not(:last-child)::after{content:"";position:absolute;left:20px;top:calc(50% + 20px);height:calc(var(--s5) + 0px);width:1px;background:var(--line);transform:translateX(-.5px)}
+.paste{display:flex;gap:var(--s2)}
+.paste .input{flex:1;font:500 14px var(--mono)}
+.paste .input:focus-visible{outline-color:var(--info)}
+.paste .input[aria-invalid="true"]{border-color:var(--danger);outline-color:var(--danger)}
+/* Aksi utama layar ini = membuka link → warna merek. */
+.paste .btn-draw{flex:none;min-width:96px;background:var(--accent);color:#fff}
+.paste .btn-draw:hover{opacity:1;filter:brightness(1.07)}
+.mono-chip{font:500 12px var(--mono);color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:4px;padding:1px var(--s1);overflow-wrap:anywhere}
+.hint.is-error{color:var(--danger)}
+.callout.is-error{border-color:color-mix(in srgb,var(--danger) 40%,var(--surface));background:color-mix(in srgb,var(--danger) 8%,var(--surface));color:var(--danger)}
+/* Kartu admin: padding & radius sama dengan .ticket, tombol setinggi tombol utama (48px). */
+.admin-cta{display:flex;justify-content:space-between;align-items:center;gap:var(--s4);margin-top:var(--s4);padding:var(--pad);border:1px dashed var(--line);border-radius:8px}
+.btn-ghost{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);height:48px;min-width:184px;padding:0 var(--s4);border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-weight:800;text-decoration:none}
+.btn-ghost:hover{border-color:var(--ink)}
+@media (max-width:520px){.admin-cta{flex-direction:column;align-items:stretch}.btn-ghost{justify-content:center}}
+.hint{margin:0;font-size:13px;line-height:1.5;color:var(--mute)}

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lucky Seat DTPSD</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1d2433;--mute:#6b7385;--acc:#0b6bcb;--ok:#1a8f5a;--line:#e3e6ee}
+@media (prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b2029;--ink:#e8ebf2;--mute:#9aa3b5;--acc:#4ea1ff;--ok:#3ccf8e;--line:#2a313d}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:1000px;margin:auto;padding:16px}
+h1{margin:.2em 0;font-size:1.5rem}small,.mute{color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,select,input{font:inherit;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+button{cursor:pointer}button.pri{background:var(--acc);color:#fff;border:0}
+textarea{width:100%;min-height:110px;font:13px monospace;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px}
+#stage{text-align:center;padding:20px}
+#who{font-size:1.4rem;font-weight:600}
+#num{font-size:5rem;font-weight:800;color:var(--acc);font-variant-numeric:tabular-nums;line-height:1.1}
+#num.done{color:var(--ok)}
+.grid{display:grid;gap:8px}
+.seat{border:1px solid var(--line);border-radius:10px;padding:8px;min-height:62px;background:var(--bg)}
+.seat b{color:var(--acc)}.seat.filled{border-color:var(--ok)}
+</style>
+</head>
+<body><main>
+<h1>🎲 Lucky Seat</h1>
+<div class="mute" id="today"></div>
+
+<div class="card">
+  <b>1. Data peserta</b> <small>(CSV, kolom: <code>nama</code>)</small>
+  <div class="row" style="margin:8px 0">
+    <input type="file" id="fPeserta" accept=".csv,text/csv">
+    <label>Kursi per baris/meja <input type="number" id="perRow" value="4" min="1" style="width:70px"></label>
+    <label>Jumlah kursi <input type="number" id="nSeat" min="1" style="width:70px" placeholder="auto"></label>
+  </div>
+  <textarea id="tPeserta" placeholder="nama&#10;Andi&#10;Budi&#10;Citra"></textarea>
+</div>
+
+<div class="card">
+  <b>2. Riwayat hari sebelumnya</b> <small>(opsional, CSV: <code>tanggal,nama,kursi</code>, agar tidak duduk di kursi/tetangga yang sama)</small>
+  <div class="row" style="margin-top:8px"><input type="file" id="fRiwayat" accept=".csv,text/csv"><span id="infoRiwayat" class="mute"></span></div>
+</div>
+
+<div class="card" id="stage">
+  <div id="who">Siap mengundi</div>
+  <div id="num">--</div>
+  <div class="row" style="justify-content:center;margin-top:10px">
+    <button class="pri" id="bNext">🎰 Ambil undian (berikutnya)</button>
+    <button id="bAll">⚡ Undi semua</button>
+    <button id="bReset">↺ Ulang hari ini</button>
+    <button id="bExport">⬇ Simpan riwayat CSV</button>
+  </div>
+  <small id="progress"></small>
+</div>
+
+<div class="card"><b>Denah hari ini</b><div class="grid" id="grid" style="margin-top:8px"></div></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const TODAY=new Date().toISOString().slice(0,10);
+$('today').textContent='Tanggal: '+new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+let history=[], plan=null, order=[], idx=0, rolling=false;
+
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+function parseCSV(t){
+  return t.replace(/\r/g,'').split('\n').map(l=>l.trim()).filter(Boolean)
+    .map(l=>l.split(/[,;]/).map(s=>s.trim().replace(/^"|"$/g,'')));
+}
+function readFile(inp,cb){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsText(f)}
+
+function names(){
+  const rows=parseCSV($('tPeserta').value);
+  if(rows.length&&/^nama$/i.test(rows[0][0]))rows.shift();
+  return [...new Set(rows.map(r=>r[0]).filter(Boolean))];
+}
+function seatCount(n){return Math.max(n,+$('nSeat').value||n)}
+function neighbors(s,per){ // kursi bersebelahan dalam satu baris/meja
+  const r=[],row=Math.floor((s-1)/per);
+  for(const t of [s-1,s+1]) if(t>0&&Math.floor((t-1)/per)===row) r.push(t);
+  return r;
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+
+// Undian: acak berulang, pilih hasil dengan "penalti" terkecil
+function draw(){
+  const ns=names(), per=+$('perRow').value||4, total=seatCount(ns.length);
+  if(!ns.length)return alert('Isi daftar peserta dulu.');
+  const past=history.filter(h=>h.tanggal!==TODAY);
+  const sameSeat=new Set(past.map(h=>h.nama+'|'+h.kursi));
+  const pastPair=new Set();
+  const byDay={};past.forEach(h=>(byDay[h.tanggal]??={})[h.kursi]=h.nama);
+  Object.values(byDay).forEach(m=>Object.keys(m).forEach(s=>neighbors(+s,per).forEach(t=>{if(m[t])pastPair.add([m[s],m[t]].sort().join('|'))})));
+  let best=null,bestP=1e9;
+  const seats=Array.from({length:total},(_,i)=>i+1);
+  for(let k=0;k<800&&bestP>0;k++){
+    const pick=shuffle(seats.slice()).slice(0,ns.length), m={};
+    ns.forEach((n,i)=>m[pick[i]]=n);
+    let p=0;
+    ns.forEach((n,i)=>{if(sameSeat.has(n+'|'+pick[i]))p+=3});
+    Object.keys(m).forEach(s=>neighbors(+s,per).forEach(t=>{if(m[t]&&t>+s&&pastPair.has([m[s],m[t]].sort().join('|')))p+=2}));
+    if(p<bestP){bestP=p;best=m}
+  }
+  plan={per,total,map:best};
+  order=shuffle(Object.entries(best).map(([s,n])=>({nama:n,kursi:+s})));
+  idx=0;history=history.filter(h=>h.tanggal!==TODAY);
+}
+function ensurePlan(){if(!plan)draw();return !!plan}
+
+function render(){
+  const g=$('grid');if(!plan){g.innerHTML='';return}
+  g.style.gridTemplateColumns=`repeat(${Math.min(plan.per,6)},1fr)`;
+  const done=new Map(history.filter(h=>h.tanggal===TODAY).map(h=>[+h.kursi,h.nama]));
+  g.innerHTML=Array.from({length:plan.total},(_,i)=>{const s=i+1,n=done.get(s);
+    return `<div class="seat ${n?'filled':''}"><b>#${s}</b><br>${n?esc(n):'<span class="mute">—</span>'}</div>`}).join('');
+  $('progress').textContent=`${idx}/${order.length} sudah mengambil undian`;
+  store.set('ls_history',JSON.stringify(history));
+}
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function commit(o){history.push({tanggal:TODAY,nama:o.nama,kursi:o.kursi});idx++}
+
+$('bNext').onclick=()=>{
+  if(rolling||!ensurePlan())return;
+  if(idx>=order.length)return alert('Semua sudah mendapat kursi.');
+  const o=order[idx];rolling=true;$('who').textContent=o.nama;$('num').classList.remove('done');
+  let t=0;const iv=setInterval(()=>{$('num').textContent=1+(Math.random()*plan.total|0);
+    if(++t>22){clearInterval(iv);$('num').textContent=o.kursi;$('num').classList.add('done');commit(o);rolling=false;render()}},60);
+};
+$('bAll').onclick=()=>{if(rolling||!ensurePlan())return;while(idx<order.length)commit(order[idx]);$('who').textContent='Semua sudah diundi';$('num').textContent='✓';render()};
+$('bReset').onclick=()=>{if(confirm('Ulang undian hari ini?')){plan=null;history=history.filter(h=>h.tanggal!==TODAY);$('who').textContent='Siap mengundi';$('num').textContent='--';render()}};
+$('bExport').onclick=()=>{
+  const csv='tanggal,nama,kursi\n'+history.map(h=>`${h.tanggal},"${h.nama}",${h.kursi}`).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`riwayat-lucky-seat-${TODAY}.csv`;a.click();
+};
+$('fPeserta').onchange=e=>readFile(e.target,t=>{$('tPeserta').value=t;store.set('ls_peserta',t)});
+$('tPeserta').oninput=()=>store.set('ls_peserta',$('tPeserta').value);
+$('fRiwayat').onchange=e=>readFile(e.target,t=>{
+  const rows=parseCSV(t);if(rows.length&&/tanggal/i.test(rows[0][0]))rows.shift();
+  history=rows.filter(r=>r.length>=3).map(r=>({tanggal:r[0],nama:r[1],kursi:+r[2]}));
+  $('infoRiwayat').textContent=`${history.length} baris riwayat dimuat`;plan=null;render();
+});
+// restore
+$('tPeserta').value=store.get('ls_peserta')||'';
+try{history=JSON.parse(store.get('ls_history')||'[]')}catch(e){history=[]}
+if(history.length)$('infoRiwayat').textContent=`${history.length} baris riwayat tersimpan di browser`;
+</script>
+</body></html>

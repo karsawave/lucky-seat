@@ -1,0 +1,12 @@
+setting	value	notes
+Title	Lucky Seat	Title on the page and images. Safe to change anytime.
+Subtitle	DTPSD	Team name, shown under the title. Safe to change anytime.
+Language	English	Default display language: Indonesia or English. Members can still switch on their own phone. Safe to change anytime.
+Start Date	'2026-11-09	First draw day, format 2026-11-09. Required. Do not change once running.
+Workdays	Monday, Tuesday, Wednesday, Thursday, Friday	Days with a draw, separated by commas. Changing this changes all results (Option 1).
+Draw Time	07:00	Time seat numbers open, format 07:00, in the Time Zone below. Safe to change anytime.
+Time Zone	Asia/Jakarta	Draw time zone for all members: Asia/Jakarta (WIB), Asia/Makassar (WITA), Asia/Jayapura (WIT), any other zone, or +7. Empty = WIB. Safe to change anytime.
+Seats	24	Number of numbered seats, at least the number of members. Changing this changes all results (Option 1).
+Draw Mode	Manual	Manual = press Draw number. Automatic = shown right at draw time. Safe to change anytime.
+Fixed Seats		Members excluded from shuffling, format Name: number, separated by commas (e.g. Vina: 3). Empty = everyone is shuffled. Changing this changes all results (Option 1).
+Key	LuckySeat-Q7m4x	Secret shuffle text, replace with your own random text. Option 1 only (Option 2 makes its own). Do not change once running.
