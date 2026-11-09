@@ -6,6 +6,14 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-11-09
+
+### Changed
+- Apps Script now has its own API version (`API_VERSION` in `Code.gs`, `CODE_GS_API` in `version.js`), separate from the website version. Option 2 admins are asked to redeploy only when `Code.gs` really changes, not after every website release. Scripts deployed from v1.0.0 on keep working without a warning.
+- The "update Apps Script" warning text no longer shows version numbers.
+- Day arrows: an active arrow is now filled with a clear border and bright icon; a disabled arrow stays faint, so the two are easy to tell apart.
+- Seat map numbers are bigger and easier to tap: 36px tall on wide screens, and 6 per row at 40px on phones.
+
 ## [1.1.1] - 2026-11-09
 
 ### Changed
