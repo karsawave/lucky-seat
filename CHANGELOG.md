@@ -6,6 +6,11 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-09
+
+### Changed
+- Tapping a taken seat on the map now also switches "Your name" to that person, so the big number and details follow. Tapping an empty seat still shows "Seat 16: empty". The saved name only changes when picked from the dropdown.
+
 ## [1.1.0] - 2026-11-09
 
 ### Added
