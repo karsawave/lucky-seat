@@ -6,6 +6,11 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-11-09
+
+### Fixed
+- Setup guide: the version line at the bottom is centered again (it was squeezed to the left).
+
 ## [1.1.2] - 2026-11-09
 
 ### Changed
