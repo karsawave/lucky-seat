@@ -294,5 +294,7 @@ header.top:has(.brand){align-items:center}
 /* Versi aplikasi di kaki halaman; is-warn = Apps Script perlu deploy ulang. */
 .ver{margin:var(--s4) 0 0;text-align:center;font:500 12px/1.5 var(--mono);color:var(--mute);letter-spacing:.02em}
 .ver.is-warn{color:var(--warn)}
+/* Di panduan, .guide p membatasi lebar (68ch) → versi tidak lagi di tengah halaman. Lepas batasnya. */
+.guide .ver{max-width:none;margin:var(--s4) 0 0}
 .callout.is-warn{border-color:color-mix(in srgb,var(--warn) 40%,var(--surface));background:color-mix(in srgb,var(--warn) 10%,var(--surface));color:var(--warn)}
 .hint{margin:0;font-size:13px;line-height:1.5;color:var(--mute)}
