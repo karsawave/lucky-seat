@@ -15,6 +15,7 @@
   <img alt="Data di Google Sheet" src="https://img.shields.io/badge/data-Google%20Sheet-2763c9">
   <img alt="Bahasa" src="https://img.shields.io/badge/bahasa-EN%20%7C%20ID-d9432f">
   <img alt="Tema" src="https://img.shields.io/badge/tema-terang%20%7C%20gelap-1c1a17">
+  <a href="../LICENSE"><img alt="Lisensi: MIT" src="https://img.shields.io/badge/lisensi-MIT-7a7266"></a>
 </p>
 
 ---
@@ -31,6 +32,7 @@
 - [Struktur folder](#struktur-folder)
 - [Kalau ada masalah](#kalau-ada-masalah)
 - [FAQ](#faq)
+- [Lisensi](#lisensi)
 
 ---
 
@@ -277,6 +279,10 @@ Tambahkan nama di tab `Anggota`. Link undangan tetap sama.
 
 **Apakah hasil undian bisa dicurangi?**
 Hasil dihitung dari **Kunci** rahasia dan tanggal, sehingga sama untuk semua orang yang membuka dan tidak bisa diatur ulang dari HP anggota.
+
+## Lisensi
+
+[MIT](../LICENSE) © 2026 Romadhon. Kamu boleh memakai, mengubah, dan membagikan proyek ini, termasuk untuk kantor atau komersial, asalkan tetap menyertakan pemberitahuan hak cipta dan teks lisensinya.
 
 ---
 

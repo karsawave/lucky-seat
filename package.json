@@ -2,6 +2,7 @@
   "name": "lucky-seat",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "description": "Fair daily seat draws for teams, powered by Google Sheets.",
   "scripts": {
     "test": "node --test"

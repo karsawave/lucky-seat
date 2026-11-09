@@ -15,6 +15,7 @@
   <img alt="Data in Google Sheets" src="https://img.shields.io/badge/data-Google%20Sheets-2763c9">
   <img alt="Languages" src="https://img.shields.io/badge/language-EN%20%7C%20ID-d9432f">
   <img alt="Theme" src="https://img.shields.io/badge/theme-light%20%7C%20dark-1c1a17">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-7a7266"></a>
 </p>
 
 ---
@@ -31,6 +32,7 @@
 - [Folder structure](#folder-structure)
 - [Troubleshooting](#troubleshooting)
 - [FAQ](#faq)
+- [License](#license)
 
 ---
 
@@ -278,6 +280,10 @@ Add their name to the `Members` tab. The invite link stays the same.
 
 **Can the draw be rigged?**
 Results are calculated from the secret **Key** and the date, so they're the same for everyone who opens the link and can't be re-rolled from a member's phone.
+
+## License
+
+[MIT](LICENSE) © 2026 Romadhon. You may use, change and share this project, including for work or commercial use, as long as you keep the copyright notice and the license text.
 
 ---
 
