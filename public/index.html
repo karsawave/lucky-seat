@@ -45,7 +45,8 @@
           </dl>
         </div>
       </div>
-      <div class="map" id="map" aria-hidden="true"></div>
+      <div class="map" id="map" role="group" data-i18n-aria="mapLabel" aria-label="Seat map"></div>
+      <p class="map-info" id="mapInfo" aria-live="polite"></p>
     </div>
     <div class="perf"></div>
     <div class="stub"><span class="ico"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><span data-i18n="nextDraw">Undian berikutnya</span></span><b id="cd">--:--:--</b></div>
@@ -62,12 +63,12 @@
     </div>
   </div>
 
-  <section>
+  <section class="ticket list-card" aria-labelledby="listTitle">
     <div class="sec-head">
-      <h2 data-i18n="listTitle">Daftar kursi</h2>
-      <div class="seg" data-sort role="group" data-i18n-aria="sortBy" aria-label="Urutkan">
-        <button data-s="no" aria-pressed="true" data-i18n="sortNo">Nomor</button>
-        <button data-s="nama" aria-pressed="false" data-i18n="sortName">Nama</button>
+      <h2 id="listTitle" data-i18n="listTitle">Seat list</h2>
+      <div class="seg" data-sort role="group" data-i18n-aria="sortBy" aria-label="Sort by">
+        <button data-s="no" aria-pressed="true" data-i18n="sortNo">Number</button>
+        <button data-s="nama" aria-pressed="false" data-i18n="sortName">Name</button>
       </div>
     </div>
     <ol id="daftar" class="seats"></ol>

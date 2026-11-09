@@ -261,9 +261,9 @@ async function panggilScript(id, tgl) {
         <div class="links">
           <button class="btn-link" id="salin"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>${t("copyLink")}</button>
           <a class="btn-link" href="${esc(url)}"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>${t("openPage")}</a>
+          <a class="btn-link" href="?admin"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>${t("changeSource")}</a>
         </div>
-      </div>`,
-      `<a href="?admin">${t("changeSource")}</a>`);
+      </div>`);
     $("lu").onclick = (e) => e.target.select();
     $("kirim").onclick = () => window.open("https://wa.me/?text=" + encodeURIComponent(pesanWA), "_blank", "noopener");
     $("salin").onclick = async () => {
@@ -406,13 +406,25 @@ async function panggilScript(id, tgl) {
     return x.slice(0, 4) + "·" + x.slice(4);
   }
   // Peta kursi mini: jumlah sel = jumlah kursi (tetap) → tinggi kartu tidak berubah.
+  // Setelah hasil terbuka, tiap nomor bisa diketuk untuk melihat siapa yang duduk di sana ("intip"),
+  // tanpa mengganti "Nama kamu". Baris yang sama di daftar kursi ikut ditandai.
+  let intip = null;
+  const teksKursi = (k) => k.nama ? t("seatOf", { no: pad2(k.no), nama: k.nama }) : t("seatEmpty", { no: pad2(k.no) });
   function renderMap(no) {
-    const N = I.jumlahKursi, map = $("map");
+    const N = I.jumlahKursi, map = $("map"), buka = !!H.kursi && terbuka();
+    if (!buka) intip = null;
     map.style.setProperty("--kol", Math.min(12, N));
     map.innerHTML = Array.from({ length: N }, (_, i) => {
-      const k = H.kursi && terbuka() ? H.kursi[i] : null;
-      return `<span class="${i + 1 === no ? "me" : ""}${k && k.tetap ? " t" : ""}">${pad2(i + 1)}</span>`;
+      const k = buka ? H.kursi[i] : null;
+      const cls = [i + 1 === no ? "me" : "", k && k.tetap ? "t" : "", i + 1 === intip ? "peek" : ""].filter(Boolean).join(" ");
+      return `<button type="button" data-no="${i + 1}" class="${cls}"${buka ? ` aria-label="${esc(teksKursi(k))}" aria-pressed="${i + 1 === intip}"` : " disabled"}>${pad2(i + 1)}</button>`;
     }).join("");
+    $("mapInfo").textContent = !buka ? "" : intip ? teksKursi(H.kursi[intip - 1]) : t("mapHint");
+  }
+  function pilihIntip(no) {
+    intip = intip === no ? null : no;
+    renderMap(kursiSaya() && terbuka() ? kursiSaya() : null);
+    renderDaftar();
   }
 
   function renderKursi(animasi) {
@@ -448,7 +460,7 @@ async function panggilScript(id, tgl) {
     let L = H.kursi;
     if (sortBy === "nama") L = [...L].sort((a, b) => (!a.nama) - (!b.nama) || (a.nama && b.nama ? a.nama.localeCompare(b.nama, T.lang) : a.no - b.no));
     $("daftar").innerHTML = L.map((s) =>
-      `<li class="${s.nama ? "" : "kosong"} ${s.nama && s.nama === nama ? "me" : ""}"><span class="no">${pad2(s.no)}</span><span class="nm">${s.nama ? esc(s.nama) : t("empty")}</span>${s.tetap ? `<span class="tag">${t("fixed")}</span>` : ""}</li>`
+      `<li class="${s.nama ? "" : "kosong"} ${s.nama && s.nama === nama ? "me" : ""} ${s.no === intip ? "peek" : ""}"><span class="no">${pad2(s.no)}</span><span class="nm">${s.nama ? esc(s.nama) : t("empty")}</span>${s.tetap ? `<span class="tag">${t("fixed")}</span>` : ""}</li>`
     ).join("");
   }
 
@@ -459,6 +471,7 @@ async function panggilScript(id, tgl) {
 
   async function buka(tgl) {
     if (!tgl) return;
+    intip = null;
     // Saat memuat hari lain, kontrol yang mengubah tampilan dikunci sementara (render() membukanya lagi).
     $("prev").disabled = $("next").disabled = $("nama").disabled = $("btnDraw").disabled = true;
     document.querySelectorAll(".seg[data-sort] button").forEach((b) => (b.disabled = true));
@@ -514,6 +527,7 @@ async function panggilScript(id, tgl) {
   isiNama();
   $("nama").onchange = (e) => { nama = e.target.value; store.set("ls-nama", nama); render(); };
   $("btnDraw").onclick = () => { store.set(kunciBuka(), "1"); render(); renderKursi(true); };
+  $("map").onclick = (e) => { const b = e.target.closest("button[data-no]"); if (b && !b.disabled) pilihIntip(+b.dataset.no); };
   $("prev").onclick = () => buka(H.prev);
   $("next").onclick = () => buka(H.next);
   $("btnShare").onclick = (e) => share(gambarDaftar, teksDaftar(), `lucky-seat-${H.tgl}.jpg`, e.currentTarget);

@@ -56,7 +56,7 @@ select:disabled,.input:disabled{opacity:.55}
 .btn-draw:disabled{background:var(--line);color:var(--mute);opacity:1}
 .btn-draw:disabled:hover{opacity:1}
 .seg button:disabled{opacity:.5}
-.map span,.meta,.num{cursor:default}
+.meta,.num{cursor:default}
 /* Ikon garis inline: ukuran tetap, ikut warna teks */
 .ic{flex:none;display:block}
 .ico,.btn-link,.foot a,.foot button{display:inline-flex;align-items:center;gap:var(--s2)}
@@ -103,9 +103,16 @@ select{width:100%;background:var(--field);border:1px solid var(--line);border-ra
 .meta dd{margin:0;font-weight:800;font-size:14px;white-space:nowrap}
 .meta dd.mono{font:700 13px var(--mono);letter-spacing:.04em}
 .map{display:grid;grid-template-columns:repeat(var(--kol,12),1fr);gap:var(--s1);margin-top:var(--s4)}
-.map span{height:24px;border-radius:3px;background:var(--field);border:1px solid var(--line);display:grid;place-items:center;font:500 10px var(--mono);color:var(--mute)}
-.map span.t{border-style:dashed}
-.map span.me{background:var(--accent);border-color:var(--accent);color:var(--on-color);font-weight:700}
+/* Sel peta = tombol: ketuk untuk "intip" siapa yang duduk di kursi itu. Nonaktif sebelum hasil terbuka. */
+.map button{height:24px;padding:0;border-radius:3px;background:var(--field);border:1px solid var(--line);display:grid;place-items:center;font:500 10px var(--mono);color:var(--mute)}
+.map button:disabled{cursor:default;color:var(--mute)}
+.map button:not(:disabled):hover{border-color:var(--ink);color:var(--ink)}
+.map button.t{border-style:dashed}
+.map button.peek{border-color:var(--info);color:var(--info);background:color-mix(in srgb,var(--info) 10%,var(--surface));font-weight:700}
+.map button.me{background:var(--accent);border-color:var(--accent);color:var(--on-color);font-weight:700}
+.map button.me.peek{outline:2px solid var(--info);outline-offset:1px}
+/* Satu baris tetap (20px) → kartu tidak melompat saat teks berganti. */
+.map-info{margin:var(--s2) 0 0;min-height:20px;font-size:13px;line-height:20px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .seats .tag{margin-left:auto;font:500 11px var(--mono);color:var(--mute);border:1px solid var(--line);border-radius:3px;padding:2px var(--s1)}
 .btn-draw{background:var(--ink);color:var(--paper);font-weight:800;height:48px;padding:0 var(--s5);border-radius:6px;white-space:nowrap}
 .btn-draw:hover{opacity:.85} .btn-draw:active{transform:translateY(1px)}
@@ -125,13 +132,19 @@ select{width:100%;background:var(--field);border:1px solid var(--line);border-ra
 .btn-primary:disabled{background:var(--line);color:var(--mute)}
 .btn-primary:not(:disabled):hover{filter:brightness(1.06)}
 .btn-primary:not(:disabled):active{transform:translateY(1px)}
-.links{display:flex;justify-content:center;gap:var(--s4)}
+.links{display:flex;flex-wrap:wrap;justify-content:center;gap:0 var(--s4)}
 .btn-link{min-height:40px;padding:0 var(--s2);color:var(--mute);font-size:14px;text-decoration:underline;text-underline-offset:3px}
 .btn-link:not(:disabled):hover{color:var(--ink)}
 .btn-link:disabled{text-decoration:none;opacity:.6}
 
 section{margin-top:var(--s7)}
 .sec-head{display:flex;justify-content:space-between;align-items:center;gap:var(--s4);margin-bottom:var(--s3)}
+/* Daftar kursi sebagai kartu (pola sama dengan .ticket): kepala + daftar di dalam padding yang sama. */
+.list-card{margin-top:var(--s6);padding:var(--pad) var(--pad) var(--s2)}
+.list-card .sec-head{margin-bottom:var(--s2)}
+.list-card .seats li:last-child,.list-card .seats li:nth-last-child(2):nth-child(odd){border-bottom:0}
+.seats li.peek{background:color-mix(in srgb,var(--info) 8%,var(--surface));box-shadow:-8px 0 0 color-mix(in srgb,var(--info) 8%,var(--surface)),8px 0 0 color-mix(in srgb,var(--info) 8%,var(--surface))}
+.seats li.peek .no,.seats li.peek .nm{color:var(--info)}
 .sec-head h2{margin:0;font-size:14px;font-weight:800}
 .seg{display:flex;border:1px solid var(--line);border-radius:6px;padding:2px;font-size:14px}
 .seg button{height:32px;padding:0 var(--s3);border-radius:4px;color:var(--mute)}
