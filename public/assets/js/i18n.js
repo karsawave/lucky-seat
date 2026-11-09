@@ -4,7 +4,7 @@
   const D = {
     id: {
       locale: "id-ID",
-      fileBlocked: "Halaman dibuka langsung dari file, jadi browser memblokir {src}. Buka lewat GitHub Pages atau server lokal (npx serve).", scriptNoNet: "Tidak bisa terhubung. Cek internet, atau pastikan Web App di-deploy dengan akses \"Siapa saja\".", scriptNoData: "Server tidak memberi data. Pastikan link Web App benar & akses \"Siapa saja\".", serverError: "Terjadi kesalahan di server.", lang: "Bahasa", mapLabel: "Peta kursi", mapHint: "Ketuk nomor untuk melihat siapa yang duduk di sana.", seatOf: "Kursi {no}: {nama}", seatEmpty: "Kursi {no}: kosong", scriptOutdated: "Apps Script v{s} tidak sama dengan website v{v}. Tempel Code.gs terbaru, lalu Kelola deployment → Versi baru.", themeDark: "Mode gelap", themeLight: "Mode terang",
+      fileBlocked: "Halaman dibuka langsung dari file, jadi browser memblokir {src}. Buka lewat GitHub Pages atau server lokal (npx serve).", scriptNoNet: "Tidak bisa terhubung. Cek internet, atau pastikan Web App di-deploy dengan akses \"Siapa saja\".", scriptNoData: "Server tidak memberi data. Pastikan link Web App benar & akses \"Siapa saja\".", serverError: "Terjadi kesalahan di server.", lang: "Bahasa", mapLabel: "Peta kursi", mapHint: "Ketuk nomor untuk melihat siapa yang duduk di sana.", seatOf: "Kursi {no}: {nama}", seatEmpty: "Kursi {no}: kosong", scriptOutdated: "Apps Script di sheet ini perlu diperbarui. Tempel Code.gs terbaru, lalu Kelola deployment → Versi baru.", themeDark: "Mode gelap", themeLight: "Mode terang",
       prevDay: "Hari sebelumnya", nextDay: "Hari berikutnya",
       yourName: "Nama kamu", pickOpt: "Pilih nama", seat: "Kursi", draw: "Ambil nomor",
       mPos: "Posisi", mWkt: "Diundi", mKode: "Kode undian",
@@ -64,7 +64,7 @@
     },
     en: {
       locale: "en-GB",
-      fileBlocked: "The page was opened directly from a file, so the browser blocks {src}. Open it via GitHub Pages or a local server (npx serve).", scriptNoNet: "Can't connect. Check your internet, or make sure the Web App is deployed with access \"Anyone\".", scriptNoData: "The server returned no data. Make sure the Web App link is right and access is \"Anyone\".", serverError: "Something went wrong on the server.", lang: "Language", mapLabel: "Seat map", mapHint: "Tap a number to see who sits there.", seatOf: "Seat {no}: {nama}", seatEmpty: "Seat {no}: empty", scriptOutdated: "Apps Script v{s} doesn't match the website v{v}. Paste the latest Code.gs, then Manage deployments → New version.", themeDark: "Dark mode", themeLight: "Light mode",
+      fileBlocked: "The page was opened directly from a file, so the browser blocks {src}. Open it via GitHub Pages or a local server (npx serve).", scriptNoNet: "Can't connect. Check your internet, or make sure the Web App is deployed with access \"Anyone\".", scriptNoData: "The server returned no data. Make sure the Web App link is right and access is \"Anyone\".", serverError: "Something went wrong on the server.", lang: "Language", mapLabel: "Seat map", mapHint: "Tap a number to see who sits there.", seatOf: "Seat {no}: {nama}", seatEmpty: "Seat {no}: empty", scriptOutdated: "The Apps Script in this sheet needs an update. Paste the latest Code.gs, then Manage deployments → New version.", themeDark: "Dark mode", themeLight: "Light mode",
       prevDay: "Previous day", nextDay: "Next day",
       yourName: "Your name", pickOpt: "Select name", seat: "Seat", draw: "Draw number",
       mPos: "Position", mWkt: "Drawn", mKode: "Draw code",

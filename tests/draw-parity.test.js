@@ -78,9 +78,9 @@ function jalankanGs(fx, nowMs) {
     ContentService: { MimeType: { JSON: "json" }, createTextOutput: (s) => ({ setMimeType: () => s }) },
     Logger: { log() {} },
   });
-  vm.runInContext(SRC.gs + "\n;this.__doGet = doGet; this.__VERSI = VERSI;", ctx);
+  vm.runInContext(SRC.gs + "\n;this.__doGet = doGet; this.__API = API_VERSION;", ctx);
   return {
-    versi: ctx.__VERSI,
+    api: ctx.__API,
     panggil: (tgl) => JSON.parse(ctx.__doGet({ parameter: { lang: "en", tgl: tgl || "" } })),
   };
 }
@@ -109,10 +109,11 @@ function jalankanSheet(fx, nowMs) {
   };
 }
 
-// Bandingkan semua yang dilihat pengguna; abaikan serverMs (jam proses) & urutan daftar nama.
+// Bandingkan semua yang dilihat pengguna; abaikan serverMs (jam proses), api (hanya dari Code.gs)
+// & urutan daftar nama.
 function normal(r) {
   if (!r.ok) return r;
-  const { serverMs, versi, ...info } = r.info;
+  const { serverMs, api, ...info } = r.info;
   info.anggota = [...info.anggota].sort();
   return { ok: true, info, hari: r.hari };
 }
@@ -159,11 +160,13 @@ const tanggalUji = (mulai, sekarangMs) => {
   return out;
 };
 
-test("versi version.js sama dengan VERSI di Code.gs", () => {
+test("CODE_GS_API di version.js sama dengan API_VERSION di Code.gs, dan dikirim di info.api", () => {
   const ctx = vm.createContext({}); ctx.window = ctx;
   vm.runInContext(SRC.version, ctx);
-  const gs = jalankanGs(SKENARIO[0], Date.parse(SKENARIO[0].sekarang));
-  assert.equal(gs.versi, ctx.APP_VERSION);
+  const fx = SKENARIO[0], gs = jalankanGs(fx, Date.parse(fx.sekarang));
+  assert.ok(Number.isInteger(gs.api) && gs.api >= 1, "API_VERSION harus bilangan bulat ≥ 1");
+  assert.equal(gs.api, ctx.CODE_GS_API);
+  assert.equal(gs.panggil("").info.api, gs.api);
 });
 
 for (const fx of SKENARIO) {

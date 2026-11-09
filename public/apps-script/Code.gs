@@ -17,8 +17,9 @@
  *   Riwayat    : dibuat & disembunyikan otomatis. Arsip hasil (jangan diedit).
  */
 
-// Versi skrip ini (SemVer), dikirim ke website agar admin tahu bila perlu deploy ulang. Sama dengan version.js.
-const VERSI = '1.1.1';
+// Versi API skrip ini (bilangan bulat). Naikkan HANYA bila isi Code.gs berubah dan admin perlu deploy ulang.
+// Website meminta minimal CODE_GS_API (version.js); bila lebih kecil, admin melihat peringatan deploy ulang.
+const API_VERSION = 1;
 const TAB_ANGGOTA = 'Anggota';
 const TAB_PENGATURAN = 'Pengaturan';
 const TAB_RIWAYAT = 'Riwayat';
@@ -142,7 +143,7 @@ function handle(p) {
     ok: true,
     info: {
       judul: S.judul, subjudul: S.subjudul, jamUndian: S.jamUndian, menitUndian: S.menitUndian, caraAmbil: S.caraAmbil, bahasa: S.bahasa,
-      versi: VERSI, hariIni: hariIni, aktif: aktif, bukaBerikutMs: bukaBerikutMs, serverMs: now.getTime(),
+      api: API_VERSION, hariIni: hariIni, aktif: aktif, bukaBerikutMs: bukaBerikutMs, serverMs: now.getTime(),
       zonaLabel: labelZona(new Date(bukaBerikutMs)), zonaOffset: offsetMenit(new Date(bukaBerikutMs)),
       anggota: Object.values(namaDepan(anggota)).sort(), jumlahKursi: N,
     },

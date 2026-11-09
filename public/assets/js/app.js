@@ -14,10 +14,13 @@ function scriptId(u) {
 const apiId = (u) => scriptId(u) || window.SheetSumber.sheetId(u);
 const apiUrl = (id) => scriptId(id) ? `https://script.google.com/macros/s/${id}/exec` : `https://docs.google.com/spreadsheets/d/${id}/edit`;
 
-// Versi: website (version.js) vs Apps Script (info.versi). Beda MAJOR.MINOR → Code.gs perlu di-deploy ulang.
+// Versi website (version.js) hanya untuk ditampilkan. Kecocokan Apps Script diukur dari API_VERSION Code.gs
+// (info.api) terhadap CODE_GS_API yang dibutuhkan website. Code.gs v1.0.0–v1.1.x belum mengirim `api`,
+// tetapi sudah mengirim `versi` dan isinya setara API 1. Tanpa keduanya = skrip lama sebelum v1.0.0.
 const APP_VERSION = window.APP_VERSION || "";
-const mm = (v) => String(v || "0").split(".").slice(0, 2).join(".");
-const scriptKuno = (id, I) => !!scriptId(id) && mm(I.versi) !== mm(APP_VERSION);
+const CODE_GS_API = window.CODE_GS_API || 1;
+const apiScript = (I) => I.api || (I.versi ? 1 : 0);
+const scriptKuno = (id, I) => !!scriptId(id) && apiScript(I) < CODE_GS_API;
 
 async function panggil(id, tgl) {
   if (!scriptId(id)) return window.SheetSumber.panggilSheet(id, tgl);
@@ -246,7 +249,7 @@ async function panggilScript(id, tgl) {
     const pesanWA = t("waMsg", { judul: I.judul + (I.subjudul ? " " + I.subjudul : ""), jam, url });
     layar(t("connected"), t("ready"), `
       <article class="ticket"><div class="ticket-main stack">
-        ${scriptKuno(id, I) ? `<p class="callout is-warn">${esc(t("scriptOutdated", { s: I.versi || "?", v: APP_VERSION }))}</p>` : ""}
+        ${scriptKuno(id, I) ? `<p class="callout is-warn">${esc(t("scriptOutdated"))}</p>` : ""}
         <div class="label">${esc(I.judul)}${I.subjudul ? " · " + esc(I.subjudul) : ""}</div>
         <p class="lead">${t("summary", { a: I.anggota.length, k: I.jumlahKursi, jam, m: t(I.caraAmbil === "otomatis" ? "auto" : "manual") })}</p>
         <div class="field">
@@ -559,7 +562,7 @@ async function panggilScript(id, tgl) {
   const tulisVersi = () => {
     const kuno = scriptKuno(ID, I);
     $("ver").className = "ver" + (kuno ? " is-warn" : "");
-    $("ver").textContent = `Lucky Seat v${APP_VERSION}` + (kuno ? " · " + t("scriptOutdated", { s: I.versi || "?", v: APP_VERSION }) : "");
+    $("ver").textContent = `Lucky Seat v${APP_VERSION}` + (kuno ? " · " + t("scriptOutdated") : "");
   };
   ulang = () => { isiNama(); render(); tick(); tulisVersi(); };
   tulisVersi();

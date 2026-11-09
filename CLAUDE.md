@@ -10,7 +10,7 @@ Lucky Seat: a static, no-build website that draws a daily seat number for each t
 
 There is no build step or linter. Plain HTML/CSS/vanilla JS. `package.json` exists only for the test script; there are no dependencies.
 
-- Tests: `npm test` (= `node --test`, Node ≥ 18). `tests/draw-parity.test.js` runs `sheet.js` and `apps-script/Code.gs` side by side in `node:vm` with stubbed `fetch` / Apps Script services and a frozen clock. It asserts the two draw implementations return identical results, and that `version.js` equals `VERSI` in `Code.gs`. Single test: `node --test --test-name-pattern="akhir pekan"`. **Run it after any change to `sheet.js` or `Code.gs`**, and add a scenario to `SKENARIO` when adding a setting.
+- Tests: `npm test` (= `node --test`, Node ≥ 18). `tests/draw-parity.test.js` runs `sheet.js` and `apps-script/Code.gs` side by side in `node:vm` with stubbed `fetch` / Apps Script services and a frozen clock. It asserts the two draw implementations return identical results, and that `CODE_GS_API` in `version.js` equals `API_VERSION` in `Code.gs`. Single test: `node --test --test-name-pattern="akhir pekan"`. **Run it after any change to `sheet.js` or `Code.gs`**, and add a scenario to `SKENARIO` when adding a setting.
 
 - Run locally: `npx serve public` or `python -m http.server 5500 -d public` (VS Code Live Server on `public/index.html` also works). Opening `index.html` via `file://` fails on purpose: data fetches are blocked and the app shows a `fileBlocked` error.
 - Syntax-check after editing JS: `node --check public/assets/js/app.js` (likewise the other files in `public/assets/js/`).
@@ -58,7 +58,10 @@ flowchart LR
 
 **`style.css`**: all colors are tokens on `:root`. Dark values are defined twice and must stay in sync: under `@media (prefers-color-scheme:dark)` guarded by `:not([data-theme="light"])`, and under `:root[data-theme="dark"]`. Action colors: `--accent` (brand/primary), `--wa` (WhatsApp), `--info` (links), `--danger` (errors). Spacing uses the `--s1…--s7` 4-point scale.
 
-**Version (`version.js`, `window.APP_VERSION`)**: shown in the footer of `index.html` and `guide.html`. Both data sources return `info.versi` (`sheet.js` echoes `APP_VERSION`; `Code.gs` returns its own `VERSI`). `app.js` `scriptKuno()` compares MAJOR.MINOR and shows a `--warn` notice when a deployed Apps Script is out of date.
+**Versions (`version.js`)** are two separate numbers:
+- `window.APP_VERSION` (SemVer string) is the website release. It is shown in the footer of `index.html` and `guide.html`, and used for `?v=` cache-busting.
+- `window.CODE_GS_API` (integer) is the Apps Script API version the website needs. It must equal `API_VERSION` in `Code.gs`, which `Code.gs` returns as `info.api`. `app.js` `scriptKuno()` shows a `--warn` notice when a deployed script's `api` is lower. Scripts from v1.0.0–v1.1.x send `versi` instead of `api` and count as API 1; scripts with neither count as 0.
+- So admins are asked to redeploy **only** when `Code.gs` really changed, never because of a website-only release.
 
 **JPG share images** (`app.js`, canvas) are deliberately always light-themed so they look the same for every WhatsApp recipient. Their hex constants mirror the light tokens in `style.css`.
 
@@ -80,10 +83,10 @@ flowchart LR
   - **MAJOR**: breaks existing setups. Examples: renamed sheet tabs or setting names, a changed response shape between `Code.gs` and the site, a changed draw algorithm that alters past results, removed URL parameters.
   - **MINOR**: new backward-compatible features (new setting, new screen, new language).
   - **PATCH**: fixes and visual tweaks with no behaviour change for existing users.
-- Any change to `Code.gs` that users must redeploy is at least **MINOR**, and the release notes must say "Apps Script: create a New version in Manage deployments".
+- Any change to `Code.gs` that users must redeploy is at least **MINOR**: raise `API_VERSION` in `Code.gs` **and** `CODE_GS_API` in `version.js` by 1 in the same commit, and the release notes must say "Apps Script: create a New version in Manage deployments". A change to `Code.gs` comments or formatting only does not raise `API_VERSION`.
 - **Versioning happens only at commit & push time.** Don't bump versions while editing. When the user asks to commit & push:
   1. Pick the bump (MAJOR/MINOR/PATCH) from the highest-impact change since the last tag (`git describe --tags --abbrev=0`; if there is no tag yet, start at `v1.0.0`).
-  2. Update the version in one go, everywhere it appears: `public/assets/js/version.js` (`APP_VERSION`), `public/apps-script/Code.gs` (`VERSI`, always equal to `APP_VERSION`; `npm test` enforces it), `package.json`, every `?v=` in `public/index.html` and `public/guide.html`, and `CHANGELOG.md` (rename `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD` and add a fresh empty `[Unreleased]`). Then run `npm test`. The website only warns admins when MAJOR.MINOR differs, so a PATCH release never asks them to redeploy. Consequently, a `Code.gs` change that admins must redeploy needs at least a MINOR bump.
+  2. Update the app version in one go, everywhere it appears: `public/assets/js/version.js` (`APP_VERSION`), `package.json`, every `?v=` in `public/index.html` and `public/guide.html`, and `CHANGELOG.md` (rename `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD` and add a fresh empty `[Unreleased]`). Do **not** touch `API_VERSION` / `CODE_GS_API` here; they change only with a real `Code.gs` change (see above). Then run `npm test`.
   3. Commit (Conventional Commits, see below), then the release commit `chore(release): vX.Y.Z`.
   4. Create an annotated tag `git tag -a vX.Y.Z -m "vX.Y.Z"` and push with the tag: `git push --follow-tags`. The push triggers the Actions workflow (test → deploy).
 - While working, add every user-visible change to the `[Unreleased]` section of `CHANGELOG.md` (Keep a Changelog: `Added` / `Changed` / `Fixed` / `Removed`, plus an `Apps Script` note when `Code.gs` changed). It only becomes a version at commit & push time.

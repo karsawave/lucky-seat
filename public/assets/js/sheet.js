@@ -312,7 +312,7 @@
       ok: true,
       info: {
         judul: S.judul, subjudul: S.subjudul, jamUndian: S.jamUndian, menitUndian: S.menitUndian, caraAmbil: S.caraAmbil, bahasa: S.bahasa,
-        versi: window.APP_VERSION || "", hariIni, aktif, serverMs: nowMs,
+        hariIni, aktif, serverMs: nowMs,
         bukaBerikutMs: msZona(S.Z, berikut, S.jamUndian, S.menitUndian),
         zonaLabel: labelZona(S.Z, msZona(S.Z, berikut, S.jamUndian, S.menitUndian)),
         zonaOffset: offsetMenit(S.Z, msZona(S.Z, berikut, S.jamUndian, S.menitUndian)),
