@@ -1,0 +1,268 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Video promo Lucky Seat. Satu sumber untuk semua versi:
+     ?lang=id|en  &ratio=9x16|16x9  &cut=25|15
+     Dirender frame demi frame oleh render.js lewat window.seek(t). -->
+<link rel="stylesheet" href="build/fonts/f.css">
+<style>
+:root{--paper:#f4efe6;--surface:#fffdf8;--ink:#1c1a17;--mute:#7a7266;--line:#e2d9c8;--accent:#d9432f;--accent-d:#ef6a4f;--wa:#1f8f4e;
+  --display:"Bricolage Grotesque",sans-serif;--mono:"JetBrains Mono",monospace;
+  --W:1080px;--H:1920px;
+  --x:90px;--xr:150px;      /* margin kiri; kanan lebih lebar = aman dari tombol Reels/TikTok */
+  --safe:270px;             /* batas atas aman (tab "Untuk Anda"/"Following") */
+  --title:112px;--big:128px;--brand:150px;--body:54px;--lab:30px}
+*{box-sizing:border-box;margin:0}
+html,body{width:var(--W);height:var(--H);overflow:hidden;background:var(--ink);font-family:var(--display);font-weight:500;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+#stage{position:relative;width:var(--W);height:var(--H);overflow:hidden;background:var(--ink)}
+.sc{position:absolute;inset:0;display:none;overflow:hidden;will-change:transform}
+.b{font-weight:800;letter-spacing:-.035em;line-height:1.02;text-wrap:balance}
+#brT,#endT{white-space:nowrap}
+.lab{font:500 var(--lab)/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.body{font-size:var(--body);line-height:1.25;text-wrap:balance}
+.mid{position:absolute;left:var(--x);right:var(--xr);top:0;bottom:0;display:flex;flex-direction:column;justify-content:center}
+.top{position:absolute;left:var(--x);right:var(--xr);top:var(--safe)}
+.paper{background:var(--paper);color:var(--ink)}
+.dark{background:var(--ink);color:#fff}
+.w{display:inline-block;margin-right:.22em}
+
+/* HOOK */
+#h{background:var(--accent);color:#fff}
+#hLab{position:absolute;left:0;right:0;top:470px;text-align:center;opacity:.9}
+#hWin{position:absolute;left:0;right:0;top:540px;height:760px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 17%,#000 83%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 17%,#000 83%,transparent 100%)}
+#hReel{position:absolute;left:0;right:0;top:0}
+#hReel div{height:760px;display:grid;place-items:center;font:700 600px/1 var(--mono);letter-spacing:-.07em}
+#hSub{position:absolute;left:0;right:0;top:1300px;text-align:center;font-size:64px}
+/* sampul (?cover=1): nama merek di bawah, masih di dalam potongan 3:4 grid profil */
+#hBrand{display:none;position:absolute;left:0;right:0;top:1470px;text-align:center;font-size:96px}
+.cover #hBrand{display:block}
+
+/* APLIKASI */
+#apCap{position:absolute;left:var(--x);right:var(--xr);top:var(--safe);height:230px}
+.cp{position:absolute;inset:0;opacity:0}
+.badge{display:inline-grid;place-items:center;min-width:84px;height:84px;border-radius:16px;background:var(--accent);color:#fff;font:700 46px var(--mono);margin-bottom:26px;padding:0 4px}
+.cp .b{font-size:var(--title)}
+#view{position:absolute;left:0;right:0;top:540px;bottom:0;overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 70px);mask-image:linear-gradient(to bottom,transparent 0,#000 70px)}
+#cam{position:absolute;left:0;top:0;overflow:hidden;transform-origin:0 0;will-change:transform}
+#cam img{position:absolute;left:0}
+.ring{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:rgba(28,26,23,.12);border:4px solid rgba(28,26,23,.38);opacity:0}
+
+/* SAMA DI SEMUA HP */
+#sm .b{font-size:var(--title)}
+#smS{margin-top:28px;color:var(--mute)}
+#minis{position:absolute;left:var(--x);right:var(--x);top:860px;display:flex;justify-content:space-between}
+.mini{width:280px}
+.mini .scr{height:510px;overflow:hidden;border-radius:22px;border:3px solid var(--line);background:var(--paper);position:relative}
+.mini img{position:absolute;left:0;top:0;width:100%}
+.mini .lab{margin-top:40px;text-align:center;color:var(--mute);letter-spacing:.08em}
+
+/* WHATSAPP */
+#wa{background:var(--wa);color:#fff}
+#wa .b{font-size:var(--title)}
+#waJ{position:absolute;left:50%;width:760px;margin-left:-380px;top:650px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+#waJ img{width:100%;display:block}
+
+/* PENUTUP */
+#endU{font:700 56px/1.3 var(--mono);color:var(--accent-d);margin-top:120px}
+#qr{display:none}
+
+/* ===== 16:9 (LinkedIn, YouTube, presentasi) ===== */
+.r169{--W:1920px;--H:1080px;--x:120px;--xr:120px;--safe:0px;--title:96px;--big:112px;--brand:150px;--body:46px;--lab:26px}
+.r169 #hLab{top:150px}
+.r169 #hWin{top:200px;height:640px}
+.r169 #hReel div{height:640px;font-size:500px}
+.r169 #hSub{top:860px;font-size:56px}
+.r169 #hBrand{top:860px;font-size:72px}
+.r169.cover #hWin{top:110px}.r169.cover #hLab{top:80px}.r169.cover #hSub{top:750px}
+.r169 .mid{right:auto;width:900px}
+.r169 #apCap{top:0;bottom:0;height:auto;width:760px;right:auto}
+.r169 .cp{top:50%;bottom:auto;transform-origin:0 50%}
+.r169 #view{left:960px;top:0;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 60px,#000 calc(100% - 60px),transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 60px,#000 calc(100% - 60px),transparent 100%)}
+.r169 .top{top:0;bottom:0;right:auto;width:760px;display:flex;flex-direction:column;justify-content:center}
+.r169 #minis{left:960px;right:120px;top:50%;margin-top:-290px}
+.r169 .mini{width:252px}
+.r169 .mini .scr{height:460px}
+.r169 .mini .lab{margin-top:30px}
+.r169 #waJ{left:auto;right:150px;width:600px;margin-left:0;top:50%}
+.r169 #end .mid{width:980px}
+.r169 #endU{margin-top:80px;font-size:48px}
+.r169 #qr{display:block;position:absolute;right:220px;top:50%;width:380px;margin-top:-230px;text-align:center}
+.r169 #qr .q{background:var(--surface);border-radius:20px;padding:30px}
+.r169 #qr img{width:100%;display:block}
+.r169 #qr .lab{margin-top:30px;color:#b8b0a3}
+</style></head>
+<body><div id="stage">
+  <section class="sc" id="h"><div class="lab" id="hLab"></div><div id="hWin"><div id="hReel"></div></div><div class="b" id="hSub"></div><div class="b" id="hBrand">Lucky Seat</div></section>
+  <section class="sc dark" id="k"><div class="mid"><div class="b" id="kT" style="font-size:var(--big)"></div></div></section>
+  <section class="sc paper" id="m"><div class="mid"><div class="b" id="mT" style="font-size:var(--big)"></div></div></section>
+  <section class="sc paper" id="br"><div class="mid">
+    <div class="b" id="brT" style="font-size:var(--brand)">Lucky Seat</div>
+    <div class="body" id="brS" style="margin-top:36px;color:var(--mute)"></div>
+  </div></section>
+  <section class="sc paper" id="ap">
+    <div id="apCap">
+      <div class="cp" id="cp1"><span class="badge">1</span><div class="b"></div></div>
+      <div class="cp" id="cp2"><span class="badge">2</span><div class="b"></div></div>
+      <div class="cp" id="cp3"><span class="badge"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div class="b"></div></div>
+    </div>
+    <div id="view"><div id="cam"><img id="i0"><img id="i1"><img id="iR"><img id="i2"></div><div class="ring" id="ring"></div></div>
+  </section>
+  <section class="sc paper" id="sm">
+    <div class="top"><div class="b" id="smT"></div><div class="body" id="smS"></div></div>
+    <div id="minis"></div>
+  </section>
+  <section class="sc" id="wa"><div class="top"><div class="b" id="waT"></div></div><div id="waJ"><img id="waImg"></div></section>
+  <section class="sc dark" id="end">
+    <div class="mid">
+      <div class="b" id="endT" style="font-size:var(--brand)">Lucky Seat</div>
+      <div class="body" id="endS" style="margin-top:36px"></div>
+      <div id="endU">karsawave.github.io/<br>lucky-seat</div>
+    </div>
+    <div id="qr"><div class="q"><img src="qr.svg" alt=""></div><div class="lab" id="qrL"></div></div>
+  </section>
+</div>
+<script>
+const Q=new URLSearchParams(location.search);
+const LANG=Q.get("lang")==="en"?"en":"id", R169=Q.get("ratio")==="16x9", SHORT=Q.get("cut")==="15";
+document.documentElement.lang=LANG; if(R169)document.body.classList.add("r169"); if(Q.get("cover"))document.body.classList.add("cover");
+const CAP=`build/cap-${LANG}/`;
+document.write(`<script src="${CAP}meta.js"><\/script>`);
+</script>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), p=(t,a,b)=>cl((t-a)/(b-a));
+const ease=x=>1-Math.pow(1-x,3), quart=x=>1-Math.pow(1-x,4), io=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const pad=n=>String(n).padStart(2,"0");
+const M=window.META, NO=M.final;
+
+// ---------- teks ----------
+const T={
+ id:{hookLab:"Kursi kamu hari ini",hookSub:"Untuk Citra, Selasa 10 Nov.",
+   k:["Tiap pagi, kursi dekat jendela jadi rebutan.",/^rebutan/],m:["Mulai besok, kursinya diundi.",/^diundi/],
+   brS:"Undian nomor kursi harian untuk tim kamu.",cp1:"Pilih nama.",cp2:"Ambil nomor.",cp3:`Kursi ${NO}. Selesai.`,
+   smT:"Sama di semua HP.",smS:"Tidak bisa diacak ulang dari HP anggota.",mini:["HP Citra","HP admin","HP teman"],
+   waT:"Kirim ke grup WhatsApp.",endS:"Gratis. Tanpa install dan tanpa akun.",qr:"Pindai untuk mencoba"},
+ en:{hookLab:"Your seat today",hookSub:"For Citra, Tuesday 10 Nov.",
+   k:["Every morning, the window seat starts an argument.",/^(window|seat)/],m:["From tomorrow, seats are drawn.",/^drawn/],
+   brS:"A daily seat number draw for your team.",cp1:"Pick your name.",cp2:"Draw your number.",cp3:`Seat ${NO}. Done.`,
+   smT:"Same on every phone.",smS:"Members can't re-roll it from their phone.",mini:["Citra","Admin","Teammate"],
+   waT:"Send it to your WhatsApp group.",endS:"Free. No install, no account.",qr:"Scan to try it"}
+}[LANG];
+const words=(el,[txt,hl],col)=>{el.innerHTML=txt.split(" ").map(w=>`<span class="w"${hl.test(w)?` style="color:${col}"`:""}>${w}</span>`).join("")};
+$("#hLab").textContent=T.hookLab; $("#hSub").textContent=T.hookSub;
+words($("#kT"),T.k,"var(--accent-d)"); words($("#mT"),T.m,"var(--accent)");
+$("#brS").textContent=T.brS; ["cp1","cp2","cp3"].forEach(k=>$(`#${k} .b`).textContent=T[k]);
+$("#smT").textContent=T.smT; $("#smS").textContent=T.smS; $("#waT").textContent=T.waT; $("#endS").textContent=T.endS; $("#qrL").textContent=T.qr;
+$("#minis").innerHTML=T.mini.map(n=>`<div class="mini"><div class="scr"><img src="${CAP}t2.png"></div><div class="lab">${n}</div></div>`).join("");
+$("#waImg").src=CAP+"daftar.jpg";
+
+// ---------- linimasa ----------
+// Durasi dasar tiap adegan (versi 25 dtk). Versi 15 dtk memakai sebagian adegan dengan durasi lebih pendek;
+// waktu lokal adegan diskalakan (base/aktual) sehingga semua gerak tetap proporsional.
+const BASE={h:2.2,k:2.4,m:1.7,br:1.6,ap:7.5,sm:3.0,wa:3.0,end:3.6};
+const PLAN=SHORT?[["h",2.0],["m",1.6],["ap",6.0],["wa",2.4],["end",3.0]]:Object.entries(BASE);
+let acc=0; const SC=PLAN.map(([id,d])=>{const s={id,a:acc,d,k:BASE[id]/d};acc+=d;return s});
+const DUR=acc, WIPE=.42, RISE=48, IN=.38;
+const loc=(t,s)=>(t-s.a)*s.k;           // waktu lokal (detik versi dasar)
+function rise(el,u,a,dy=RISE,d=IN){const k=ease(p(u,a,a+d));el.style.opacity=k;el.style.transform=`translate3d(0,${(1-k)*dy}px,0)`}
+
+// ---------- ukuran per rasio ----------
+const L=R169
+ ?{camW:700,viewL:960,viewT:0,QX:960+470,QY:540,Wd:1920,Hd:1080}
+ :{camW:900,viewL:0,viewT:540,QX:540,QY:1190,Wd:1080,Hd:1920};
+const K=L.camW/412, CROP=140, TK=M.ticket, CAMH=(TK.y+TK.h+10-CROP)*K;
+const cam=$("#cam"); cam.style.width=L.camW+"px"; cam.style.height=CAMH+"px";
+["#i0","#i1","#iR","#i2"].forEach(s=>{$(s).style.width=L.camW+"px";$(s).style.top=-CROP*K+"px"});
+$("#i0").src=CAP+"t0.png"; $("#i1").src=CAP+"t1.png"; $("#i2").src=CAP+"t2.png";
+const ROLL=[...Array(15)].map((_,i)=>`${CAP}r${pad(i)}.png`); ROLL.forEach(s=>{new Image().src=s});
+const F=(x,y)=>[x*K,(y-CROP)*K];
+const cx=TK.x+TK.w/2;                                  // tengah kartu
+const SEL=[M.sel.x+M.sel.w/2,M.sel.y+M.sel.h/2], BTN=[M.btn.x+M.btn.w/2,M.btn.y+M.btn.h/2];
+const NUMY=M.num.y+M.num.h/2, MIDY=TK.y+TK.h/2;
+const Z=R169?1.12:1.28;
+// kamera (waktu lokal adegan aplikasi): [u, skala, fokus x, fokus y]
+const KF=[[0,1,...F(cx,MIDY)],[.6,1,...F(cx,MIDY)],[1.2,Z,...F(cx,SEL[1]+67)],[2.3,Z,...F(cx,SEL[1]+67)],[2.85,Z,...F(cx,BTN[1]-2)],[3.7,Z,...F(cx,BTN[1]-2)],[4.2,Z,...F(cx,NUMY+30)],[5.8,Z,...F(cx,NUMY+30)],[6.5,1,...F(cx,MIDY)]];
+function camAt(u){
+  if(u<=KF[0][0])return KF[0].slice(1);
+  for(let i=0;i<KF.length-1;i++){const a=KF[i],b=KF[i+1];if(u<b[0]){const k=io(p(u,a[0],b[0]));return [1,2,3].map(j=>a[j]+(b[j]-a[j])*k)}}
+  return KF[KF.length-1].slice(1);
+}
+
+// HOOK: gulungan vertikal ke angka hasil undian
+const HV=["07","14","03","22","11","05","18","09","24","02","16","20","08","13","01","21","06","12","04",NO];
+$("#hReel").innerHTML=HV.map(n=>`<div>${n}</div>`).join("");
+const STEP=R169?640:760, LAND=1.15;
+
+// ---------- peristiwa suara (dibaca render.js untuk membuat audio yang pas) ----------
+const EV=[]; const ev=(type,t,g)=>EV.push({type,t:+t.toFixed(4),g});
+const at=(id,u)=>{const s=SC.find(x=>x.id===id);return s?s.a+u/s.k:null};
+SC.forEach((s,i)=>{if(i)ev("thump",s.a,.45)});
+{let prev=0;for(let ms=1;ms<=LAND*1000;ms++){const n=Math.floor(quart(ms/1000/LAND)*(HV.length-1)+1e-9);if(n>prev){ev("tick",at("h",ms/1000),.35);prev=n}}
+ ev("ding",at("h",LAND),.5);ev("thump",at("h",LAND),.6)}
+if(at("k",0)!=null)$$("#kT .w").forEach((_,i)=>ev("pop",at("k",WIPE*.6+i*.12),.18));
+$$("#mT .w").forEach((_,i)=>ev("pop",at("m",WIPE*.6+i*.15),.18));
+const U={tap1:1.1,sel:1.45,tap2:2.95,r0:3.3}; const ROLLD=.06;
+ev("click",at("ap",U.tap1+.05),.4); ev("click",at("ap",U.tap2+.05),.4);
+for(let i=0;i<15;i++)ev("tick",at("ap",U.r0)+i*ROLLD,.35);
+ev("ding",at("ap",U.r0)+15*ROLLD,.5);
+if(at("sm",0)!=null)[0,1,2].forEach(i=>ev("pop",at("sm",.55+i*.35),.3));
+ev("chime",at("end",.1),.45);
+window.AUDIO={dur:DUR,beatFrom:SC[1].a,beatTo:at("end",0),events:EV};
+
+function seek(t){
+  SC.forEach((s,i)=>{
+    const n=SC[i+1], end=n?n.a+WIPE:DUR+1, el=$("#"+s.id), on=t>=s.a&&t<end;
+    el.style.display=on?"block":"none"; el.style.zIndex=i; if(!on)return;
+    const w=i?io(p(t,s.a,s.a+WIPE)):1, o=n?io(p(t,n.a,n.a+WIPE)):0;
+    el.style.transform=`translate3d(0,${(1-w)*L.Hd - o*L.Hd*.125}px,0)`;
+  });
+  const S=Object.fromEntries(SC.map(s=>[s.id,s]));
+  const u=id=>S[id]?loc(t,S[id]):-1;
+
+  // HOOK
+  {const q=u("h"), hk=quart(p(q,0,LAND));
+   $("#hReel").style.transform=`translate3d(0,${-hk*(HV.length-1)*STEP}px,0)`;
+   const v=1-hk; $("#hReel").style.filter=`blur(${(v*v*6).toFixed(2)}px)`;
+   $("#hWin").style.transform=`scale(${1+.06*Math.sin(p(q,LAND,LAND+.4)*Math.PI)})`;
+   rise($("#hSub"),q,LAND+.15);}
+  // PERNYATAAN
+  $$("#kT .w").forEach((e,i)=>rise(e,u("k"),WIPE*.6+i*.12,40,.3));
+  $$("#mT .w").forEach((e,i)=>rise(e,u("m"),WIPE*.6+i*.15,40,.3));
+  rise($("#brT"),u("br"),WIPE*.5,60,.45); rise($("#brS"),u("br"),WIPE*.5+.25);
+
+  // APLIKASI
+  {const q=u("ap"), [s,px,py]=camAt(q);
+   cam.style.transform=`translate3d(${L.QX-L.viewL-px*s}px,${L.QY-L.viewT-py*s}px,0) scale(${s})`;
+   const cap=(el,a,b)=>{const k=ease(p(q,a,a+IN)),o=io(p(q,b-.2,b));el.style.opacity=q<a||q>=b?0:k*(1-o);
+     el.style.transform=(R169?"translateY(-50%) ":"")+`translate3d(0,${(1-k)*RISE-o*20}px,0)`};
+   cap($("#cp1"),.35,2.5); cap($("#cp2"),2.5,4.7); cap($("#cp3"),4.7,99);
+   const R1=U.r0+15*ROLLD*S.ap.k;                     // gulungan berjalan dalam waktu nyata (60 ms)
+   $("#i1").style.opacity=q>=U.sel?1:0;
+   const rolling=q>=U.r0&&q<R1; if(rolling)$("#iR").src=ROLL[Math.min(14,Math.floor((q-U.r0)/(ROLLD*S.ap.k)))];
+   $("#iR").style.opacity=rolling?1:0; $("#i2").style.opacity=q>=R1?1:0;
+   let tap=null; if(q>=U.tap1-.1&&q<U.tap1+.7)tap=[q-U.tap1+.1,...SEL]; if(q>=U.tap2-.1&&q<U.tap2+.7)tap=[q-U.tap2+.1,...BTN];
+   const ring=$("#ring");
+   if(tap){const [z,x,y]=tap,[lx,ly]=F(x,y);
+     ring.style.left=L.QX-L.viewL+(lx-px)*s+"px"; ring.style.top=L.QY-L.viewT+(ly-py)*s+"px";
+     ring.style.opacity=z<.3?ease(p(z,0,.15)):1-ease(p(z,.3,.7)); ring.style.transform=`scale(${.6+.4*ease(p(z,0,.3))})`;}
+   else ring.style.opacity=0;}
+
+  // SAMA DI SEMUA HP
+  rise($("#smT"),u("sm"),WIPE*.6); rise($("#smS"),u("sm"),WIPE*.6+.2);
+  $$("#minis .mini").forEach((e,i)=>rise(e,u("sm"),.55+i*.35,120,.45));
+
+  // WHATSAPP
+  {const q=u("wa"); rise($("#waT"),q,WIPE*.6);
+   const wj=ease(p(q,.35,.95)), zz=io(p(q,1,3));
+   $("#waJ").style.transform=(R169?"translateY(-50%) ":"")+`translate3d(0,${(1-wj)*L.Hd*.75}px,0) scale(${1+.025*zz})`;
+   $("#waJ").style.opacity=cl(wj*3);}
+
+  // PENUTUP
+  {const q=u("end");
+   rise($("#endT"),q,WIPE*.5,60,.45); rise($("#endS"),q,WIPE*.5+.3); rise($("#endU"),q,WIPE*.5+.7,30);
+   if(R169)rise($("#qr"),q,WIPE*.5+.9,30);
+   const f=1-io(p(t,DUR-.6,DUR)); $("#end .mid").style.opacity=f; $("#qr").style.opacity*=f;}
+}
+window.DUR=DUR; window.SIZE=[L.Wd,L.Hd]; window.seek=seek; seek(0);
+</script></body></html>

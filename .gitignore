@@ -16,3 +16,6 @@ npm-debug.log*
 # Rahasia lokal
 .env
 .env.*
+
+# Video promo: hasil tangkapan, font, dan video (bisa dibuat ulang)
+docs/promo/build/
