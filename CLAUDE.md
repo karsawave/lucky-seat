@@ -61,7 +61,7 @@ flowchart LR
 **Versions (`version.js`)** are two separate numbers:
 - `window.APP_VERSION` (SemVer string) is the website release. It is shown in the footer of `index.html` and `guide.html`, and used for `?v=` cache-busting.
 - `window.CODE_GS_API` (integer) is the Apps Script API version the website needs. It must equal `API_VERSION` in `Code.gs`, which `Code.gs` returns as `info.api`. `app.js` `scriptKuno()` shows a `--warn` notice when a deployed script's `api` is lower. Scripts from v1.0.0–v1.1.x send `versi` instead of `api` and count as API 1; scripts with neither count as 0.
-- So admins are asked to redeploy **only** when `Code.gs` really changed, never because of a website-only release.
+- So admins are asked to redeploy **only** when `Code.gs` changed, never because of a website-only release.
 
 **JPG share images** (`app.js`, canvas) are deliberately always light-themed so they look the same for every WhatsApp recipient. Their hex constants mirror the light tokens in `style.css`.
 
@@ -74,6 +74,8 @@ flowchart LR
 - Any user-facing text change needs both `id` and `en` entries (`i18n.js`, `PESAN` in `Code.gs`, `guide.html` `data-l` pairs, `README.md` and `docs/README.id.md`).
 - New files go where they belong: anything the site serves → `public/` (code under `public/assets/{css,js,img}`); tests → `tests/`; docs → `docs/`. Keep the repo root for meta files only (README, CHANGELOG, CLAUDE, package.json, dotfiles).
 - Header controls (theme button and language switcher) share one 40px height via `.tools { --th }`. Primary buttons and inputs are 48px.
+- Every screen ends with the same page footer: `.foot` (divider, then left link = back or main page action with an icon, right link = other destination), then `.ver` with the app version. In `app.js` build it with `kaki(kiri, kanan)` and `tautan(href, icon, text)`; `layar()` adds it by default. Back links use the left-arrow icon and sit on the left. Card actions (copy, download, share) stay in `.links` under the card, never in the footer. Don't show the same destination twice on one screen.
+- Internal links to the main page use `./` (e.g. `./?admin`), never `index.html`, so invite links stay `…/lucky-seat/?s=…`.
 - Bulk edits on Windows: in PowerShell, `@(@('a','b'))` flattens to `@('a','b')`, so a loop over "pairs" ends up replacing single characters. This previously corrupted `app.js` and `style.css`. Prefer the Edit tool, or build a list with at least two pairs. Run `node --check` and `git diff --stat` after any scripted edit.
 - Git author for this repo is the GitHub noreply address (a private email push is rejected by GitHub).
 
