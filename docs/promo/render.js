@@ -3,6 +3,7 @@
 //   node docs/promo/render.js --lang id --ratio 9x16 --cut 25            → build/lucky-seat-id-9x16-25s.mp4
 //   node docs/promo/render.js --lang en --still 2 --out cover.png        → sampul (hook + nama merek)
 //   node docs/promo/render.js --lang id --preview 2,9.5,20               → beberapa PNG untuk diperiksa
+//   node docs/promo/render.js --lang en --ratio 16x9 --gif 7.9,15.4       → GIF demo (720 px, 15 fps)
 // Butuh: Playwright + Chromium, ffmpeg, python3. Jalankan capture.js dulu untuk bahasa yang sama.
 const { chromium } = require("playwright");
 const { spawn, execFileSync } = require("child_process");
@@ -32,6 +33,20 @@ const FONTS = ['500 40px "Bricolage Grotesque"', '800 40px "Bricolage Grotesque"
     const dir = path.join(BUILD, "preview-" + name); fs.mkdirSync(dir, { recursive: true });
     for (const [i, t] of arg("preview").split(",").map(Number).entries()) await frame(t, { path: path.join(dir, `p${i}-${t}s.png`) });
     console.log(dir); return b.close();
+  }
+
+  // GIF singkat dari satu rentang waktu, mis. --gif 7.9,15.4 (untuk README)
+  if (arg("gif")) {
+    const [t0, t1] = arg("gif").split(",").map(Number), gfps = 15;
+    const out = arg("out", path.join(BUILD, name + ".gif"));
+    const ff = spawn("ffmpeg", ["-loglevel", "error", "-y", "-f", "image2pipe", "-framerate", String(gfps), "-i", "-", "-vf",
+      "scale=720:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=96:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle", out],
+      { stdio: ["pipe", "inherit", "inherit"] });
+    for (let t = t0; t < t1; t += 1 / gfps) {
+      const buf = await frame(t);
+      if (!ff.stdin.write(buf)) await new Promise((r) => ff.stdin.once("drain", r));
+    }
+    ff.stdin.end(); await new Promise((r) => ff.on("close", r)); await b.close(); console.log(out); return;
   }
 
   const audio = await pg.evaluate(() => window.AUDIO);
