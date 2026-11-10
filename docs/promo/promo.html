@@ -41,7 +41,7 @@ html,body{width:var(--W);height:var(--H);overflow:hidden;background:var(--ink);f
 #apCap{position:absolute;left:var(--x);right:var(--xr);top:var(--safe);height:230px}
 .cp{position:absolute;inset:0;opacity:0}
 .badge{display:inline-grid;place-items:center;min-width:84px;height:84px;border-radius:16px;background:var(--accent);color:#fff;font:700 46px var(--mono);margin-bottom:26px;padding:0 4px}
-.cp .b{font-size:var(--title)}
+.cp .b{font-size:var(--title);white-space:nowrap}
 #view{position:absolute;left:0;right:0;top:540px;bottom:0;overflow:hidden;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 70px);mask-image:linear-gradient(to bottom,transparent 0,#000 70px)}
 #cam{position:absolute;left:0;top:0;overflow:hidden;transform-origin:0 0;will-change:transform}
@@ -145,7 +145,7 @@ const T={
    waT:"Kirim ke grup WhatsApp.",endS:"Gratis. Tanpa install dan tanpa akun.",qr:"Pindai untuk mencoba"},
  en:{hookLab:"Your seat today",hookSub:"For Citra, Tuesday 10 Nov.",
    k:["Every morning, the window seat starts an argument.",/^(window|seat)/],m:["From tomorrow, seats are drawn.",/^drawn/],
-   brS:"A daily seat number draw for your team.",cp1:"Pick your name.",cp2:"Draw your number.",cp3:`Seat ${NO}. Done.`,
+   brS:"A daily seat number draw for your team.",cp1:"Pick your name.",cp2:"Draw a number.",cp3:`Seat ${NO}. Done.`,
    smT:"Same on every phone.",smS:"Members can't re-roll it from their phone.",mini:["Citra","Admin","Teammate"],
    waT:"Send it to your WhatsApp group.",endS:"Free. No install, no account.",qr:"Scan to try it"}
 }[LANG];
