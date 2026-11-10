@@ -1,6 +1,7 @@
 // Render video promo: promo.html → MP4 (frame PNG dialirkan langsung ke ffmpeg) + audio dari sfx.py.
 // Pakai:
 //   node docs/promo/render.js --lang id --ratio 9x16 --cut 25            → build/lucky-seat-id-9x16-25s.mp4
+//     (--music marimba|ceria|lofi|tech|none, bawaan marimba)
 //   node docs/promo/render.js --lang en --still 2 --out cover.png        → sampul (hook + nama merek)
 //   node docs/promo/render.js --lang id --preview 2,9.5,20               → beberapa PNG untuk diperiksa
 //   node docs/promo/render.js --lang en --ratio 16x9 --gif 7.9,15.4       → GIF demo (720 px, 15 fps)
@@ -53,9 +54,13 @@ const FONTS = ['500 40px "Bricolage Grotesque"', '800 40px "Bricolage Grotesque"
   const json = path.join(BUILD, name + ".audio.json"), wav = path.join(BUILD, name + ".wav");
   fs.writeFileSync(json, JSON.stringify(audio));
   execFileSync("python3", [path.join(__dirname, "sfx.py"), json, wav]);
+  // Musik latar (music.py) di bawah efek suara; --music none untuk tanpa musik
+  const gaya = arg("music", "marimba"), mus = path.join(BUILD, name + ".music.wav");
+  if (gaya !== "none") execFileSync("python3", [path.join(__dirname, "music.py"), json, mus, gaya]);
 
   const out = arg("out", path.join(BUILD, name + ".mp4"));
-  const ff = spawn("ffmpeg", ["-loglevel", "error", "-y", "-f", "image2pipe", "-framerate", String(fps), "-i", "-", "-i", wav,
+  const ff = spawn("ffmpeg", ["-loglevel", "error", "-y", "-f", "image2pipe", "-framerate", String(fps), "-i", "-", "-i", wav, ...(gaya !== "none" ? ["-i", mus, "-filter_complex",
+      "[2:a]volume=0.55[m];[m][1:a]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.8:level=false[a]", "-map", "0:v", "-map", "[a]"] : []),
     "-c:v", "libx264", "-preset", "slow", "-crf", "14", "-pix_fmt", "yuv420p", "-profile:v", "high", "-tune", "animation",
     "-c:a", "aac", "-b:a", "256k", "-shortest", "-movflags", "+faststart", out], { stdio: ["pipe", "inherit", "inherit"] });
   const n = Math.round(audio.dur * fps);

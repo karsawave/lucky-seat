@@ -17,18 +17,21 @@ flowchart LR
   C["capture.js"] -->|"screenshots + meta.js"| P["promo.html"]
   P -->|"frames (seek)"| R["render.js"]
   P -->|"sound events"| S["sfx.py"]
+  P -->|"timeline"| MU["music.py"]
   S -->|"WAV"| R
+  MU -->|"WAV"| R
   R -->|"MP4 via ffmpeg"| O["build/*.mp4"]
 ```
 
 - `capture.js` opens the site from `public/` at 412px wide (6× pixel density) with the Indonesian templates, and freezes the clock at 10 Nov 2026 08:15 WIB, so every capture shows the same draw and timer. It saves the ticket states, the 15 rolling frames, and the real JPG from "Save list as JPG".
 - `promo.html` is the timeline. Options in the URL: `lang=id|en`, `ratio=9x16|16x9`, `cut=25|15`, `cover=1`.
-- `sfx.py` builds the sound from the timeline: a 120 BPM beat, ticks while the number rolls, taps, and a ding when it stops. It is all synthesized, so there are no music rights to clear.
+- `sfx.py` builds the sound effects from the timeline: a 120 BPM beat, ticks while the number rolls, taps, and a ding when it stops.
+- `music.py` composes the background music from the same timeline: an intro under the hook, a 120 BPM groove, and a closing chord on the end card. The videos use the `marimba` style; `ceria`, `lofi` and `tech` are alternatives (`--music <style>`, or `--music none`). Sound effects and music are synthesized, so there are no music rights to clear and no credit line is needed.
 - `render.js` sends each frame as PNG straight to ffmpeg (H.264, 60 fps, CRF 14, AAC 256 kbps).
 
 ## Render
 
-You need Node ≥ 18 with Playwright and Chromium, ffmpeg, and python3. All output goes to `build/`, which git ignores.
+You need Node ≥ 18 with Playwright and Chromium, ffmpeg, and python3 with numpy. All output goes to `build/`, which git ignores.
 
 1. Fonts (once):
 
@@ -62,7 +65,7 @@ You need Node ≥ 18 with Playwright and Chromium, ffmpeg, and python3. All outp
    node docs/promo/render.js --lang id --ratio 9x16 --still 2
    ```
 
-   `--still 2` renders the cover image. `--preview 2,9.5,20` renders a few PNGs to check before a full render, which takes about 2–3 minutes.
+   `--still 2` renders the cover image. `--gif 7.9,15.4` renders the README demo GIF. `--preview 2,9.5,20` renders a few PNGs to check before a full render, which takes about 2–3 minutes.
 
 `qr.svg` points to `https://karsawave.github.io/lucky-seat/`.
 
@@ -70,4 +73,4 @@ Publish finished videos in GitHub Releases, not in the repo: they run to several
 
 ---
 
-**Bahasa Indonesia, singkat:** semua versi video dibuat dari `promo.html`. Jalankan `capture.js id` atau `capture.js en` untuk mengambil layar asli, lalu `render.js` dengan `--lang`, `--ratio` dan `--cut`. Hasilnya ada di `build/` dan tidak masuk git.
+**Bahasa Indonesia, singkat:** semua versi video dibuat dari `promo.html`. Jalankan `capture.js id` atau `capture.js en` untuk mengambil layar asli, lalu `render.js` dengan `--lang`, `--ratio` dan `--cut`. Musik latar dibuat oleh `music.py` (gaya `marimba`). Hasilnya ada di `build/` dan tidak masuk git.
