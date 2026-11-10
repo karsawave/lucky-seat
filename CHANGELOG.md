@@ -6,6 +6,16 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.4] - 2026-11-10
+
+### Changed
+- Every screen now ends with the same footer: a divider, a back or main link on the left, another destination on the right, and the app version. This covers the setup guide, admin screens, the "Invite link needed" screen and the error screen.
+- Setup guide: "Back to Admin" moved to the left of the footer, like on the other pages.
+- Admin "Invite link ready": "Open draw page" moved from the link row into the footer as "← Draw page".
+
+### Fixed
+- Invite links no longer include `index.html` (`…/lucky-seat/?s=…` instead of `…/lucky-seat/index.html?s=…`) when the admin arrived from the setup guide.
+
 ## [1.1.3] - 2026-11-09
 
 ### Fixed
@@ -14,7 +24,7 @@ and this project follows [Semantic Versioning](https://semver.org/).
 ## [1.1.2] - 2026-11-09
 
 ### Changed
-- Apps Script now has its own API version (`API_VERSION` in `Code.gs`, `CODE_GS_API` in `version.js`), separate from the website version. Option 2 admins are asked to redeploy only when `Code.gs` really changes, not after every website release. Scripts deployed from v1.0.0 on keep working without a warning.
+- Apps Script now has its own API version (`API_VERSION` in `Code.gs`, `CODE_GS_API` in `version.js`), separate from the website version. Option 2 admins are asked to redeploy only when `Code.gs` changes, not after every website release. Scripts deployed from v1.0.0 on keep working without a warning.
 - The "update Apps Script" warning text no longer shows version numbers.
 - Day arrows: an active arrow is now filled with a clear border and bright icon; a disabled arrow stays faint, so the two are easy to tell apart.
 - Seat map numbers are bigger and easier to tap: 36px tall on wide screens, and 6 per row at 40px on phones.
