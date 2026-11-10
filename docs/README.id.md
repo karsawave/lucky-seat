@@ -20,6 +20,10 @@
   <a href="../LICENSE"><img alt="Lisensi: MIT" src="https://img.shields.io/badge/lisensi-MIT-7a7266"></a>
 </p>
 
+<p align="center">
+  <img src="demo-id.gif" width="720" alt="Anggota memilih nama, menekan Ambil nomor, lalu mendapat kursi 19.">
+</p>
+
 ---
 
 ## Daftar isi
@@ -248,6 +252,8 @@ lucky-seat/
 ├── tests/                      # Memastikan kedua opsi memberi hasil undian yang sama
 ├── docs/
 │   ├── README.id.md            # README bahasa Indonesia (file ini)
+│   ├── demo-{en,id}.gif        # Demo singkat di bagian atas tiap README
+│   ├── promo/                  # Sumber video promo (dirender dengan Playwright + ffmpeg)
 │   └── archive/                # Prototipe lama, hanya untuk referensi
 ├── .github/workflows/          # Tes & terbitkan ke GitHub Pages
 ├── CHANGELOG.md                # Catatan perubahan tiap versi

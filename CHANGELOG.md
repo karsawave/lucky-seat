@@ -6,6 +6,10 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- A short demo GIF at the top of the README (English) and `docs/README.id.md` (Indonesian): pick a name, draw a number, get a seat.
+- Promo video sources in `docs/promo/`: one template renders the Indonesian and English videos in 9:16 and 16:9, at 25 or 15 seconds, from real screens of the site.
+
 ### Fixed
 - Phones narrower than about 410px (most Android phones and the iPhone mini/SE): the seat details next to the big number (Position, Drawn, Draw code) no longer run past the edge of the card. On a narrow screen each label now sits above its value.
 - 320px screens: the "Draw number" button no longer runs past the edge of the card.

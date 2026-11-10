@@ -20,6 +20,10 @@
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-7a7266"></a>
 </p>
 
+<p align="center">
+  <img src="docs/demo-en.gif" width="720" alt="A member picks their name, taps Draw number, and gets seat 19.">
+</p>
+
 ---
 
 ## Table of contents
@@ -249,6 +253,8 @@ lucky-seat/
 ├── tests/                      # Checks that both options give the same draw
 ├── docs/
 │   ├── README.id.md            # Indonesian README
+│   ├── demo-{en,id}.gif        # Short demo at the top of each README
+│   ├── promo/                  # Promo video sources (render with Playwright + ffmpeg)
 │   └── archive/                # Old prototype, for reference only
 ├── .github/workflows/          # Test & deploy to GitHub Pages
 ├── CHANGELOG.md                # What changed in each version

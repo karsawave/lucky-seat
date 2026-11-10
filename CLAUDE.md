@@ -23,7 +23,7 @@ There is no build step or linter. Plain HTML/CSS/vanilla JS. `package.json` exis
 - `public/assets/`: `css/style.css`; `js/version.js`, `i18n.js`, `sheet.js`, `app.js` (loaded in that order); `img/icon.svg`.
 - `public/apps-script/Code.gs` and `public/templates/{en,id}/` live inside `public/` because `guide.html` offers them as downloads. `Code.gs` is never executed by the site.
 
-Outside `public/` sit only project files: `tests/`, `docs/` (`README.id.md`, `archive/`), `.github/`, and the root meta files. Asset paths used inside JS (e.g. `<img src>` in `app.js`) are relative to the **HTML page**, not to the JS file. Short file names below (`app.js`, `sheet.js`, `Code.gs`, …) refer to these locations.
+Outside `public/` sit only project files: `tests/`, `docs/` (`README.id.md`, `demo-{en,id}.gif`, `promo/`, `archive/`), `.github/`, and the root meta files. `docs/promo/` holds the promo video sources (see its README); its `build/` output is git-ignored. Re-run `capture.js` and re-render after a visible UI change. Asset paths used inside JS (e.g. `<img src>` in `app.js`) are relative to the **HTML page**, not to the JS file. Short file names below (`app.js`, `sheet.js`, `Code.gs`, …) refer to these locations.
 
 Two interchangeable data sources produce the **same response shape** `{ ok, info, hari }`, and `app.js` only consumes that shape:
 
