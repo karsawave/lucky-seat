@@ -104,6 +104,18 @@ select{width:100%;background:var(--field);border:1px solid var(--line);border-ra
 .meta dt{color:var(--mute);font-size:13px}
 .meta dd{margin:0;font-weight:800;font-size:14px;white-space:nowrap}
 .meta dd.mono{font:700 13px var(--mono);letter-spacing:.04em}
+/* HP sempit (≤ ~400px): kolom di samping angka tidak muat label + nilai sebaris, teks keluar dari kartu.
+   Ukur lebar kolomnya sendiri (container query), lalu susun label di atas nilai. */
+.seat-act{container-type:inline-size}
+@container (max-width:205px){
+  .meta div{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;height:auto;min-height:40px;padding:var(--s1) 0}
+  .meta dt{font-size:12px;line-height:1.2}
+  .meta dd{white-space:normal;line-height:1.25}
+}
+/* Layar ~320px: tombol "Ambil nomor" lebih lebar dari kolomnya; isi penuh kolom dan izinkan 2 baris. */
+@container (max-width:160px){
+  .seat .btn-draw{width:100%;padding:0 var(--s2);white-space:normal;line-height:1.1}
+}
 /* Target sentuh: 36px di layar lebar; di HP 6 kolom × 40px (ukuran minimum jari yang disarankan). */
 .map{display:grid;grid-template-columns:repeat(var(--kol,12),1fr);gap:6px;margin-top:var(--s4)}
 /* Sel peta = tombol: ketuk untuk "intip" siapa yang duduk di kursi itu. Nonaktif sebelum hasil terbuka. */

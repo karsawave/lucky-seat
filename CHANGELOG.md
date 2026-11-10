@@ -6,6 +6,10 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Phones narrower than about 410px (most Android phones and the iPhone mini/SE): the seat details next to the big number (Position, Drawn, Draw code) no longer run past the edge of the card. On a narrow screen each label now sits above its value.
+- 320px screens: the "Draw number" button no longer runs past the edge of the card.
+
 ## [1.1.4] - 2026-11-10
 
 ### Changed
