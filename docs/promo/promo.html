@@ -134,19 +134,19 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), p=(t,a,b)=>cl((t-a)/(b-a));
 const ease=x=>1-Math.pow(1-x,3), quart=x=>1-Math.pow(1-x,4), io=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const pad=n=>String(n).padStart(2,"0");
-const M=window.META, NO=M.final;
+const M=window.META, NO=M.final, NM=M.nama;
 
 // ---------- teks ----------
 const T={
- id:{hookLab:"Kursi kamu hari ini",hookSub:"Untuk Citra, Selasa 10 Nov.",
+ id:{hookLab:"Kursi kamu hari ini",hookSub:`Untuk ${NM}, Selasa 10 Nov.`,
    k:["Tiap pagi, kursi dekat jendela jadi rebutan.",/^rebutan/],m:["Mulai besok, kursinya diundi.",/^diundi/],
    brS:"Undian nomor kursi harian untuk tim kamu.",cp1:"Pilih nama.",cp2:"Ambil nomor.",cp3:`Kursi ${NO}. Selesai.`,
-   smT:"Sama di semua HP.",smS:"Tidak bisa diacak ulang dari HP anggota.",mini:["HP Citra","HP admin","HP teman"],
+   smT:"Sama di semua HP.",smS:"Tidak bisa diacak ulang dari HP anggota.",mini:[`HP ${NM}`,"HP admin","HP teman"],
    waT:"Kirim ke grup WhatsApp.",endS:"Gratis. Tanpa install dan tanpa akun.",qr:"Pindai untuk mencoba"},
- en:{hookLab:"Your seat today",hookSub:"For Citra, Tuesday 10 Nov.",
+ en:{hookLab:"Your seat today",hookSub:`For ${NM}, Tuesday 10 Nov.`,
    k:["Every morning, the window seat starts an argument.",/^(window|seat)/],m:["From tomorrow, seats are drawn.",/^drawn/],
    brS:"A daily seat number draw for your team.",cp1:"Pick your name.",cp2:"Draw a number.",cp3:`Seat ${NO}. Done.`,
-   smT:"Same on every phone.",smS:"Members can't re-roll it from their phone.",mini:["Citra","Admin","Teammate"],
+   smT:"Same on every phone.",smS:"Members can't re-roll it from their phone.",mini:[NM,"Admin","Teammate"],
    waT:"Send it to your WhatsApp group.",endS:"Free. No install, no account.",qr:"Scan to try it"}
 }[LANG];
 const words=(el,[txt,hl],col)=>{el.innerHTML=txt.split(" ").map(w=>`<span class="w"${hl.test(w)?` style="color:${col}"`:""}>${w}</span>`).join("")};

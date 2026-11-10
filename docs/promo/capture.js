@@ -12,7 +12,8 @@ const PUB = path.join(ROOT, "public");
 const TPL = path.join(PUB, "templates/id");
 const OUT = path.join(__dirname, "build", "cap-" + LANG);
 const TIM = LANG === "en" ? "Office Team" : "Tim Kantor";
-const NAMA = "Citra";
+// Anggota yang diperagakan di video. Menggantikan nama asli di template pada posisi yang sama.
+const NAMA = "Roma", GANTI = "Citra";
 const JAM = "2026-11-10T08:15:00+07:00";
 const SITUS = "https://karsawave.github.io/lucky-seat/";
 const ID = "1AbCdEfGhIjKlMnOpQrStUvWxYz0123456789abcdefg";
@@ -40,7 +41,7 @@ const TIPE = { html: "text/html", js: "text/javascript", css: "text/css", svg: "
   await ctx.route(/docs\.google\.com/, (r) => {
     const u = decodeURIComponent(r.request().url());
     const f = /Anggota|Members/.test(u) ? "Members-ID.csv" : "Settings-ID.csv";
-    r.fulfill({ status: 200, contentType: "text/csv", body: fs.readFileSync(path.join(TPL, f), "utf8").replace("Subjudul,DTPSD", "Subjudul," + TIM) });
+    r.fulfill({ status: 200, contentType: "text/csv", body: fs.readFileSync(path.join(TPL, f), "utf8").replace("Subjudul,DTPSD", "Subjudul," + TIM).replace(new RegExp("^" + GANTI + "$", "m"), NAMA) });
   });
 
   const pg = await ctx.newPage();
@@ -50,7 +51,7 @@ const TIPE = { html: "text/html", js: "text/javascript", css: "text/css", svg: "
   const kotak = (s) => pg.evaluate((s) => { const r = document.querySelector(s).getBoundingClientRect(); return { x: r.x, y: r.y + scrollY, w: r.width, h: r.height }; }, s);
   const tk = await kotak(".ticket");
   const atas = { x: 0, y: 0, width: 412, height: Math.ceil(tk.y + tk.h + 10) };
-  const meta = { lang: LANG, ticket: tk, sel: await kotak("#nama") };
+  const meta = { lang: LANG, nama: NAMA, ticket: tk, sel: await kotak("#nama") };
   const foto = (n) => pg.screenshot({ path: path.join(OUT, n + ".png"), clip: atas });
 
   await foto("t0");
