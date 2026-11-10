@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.5] - 2026-11-10
+
 ### Added
 - A short demo GIF at the top of the README (English) and `docs/README.id.md` (Indonesian): pick a name, draw a number, get a seat.
 - Promo video sources in `docs/promo/`: one template renders the Indonesian and English videos in 9:16 and 16:9, at 25 or 15 seconds, from real screens of the site.
