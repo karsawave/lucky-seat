@@ -4,7 +4,7 @@
   const D = {
     id: {
       locale: "id-ID",
-      fileBlocked: "Halaman dibuka langsung dari file, jadi browser memblokir {src}. Buka lewat GitHub Pages atau server lokal (npx serve).", scriptNoNet: "Tidak bisa terhubung. Cek internet, atau pastikan Web App di-deploy dengan akses \"Siapa saja\".", scriptNoData: "Server tidak memberi data. Pastikan link Web App benar & akses \"Siapa saja\".", serverError: "Terjadi kesalahan di server.", lang: "Bahasa", mapLabel: "Peta kursi", mapHint: "Ketuk nomor untuk melihat siapa yang duduk di sana.", seatOf: "Kursi {no}: {nama}", seatEmpty: "Kursi {no}: kosong", scriptOutdated: "Apps Script di sheet ini perlu diperbarui. Tempel Code.gs terbaru, lalu Kelola deployment → Versi baru.", themeDark: "Mode gelap", themeLight: "Mode terang",
+      fileBlocked: "Halaman dibuka langsung dari file, jadi browser memblokir {src}. Buka lewat GitHub Pages atau server lokal (npx serve).", scriptNoNet: "Tidak bisa terhubung. Cek internet, atau pastikan Web App di-deploy dengan akses \"Siapa saja\".", scriptNoData: "Server tidak memberi data. Pastikan link Web App benar & akses \"Siapa saja\".", serverError: "Terjadi kesalahan di server.", lang: "Bahasa", backToDraw: "Halaman undian", guideShort: "Panduan pemasangan", mapLabel: "Peta kursi", mapHint: "Ketuk nomor untuk melihat siapa yang duduk di sana.", seatOf: "Kursi {no}: {nama}", seatEmpty: "Kursi {no}: kosong", scriptOutdated: "Apps Script di sheet ini perlu diperbarui. Tempel Code.gs terbaru, lalu Kelola deployment → Versi baru.", themeDark: "Mode gelap", themeLight: "Mode terang",
       prevDay: "Hari sebelumnya", nextDay: "Hari berikutnya",
       yourName: "Nama kamu", pickOpt: "Pilih nama", seat: "Kursi", draw: "Ambil nomor",
       mPos: "Posisi", mWkt: "Diundi", mKode: "Kode undian",
@@ -58,13 +58,12 @@
       connected: "Admin · Tersambung", ready: "Link undangan siap",
       summary: "{a} anggota · {k} kursi · dibuka {jam} · ambil {m}", manual: "manual", auto: "otomatis",
       inviteLink: "Link undangan", toMembers: "Bagikan ke anggota", oneLink: "1 link untuk semua",
-      sendWA: "Kirim ke grup WhatsApp", copyLink: "Salin link", openPage: "Buka halaman undian",
-      changeSource: "Ganti sumber data", selected: "Link sudah dipilih, tekan Ctrl+C",
+      sendWA: "Kirim ke grup WhatsApp", copyLink: "Salin link",       changeSource: "Ganti sumber data", selected: "Link sudah dipilih, tekan Ctrl+C",
       waMsg: "*{judul}*\nNomor kursi harian dibuka tiap pukul {jam} di link berikut:\n{url}\n\nSimpan link ini, ya.",
     },
     en: {
       locale: "en-GB",
-      fileBlocked: "The page was opened directly from a file, so the browser blocks {src}. Open it via GitHub Pages or a local server (npx serve).", scriptNoNet: "Can't connect. Check your internet, or make sure the Web App is deployed with access \"Anyone\".", scriptNoData: "The server returned no data. Make sure the Web App link is right and access is \"Anyone\".", serverError: "Something went wrong on the server.", lang: "Language", mapLabel: "Seat map", mapHint: "Tap a number to see who sits there.", seatOf: "Seat {no}: {nama}", seatEmpty: "Seat {no}: empty", scriptOutdated: "The Apps Script in this sheet needs an update. Paste the latest Code.gs, then Manage deployments → New version.", themeDark: "Dark mode", themeLight: "Light mode",
+      fileBlocked: "The page was opened directly from a file, so the browser blocks {src}. Open it via GitHub Pages or a local server (npx serve).", scriptNoNet: "Can't connect. Check your internet, or make sure the Web App is deployed with access \"Anyone\".", scriptNoData: "The server returned no data. Make sure the Web App link is right and access is \"Anyone\".", serverError: "Something went wrong on the server.", lang: "Language", backToDraw: "Draw page", guideShort: "Setup guide", mapLabel: "Seat map", mapHint: "Tap a number to see who sits there.", seatOf: "Seat {no}: {nama}", seatEmpty: "Seat {no}: empty", scriptOutdated: "The Apps Script in this sheet needs an update. Paste the latest Code.gs, then Manage deployments → New version.", themeDark: "Dark mode", themeLight: "Light mode",
       prevDay: "Previous day", nextDay: "Next day",
       yourName: "Your name", pickOpt: "Select name", seat: "Seat", draw: "Draw number",
       mPos: "Position", mWkt: "Drawn", mKode: "Draw code",
@@ -118,8 +117,7 @@
       connected: "Admin · Connected", ready: "Invite link ready",
       summary: "{a} members · {k} seats · opens {jam} · {m} draw", manual: "manual", auto: "automatic",
       inviteLink: "Invite link", toMembers: "Share with members", oneLink: "1 link for everyone",
-      sendWA: "Send to WhatsApp group", copyLink: "Copy link", openPage: "Open draw page",
-      changeSource: "Change data source", selected: "Link selected, press Ctrl+C",
+      sendWA: "Send to WhatsApp group", copyLink: "Copy link",       changeSource: "Change data source", selected: "Link selected, press Ctrl+C",
       waMsg: "*{judul}*\nDaily seat numbers open every day at {jam} at this link:\n{url}\n\nPlease save this link.",
     },
   };

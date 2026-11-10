@@ -75,19 +75,37 @@ async function panggilScript(id, tgl) {
   // Sumber: ?s=<ID> > terakhir dipakai di perangkat ini > config.js
   const qs = new URLSearchParams(location.search);
   const ID = apiId(qs.get("s")) || (!qs.has("s") && apiId(store.get("ls-api"))) || apiId(C.api);
-  const linkUndangan = (id) => `${location.origin}${location.pathname}?s=${id}`;
+  // Link undangan selalu ke folder situs (…/lucky-seat/?s=), bukan …/index.html?s=, walau admin datang lewat index.html.
+  const dasar = () => `${location.origin}${location.pathname.replace(/index\.html$/, "")}`;
+  const linkUndangan = (id) => `${dasar()}?s=${id}`;
+
+  // ---------- Kaki halaman (sama di semua layar) ----------
+  // Garis pemisah → navigasi antarhalaman (kiri: kembali/aksi utama, kanan: tujuan lain) → versi.
+  // Aksi milik kartu (salin, unduh, dll.) tetap di .links di bawah kartu, bukan di sini.
+  const IKON = {
+    back: '<path d="M15 6l-6 6 6 6"/>',
+    admin: '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+    guide: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/>',
+    retry: '<path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/>',
+  };
+  const ikon = (k) => `<svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IKON[k]}</svg>`;
+  const tautan = (href, k, teks) => `<a href="${esc(href)}">${ikon(k)}<span>${esc(teks)}</span></a>`;
+  const kaki = (kiri = "", kanan = "") =>
+    `<div class="foot"><span>${kiri}</span><span>${kanan}</span></div><p class="ver" id="ver">Lucky Seat v${esc(APP_VERSION)}</p>`;
+  // Tujuan "Halaman undian" dari layar admin: sumber terakhir di perangkat ini, atau halaman awal.
+  const keUndian = (id) => tautan(id ? `${dasar()}?s=${id}` : dasar(), "back", t("backToDraw"));
 
   if (qs.has("admin") || qs.has("ganti")) return adminSetup();
   if (qs.has("s") && !ID) return butuhLink("linkBroken");
   if (!ID) return butuhLink();
 
   // ---------- Layar khusus ----------
-  // Semua layar memakai kerangka yang sama: header → kartu tiket → aksi → catatan.
-  function layar(eyebrow, judul, isi, bawah = "") {
+  // Semua layar memakai kerangka yang sama: header → kartu tiket → aksi → kaki halaman.
+  function layar(eyebrow, judul, isi, kakiHtml = kaki()) {
     main.innerHTML = `
       <header class="top"><div><h1>${esc(judul)}</h1><p class="sub">${esc(eyebrow)}</p></div>${T.toggle()}</header>
       ${isi}
-      ${bawah ? `<p class="note">${bawah}</p>` : ""}`;
+      ${kakiHtml}`;
     siap();
   }
 
@@ -126,7 +144,8 @@ async function panggilScript(id, tgl) {
       <div class="admin-cta">
         <span class="row-ic">${ic('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>', "c-mute")}<span><b>${t("adminQ")}</b><small>${t("adminCta")}</small></span></span>
         <a class="btn-ghost" href="?admin">${t("connect")} ${ic('<path d="M5 12h14M13 6l6 6-6 6"/>')}</a>
-      </div>`;
+      </div>
+      ${kaki(tautan("guide.html", "guide", t("guideShort")))}`;
     $("fLink").addEventListener("submit", (e) => {
       e.preventDefault();
       const v = $("iLink").value.trim();
@@ -150,7 +169,7 @@ async function panggilScript(id, tgl) {
       <article class="ticket"><div class="ticket-main stack">
         <p class="callout">${esc(isi)}</p>
       </div></article>`,
-      `<a href="">${t("retry")}</a> · <a href="?admin">${t("admin")}</a>`);
+      kaki(tautan(location.href, "retry", t("retry")), tautan("?admin", "admin", t("admin"))));
   }
 
   function adminSetup(mode0, isi0) {
@@ -203,7 +222,7 @@ async function panggilScript(id, tgl) {
       <div class="links">
         <a class="btn-link" href="guide.html#unduh"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>${t("downloadTpl")}</a>
         <a class="btn-link" href="guide.html"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/></svg>${t("guide")}</a>
-      </div>`);
+      </div>`, kaki(keUndian(simpan)));
 
     function setMode(m) {
       mode = m;
@@ -263,10 +282,9 @@ async function panggilScript(id, tgl) {
         <button class="btn-primary" id="kirim"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.3-.8-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.4.6-.3.3c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z"/></svg>${t("sendWA")}</button>
         <div class="links">
           <button class="btn-link" id="salin"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>${t("copyLink")}</button>
-          <a class="btn-link" href="${esc(url)}"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>${t("openPage")}</a>
           <a class="btn-link" href="?admin"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>${t("changeSource")}</a>
         </div>
-      </div>`);
+      </div>`, kaki(keUndian(id)));
     $("lu").onclick = (e) => e.target.select();
     $("kirim").onclick = () => window.open("https://wa.me/?text=" + encodeURIComponent(pesanWA), "_blank", "noopener");
     $("salin").onclick = async () => {
