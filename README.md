@@ -112,6 +112,7 @@ Indonesian versions (`-ID`) are in [`templates/id/`](public/templates/id/).
 2. Rename the `Sheet1` tab to **`Members`**.
    Then **File → Import → Upload**, choose `Members-EN.csv`, and pick **Replace current sheet**.
 3. Replace the sample names with your team, **one name per row**.
+   The **`nickname`** column is optional. When filled, the site shows only that nickname. When empty, it shows the first name plus initials (e.g. `Ahmad R.`).
 4. Add a new tab named **`Settings`** and import `Settings-EN.csv` the same way.
 5. In column B, fill in at least:
    - **Start Date**: e.g. `'2026-11-16` (with an apostrophe `'` in front)

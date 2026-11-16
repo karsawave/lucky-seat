@@ -46,7 +46,7 @@ flowchart LR
 **The draw algorithm is duplicated** in `sheet.js` (`panggilSheet`) and `Code.gs` (`handle`, `hasilHari`, `undi`), together with the helpers `hash`, `shuffle`, `namaDepan`, `aturTetap`, the time-zone helpers and the date-window logic (`aktif`/`berikut`/`buka`). Any change to the draw, settings parsing, error keys or the response shape must be made in **both** files. Key properties:
 - Deterministic seeded shuffle `shuffle(pool, "${kunci}|${date}|${n}")`, with up to 60 retries to minimise members getting the same seat as on the previous workday. Results are replayed sequentially from `Tanggal Mulai`, so changing workdays, seat count or fixed seats changes past results in Option 1.
 - "Now" is computed in the team's configured time zone (`Zona Waktu`), not the device's, so every phone opens at the same moment.
-- Only first names plus the initials of the following words are exposed ("Ahmad R.", "Ahmad R. H."; `namaDepan` strips honorifics and leading initials, and lengthens the initial for duplicates).
+- Only first names plus the initials of the following words are exposed ("Ahmad R.", "Ahmad R. H."), or the optional `panggilan`/`nickname` column instead when filled (`namaDepan` strips honorifics and leading initials, and lengthens the initial for duplicates).
 
 **Settings parsing** accepts both Indonesian and English setting names via an alias map (`ALIAS` in `Code.gs`, equivalent normalisation in `sheet.js` `pengaturan`). Tab lookup always tries the Indonesian name first, then the English one.
 

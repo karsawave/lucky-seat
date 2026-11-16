@@ -138,12 +138,15 @@
     if (!rows.length) return [];
     let col = rows[0].findIndex((h) => /^(nama|name)$/i.test(h));
     const ab = col >= 0 ? rows[0].findIndex((h) => /^(abaikan|ignore)$/i.test(h)) : -1;
+    // Kolom opsional "panggilan": bila diisi, nama ini yang tampil (nama asli tidak keluar sama sekali).
+    const pg = col >= 0 ? rows[0].findIndex((h) => /^(panggilan|nama panggilan|nickname|nick)$/i.test(h.trim())) : -1;
     const body = col >= 0 ? rows.slice(1) : rows;
     if (col < 0) col = 0;
     return body.map((r) => {
       const nama = String(r[col] || "").trim().replace(/\s+/g, " ");
       const v = ab >= 0 ? String(r[ab] || "").trim() : "";
-      return { nama, tetap: /^\d+$/.test(v) && +v > 0 ? +v : 0, abai: !!v && !/^(\d+|tidak|no|n|-)$/i.test(v) };
+      const panggilan = pg >= 0 ? String(r[pg] || "").trim().replace(/\s+/g, " ") : "";
+      return { nama, panggilan, tetap: /^\d+$/.test(v) && +v > 0 ? +v : 0, abai: !!v && !/^(\d+|tidak|no|n|-)$/i.test(v) };
     }).filter((a) => a.nama);
   }
   // "Vina: 3, Budi 12" → [{nama:"Vina", no:3}, ...]. Pemisah nama–nomor: : = - atau spasi.
@@ -158,7 +161,7 @@
   function aturTetap(list, N, dariPengaturan = []) {
     const tunggal = (x) => (x.length === 1 ? x[0] : null);
     const tetap = {}, dipakai = {};
-    const depan = namaDepan(list.map((a) => a.nama));
+    const depan = namaDepan(list.map((a) => a.nama), petaPanggilan(list));
     dariPengaturan.forEach((t) => {
       const cari = t.nama.toLowerCase();
       const a = list.find((x) => x.nama.toLowerCase() === cari) || list.find((x) => depan[x.nama].toLowerCase() === cari)
@@ -206,7 +209,9 @@
     return S;
   }
 
-  function namaDepan(list) {
+  // { namaLengkap: panggilan } untuk anggota yang kolom panggilannya diisi.
+  function petaPanggilan(list) { const p = {}; list.forEach((a) => { if (a.panggilan) p[a.nama] = a.panggilan; }); return p; }
+  function namaDepan(list, pgl = {}) {
     const uniq = list.filter((n, i) => list.indexOf(n) === i);
     // Gelar dibuang; inisial di depan ("R. Andi", "M Rizky") dilewati selama masih ada kata lain.
     const kata = (n) => { const k = n.split(" ").filter((w) => !GELAR.test(w)); while (k.length > 1 && /^[a-z]\.?$/i.test(k[0])) k.shift(); return k; };
@@ -214,11 +219,11 @@
     // Nama depan + inisial tiap kata berikutnya: "Ahmad Rofiq" → "Ahmad R.", "Ahmad Rofiq Hidayat" → "Ahmad R. H.".
     // len = panjang singkatan kata kedua (diperpanjang bila bentrok: "Budi Sa." / "Budi Se.").
     const susun = (k, len) => [k[0], ...k.slice(1).map((w, i) => w[0].toUpperCase() + (i ? "" : w.slice(1, len).toLowerCase()) + ".")].join(" ");
-    uniq.forEach((n) => { const k = kata(n); out[n] = k.length ? susun(k, 1) : n; });
+    uniq.forEach((n) => { const k = kata(n); out[n] = pgl[n] || (k.length ? susun(k, 1) : n); });
     const hitung = () => { const c = {}; Object.values(out).forEach((v) => (c[v] = (c[v] || 0) + 1)); return c; };
     for (let len = 1; len <= 3; len++) {
       const c = hitung();
-      uniq.forEach((n) => { const k = kata(n); if (c[out[n]] > 1 && k[1]) out[n] = susun(k, len); });
+      uniq.forEach((n) => { const k = kata(n); if (c[out[n]] > 1 && k[1] && !pgl[n]) out[n] = susun(k, len); });
     }
     const c = hitung(), urut = {};
     uniq.forEach((n) => { if (c[out[n]] > 1) { urut[out[n]] = (urut[out[n]] || 0) + 1; out[n] += " " + urut[out[n]]; } });
@@ -306,7 +311,7 @@
         }
         prev = hasil = best;
       }
-      const depan = namaDepan(anggota);
+      const depan = namaDepan(anggota, petaPanggilan(ikut));
       kursi = semua.map((no) => ({ no, nama: null }));
       acak.forEach((a, i) => (kursi[hasil[i] - 1].nama = depan[a]));
       Object.keys(tetap).forEach((a) => Object.assign(kursi[tetap[a] - 1], { nama: depan[a], tetap: true }));
@@ -323,7 +328,7 @@
         bukaBerikutMs: msZona(S.Z, berikut, S.jamUndian, S.menitUndian),
         zonaLabel: labelZona(S.Z, msZona(S.Z, berikut, S.jamUndian, S.menitUndian)),
         zonaOffset: offsetMenit(S.Z, msZona(S.Z, berikut, S.jamUndian, S.menitUndian)),
-        anggota: Object.values(namaDepan(anggota)).sort((a, b) => a.localeCompare(b, "id")), jumlahKursi: N,
+        anggota: Object.values(namaDepan(anggota, petaPanggilan(ikut))).sort((a, b) => a.localeCompare(b, "id")), jumlahKursi: N,
       },
       hari: { tgl, nomor, buka, prev: prev >= S.tanggalMulai ? prev : null, next: tgl < aktif ? kerjaDekat(tgl, 1) : tgl === aktif ? berikut : null, kursi,
         // Daftar Dibuka (mode Manual): saat daftar lengkap terbuka untuk semua orang. null = tidak diatur.

@@ -6,6 +6,14 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Optional `panggilan` / `nickname` column in the Members tab. When filled, the site shows only the nickname, so the real name never leaves the sheet. Fixed Seats can use the nickname.
+
+### Apps Script
+
+- Apps Script: create a New version in Manage deployments to use nicknames with Option 2.
+
 ## [1.5.0] - 2026-11-16
 
 ### Changed

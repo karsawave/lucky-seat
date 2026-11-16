@@ -161,6 +161,13 @@ const SKENARIO = [
     pengaturan: [["pengaturan", "nilai"], ["Tanggal Mulai", "'2026-11-23"], ["Kunci", "K7"]],
   },
   {
+    nama: "kolom panggilan: dipakai bila diisi, bentrok diberi nomor",
+    sekarang: "2026-11-25T03:00:00Z",
+    tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "K8",
+    anggota: [["nama", "panggilan"], ["Ahmad Rofiq Hidayat", "Opik"], ["Siti Aminah", ""], ["Budi Santoso", "Bebe"], ["Bayu Bramasta", "Bebe"], ["Joko Widodo", "Siti A."], ["Dewi Lestari", ""]],
+    pengaturan: [["pengaturan", "nilai"], ["Tanggal Mulai", "'2026-11-23"], ["Kursi Tetap", "Opik: 1"], ["Kunci", "K8"]],
+  },
+  {
     nama: "akhir pekan: hari aktif = Jumat sebelumnya",
     sekarang: "2026-11-29T05:00:00Z", // Minggu
     tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "K3",
@@ -203,6 +210,14 @@ test("nama depan + inisial tiap kata berikutnya", async () => {
   const fx = SKENARIO.find((s) => /inisial/.test(s.nama));
   const r = await jalankanSheet(fx, Date.parse(fx.sekarang))("");
   assert.deepEqual([...r.info.anggota].sort(), ["Ahmad R. H.", "Andi W.", "Budi S.", "Dewi A. S. L.", "R.", "Rizky", "Siti R."]);
+});
+
+test("kolom panggilan menggantikan nama asli", async () => {
+  const fx = SKENARIO.find((s) => /panggilan/.test(s.nama));
+  const r = await jalankanSheet(fx, Date.parse(fx.sekarang))("");
+  assert.deepEqual([...r.info.anggota].sort(), ["Bebe 1", "Bebe 2", "Dewi L.", "Opik", "Siti A.", "Siti Am."]);
+  assert.equal(r.hari.kursi[0].nama, "Opik"); // Kursi Tetap boleh memakai nama panggilan
+  assert.ok(!JSON.stringify(r).includes("Rofiq"), "nama asli tidak boleh keluar");
 });
 
 for (const fx of SKENARIO) {

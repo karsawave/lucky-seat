@@ -112,6 +112,7 @@ Versi bahasa Inggris (`-EN`) ada di [`templates/en/`](../public/templates/en/).
 2. Ganti nama tab `Sheet1` menjadi **`Anggota`**.
    Lalu **File → Impor → Upload**, pilih `Members-ID.csv`, pilih **Ganti sheet saat ini**.
 3. Ganti nama contoh dengan nama anggota tim, **satu nama per baris**.
+   Kolom **`panggilan`** boleh diisi. Bila diisi, situs hanya menampilkan nama panggilan itu. Bila kosong, tampil nama depan + inisial (contoh `Ahmad R.`).
 4. Tambah tab baru bernama **`Pengaturan`**, lalu impor `Settings-ID.csv` dengan cara yang sama.
 5. Di kolom B, isi minimal:
    - **Tanggal Mulai**: contoh `'2026-11-16` (pakai tanda petik `'` di depan)

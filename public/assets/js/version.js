@@ -3,4 +3,4 @@
 window.APP_VERSION = "1.5.0";
 // Versi API Code.gs yang dibutuhkan website. Harus sama dengan API_VERSION di apps-script/Code.gs.
 // Terpisah dari APP_VERSION: admin Opsi 2 hanya diminta deploy ulang bila Code.gs benar-benar berubah.
-window.CODE_GS_API = 5;
+window.CODE_GS_API = 6;
