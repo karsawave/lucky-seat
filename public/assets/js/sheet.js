@@ -1,6 +1,6 @@
 // OPSI 1: baca Google Sheet langsung (sheet dibagikan "Siapa saja yang memiliki link = Pelihat").
 // Pengundian dihitung di browser, hasilnya berbentuk sama persis dengan Apps Script (opsi 2).
-// Hanya nama depan yang ditampilkan.
+// Hanya nama depan + inisial kata kedua yang ditampilkan ("Ahmad R.").
 (function () {
   const HARI = { minggu: 0, senin: 1, selasa: 2, rabu: 3, kamis: 4, jumat: 5, sabtu: 6,
     sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
@@ -156,11 +156,13 @@
   }
   // Nama → nomor kursi tetap (divalidasi). Sumber: kolom "abaikan" (angka) + baris "Kursi Tetap" di Pengaturan.
   function aturTetap(list, N, dariPengaturan = []) {
+    const tunggal = (x) => (x.length === 1 ? x[0] : null);
     const tetap = {}, dipakai = {};
     const depan = namaDepan(list.map((a) => a.nama));
     dariPengaturan.forEach((t) => {
       const cari = t.nama.toLowerCase();
-      const a = list.find((x) => x.nama.toLowerCase() === cari) || list.find((x) => depan[x.nama].toLowerCase() === cari);
+      const a = list.find((x) => x.nama.toLowerCase() === cari) || list.find((x) => depan[x.nama].toLowerCase() === cari)
+        || tunggal(list.filter((x) => depan[x.nama].split(" ")[0].toLowerCase() === cari)); // "Vina: 3" tetap cocok dengan "Vina M."
       if (!a) throw E("fixedUnknown", { nama: t.nama });
       if (a.tetap && a.tetap !== t.no) throw E("fixedConflict", { nama: a.nama, a: a.tetap, b: t.no });
       a.tetap = t.no;
@@ -209,7 +211,8 @@
     // Gelar dibuang; inisial di depan ("R. Andi", "M Rizky") dilewati selama masih ada kata lain.
     const kata = (n) => { const k = n.split(" ").filter((w) => !GELAR.test(w)); while (k.length > 1 && /^[a-z]\.?$/i.test(k[0])) k.shift(); return k; };
     const out = {};
-    uniq.forEach((n) => (out[n] = kata(n)[0] || n));
+    // Nama depan + inisial kata kedua bila ada: "Ahmad Rofiq" → "Ahmad R.", "Siti" → "Siti".
+    uniq.forEach((n) => { const k = kata(n); out[n] = k[1] ? k[0] + " " + k[1][0].toUpperCase() + "." : k[0] || n; });
     const hitung = () => { const c = {}; Object.values(out).forEach((v) => (c[v] = (c[v] || 0) + 1)); return c; };
     for (let len = 1; len <= 3; len++) {
       const c = hitung();

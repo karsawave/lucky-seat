@@ -6,6 +6,15 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- "Copy invite link" moved from the page footer to the links under the card. The footer now links to the setup guide.
+- Names now show the first name plus the initial of the second word ("Ahmad Rofiq" shows as "Ahmad R."). Single-word names stay as they are. Fixed Seats written with the first name only ("Vina: 3") still match.
+
+### Apps Script
+
+- Apps Script: create a New version in Manage deployments to get the new name format with Option 2.
+
 ## [1.3.0] - 2026-11-16
 
 ### Fixed

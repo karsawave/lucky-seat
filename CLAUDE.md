@@ -28,7 +28,7 @@ Outside `public/` sit only project files: `tests/`, `docs/` (`README.id.md`, `de
 Two interchangeable data sources produce the **same response shape** `{ ok, info, hari }`, and `app.js` only consumes that shape:
 
 - **Option 1: shared Google Sheet** (`sheet.js`, exposes `window.SheetSumber`): fetches the `Anggota`/`Members` and `Pengaturan`/`Settings` tabs as CSV through the gviz endpoint, then computes the draw **in the browser**.
-- **Option 2: private sheet via Apps Script** (`apps-script/Code.gs`, deployed separately as a Web App): computes the draw **on the server**. It archives each day's result in a hidden `Riwayat` tab and returns only first names. It is not loaded by the site; users paste it into their own sheet.
+- **Option 2: private sheet via Apps Script** (`apps-script/Code.gs`, deployed separately as a Web App): computes the draw **on the server**. It archives each day's result in a hidden `Riwayat` tab and returns only first names plus the initial of the second word. It is not loaded by the site; users paste it into their own sheet.
 
 ```mermaid
 flowchart LR
@@ -46,7 +46,7 @@ flowchart LR
 **The draw algorithm is duplicated** in `sheet.js` (`panggilSheet`) and `Code.gs` (`handle`, `hasilHari`, `undi`), together with the helpers `hash`, `shuffle`, `namaDepan`, `aturTetap`, the time-zone helpers and the date-window logic (`aktif`/`berikut`/`buka`). Any change to the draw, settings parsing, error keys or the response shape must be made in **both** files. Key properties:
 - Deterministic seeded shuffle `shuffle(pool, "${kunci}|${date}|${n}")`, with up to 60 retries to minimise members getting the same seat as on the previous workday. Results are replayed sequentially from `Tanggal Mulai`, so changing workdays, seat count or fixed seats changes past results in Option 1.
 - "Now" is computed in the team's configured time zone (`Zona Waktu`), not the device's, so every phone opens at the same moment.
-- Only first names are exposed (`namaDepan` disambiguates duplicates and strips honorifics).
+- Only first names plus the initial of the second word are exposed ("Ahmad R."; `namaDepan` strips honorifics and leading initials, and lengthens the initial for duplicates).
 
 **Settings parsing** accepts both Indonesian and English setting names via an alias map (`ALIAS` in `Code.gs`, equivalent normalisation in `sheet.js` `pengaturan`). Tab lookup always tries the Indonesian name first, then the English one.
 

@@ -2,11 +2,11 @@
  * LUCKY SEAT: server undian (Google Apps Script)
  * Sheet tetap PRIVAT. Script ini satu-satunya pintu keluar data, dan hanya mengirim:
  *   - pengaturan tampilan (judul, subjudul, jam, hari kerja)
- *   - NAMA DEPAN anggota + nomor kursi, hanya untuk hari yang SUDAH dibuka
+ *   - NAMA DEPAN + inisial kata kedua anggota + nomor kursi, hanya untuk hari yang SUDAH dibuka
  * Tidak pernah dikirim: nama lengkap, kolom lain, kunci acak, hasil hari yang belum dibuka.
  *
  * EN: Draw server for Lucky Seat. The sheet stays PRIVATE; this script only returns display
- * settings plus FIRST NAMES and seat numbers for days that are already open.
+ * settings plus FIRST NAMES (with the initial of the second word) and seat numbers for days that are already open.
  * Tabs: Anggota/Members (a "nama"/"name" column), Pengaturan/Settings (A = setting, B = value),
  * Riwayat (created & hidden automatically; results archive, do not edit).
  * Messages follow ?lang=id|en from the website, otherwise the "Bahasa/Language" setting.
@@ -19,7 +19,7 @@
 
 // Versi API skrip ini (bilangan bulat). Naikkan HANYA bila isi Code.gs berubah dan admin perlu deploy ulang.
 // Website meminta minimal CODE_GS_API (version.js); bila lebih kecil, admin melihat peringatan deploy ulang.
-const API_VERSION = 3;
+const API_VERSION = 4;
 const TAB_ANGGOTA = 'Anggota';
 const TAB_PENGATURAN = 'Pengaturan';
 const TAB_RIWAYAT = 'Riwayat';
@@ -223,11 +223,13 @@ function bacaTetap(s) {
 }
 
 function aturTetap(list, N, dariPengaturan) {
+  const tunggal = (x) => (x.length === 1 ? x[0] : null);
   const tetap = {}, dipakai = {};
   const depan = namaDepan(list.map((a) => a.nama));
   (dariPengaturan || []).forEach((t) => {
     const cari = t.nama.toLowerCase();
-    const a = list.find((x) => x.nama.toLowerCase() === cari) || list.find((x) => depan[x.nama].toLowerCase() === cari);
+    const a = list.find((x) => x.nama.toLowerCase() === cari) || list.find((x) => depan[x.nama].toLowerCase() === cari)
+      || tunggal(list.filter((x) => depan[x.nama].split(" ")[0].toLowerCase() === cari)); // "Vina: 3" tetap cocok dengan "Vina M."
     if (!a) throw E('fixedUnknown', { nama: t.nama });
     if (a.tetap && a.tetap !== t.no) throw E('fixedConflict', { nama: a.nama, a: a.tetap, b: t.no });
     a.tetap = t.no;
@@ -304,8 +306,8 @@ function namaDepan(list) {
   // Gelar dibuang; inisial di depan ("R. Andi", "M Rizky") dilewati selama masih ada kata lain.
   const kata = (n) => { const k = n.split(' ').filter((w) => !GELAR.test(w)); while (k.length > 1 && /^[a-z]\.?$/i.test(k[0])) k.shift(); return k; };
   const out = {};
-  uniq.forEach((n) => (out[n] = kata(n)[0] || n));
-  // Bila nama depan bentrok, tambahkan inisial kata berikutnya: "Budi S."
+  // Nama depan + inisial kata kedua bila ada: "Ahmad Rofiq" → "Ahmad R.", "Siti" → "Siti".
+  uniq.forEach((n) => { const k = kata(n); out[n] = k[1] ? k[0] + " " + k[1][0].toUpperCase() + "." : k[0] || n; });
   const hitung = (o) => { const c = {}; Object.values(o).forEach((v) => (c[v] = (c[v] || 0) + 1)); return c; };
   // Bila bentrok, tambahkan huruf awal kata berikutnya secukupnya: "Budi Sa." / "Budi Se."
   for (let len = 1; len <= 3; len++) {

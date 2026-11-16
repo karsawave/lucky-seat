@@ -202,7 +202,7 @@ test("Daftar Dibuka dihitung di zona tim; kosong = null", async () => {
 test("nama depan melewati inisial di depan", async () => {
   const fx = SKENARIO.find((s) => /inisial/.test(s.nama));
   const r = await jalankanSheet(fx, Date.parse(fx.sekarang))("");
-  assert.deepEqual([...r.info.anggota].sort(), ["Andi", "Budi", "R.", "Rizky", "Siti"]);
+  assert.deepEqual([...r.info.anggota].sort(), ["Andi W.", "Budi S.", "R.", "Rizky", "Siti R."]);
 });
 
 for (const fx of SKENARIO) {

@@ -1,7 +1,7 @@
 // LUCKY SEAT: tampilan. Dua sumber data, hasilnya berbentuk sama:
 //   Opsi 1 (utama) : link Google Sheet (dibagikan Pelihat) → dihitung di browser (sheet.js)
 //   Opsi 2 (privat): URL Web App Apps Script → dihitung di server (apps-script/Code.gs)
-// Yang ditampilkan hanya nama depan + nomor kursi.
+// Yang ditampilkan hanya nama depan + inisial kata kedua + nomor kursi.
 
 // URL Web App Apps Script (…/macros/s/<ID>/exec) atau ID-nya (AKfy…) → ID, atau "".
 function scriptId(u) {

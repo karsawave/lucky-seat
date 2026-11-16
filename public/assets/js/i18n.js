@@ -48,7 +48,7 @@
       ],
       sheetFoot: "Website hanya membaca sheet, tidak pernah mengubah isinya.",
       scriptLabel: "URL Web App", scriptWrong: "Bukan URL Web App. Salin URL berakhiran /exec dari Kelola deployment.",
-      scriptNote: "Privasi ketat. Sheet tetap privat, yang keluar hanya nama depan dan nomor kursi.",
+      scriptNote: "Privasi ketat. Sheet tetap privat, yang keluar hanya nama depan, inisial nama kedua, dan nomor kursi.",
       scriptSteps: [
         "Biarkan sheet <b>Terbatas</b>. Buka Ekstensi, lalu Apps Script.",
         "Tempel isi <code>apps-script/Code.gs</code>, lalu simpan.",
@@ -108,7 +108,7 @@
       ],
       sheetFoot: "The website only reads the sheet and never changes it.",
       scriptLabel: "Web App URL", scriptWrong: "Not a Web App URL. Copy the URL ending in /exec from Manage deployments.",
-      scriptNote: "Strict privacy. The sheet stays private; only first names and seat numbers leave it.",
+      scriptNote: "Strict privacy. The sheet stays private; only first names, the second-name initial and seat numbers leave it.",
       scriptSteps: [
         "Keep the sheet <b>Restricted</b>. Open Extensions, then Apps Script.",
         "Paste the contents of <code>apps-script/Code.gs</code> and save.",
