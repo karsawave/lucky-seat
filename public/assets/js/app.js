@@ -386,6 +386,10 @@ async function panggilScript(id, tgl) {
   // Cara Ambil (tab Pengaturan): Otomatis → hasil langsung terlihat di jam undian.
   // Manual → hasil (kursi pribadi, daftar, tombol bagikan) terbuka setelah "Ambil nomor" ditekan di perangkat ini.
   const terbuka = () => !!H.kursi && (otomatis() || H.tgl < I.aktif || !!store.get(kunciBuka()));
+  // Tanda per nama: di HP yang dipakai bergantian, tiap orang tetap menekan "Ambil nomor" (dan melihat animasinya) sendiri.
+  // Daftar tetap terbuka begitu ada satu orang yang sudah mengambil di HP ini.
+  const kunciSaya = () => `${kunciBuka()}|${nama}`;
+  const terbukaSaya = () => !!H.kursi && (otomatis() || H.tgl < I.aktif || !!store.get(kunciSaya()));
 
   // ---------- Render ----------
   function render() {
@@ -402,11 +406,11 @@ async function panggilScript(id, tgl) {
     document.querySelector(".ticket").removeAttribute("aria-busy");
     const ada = terbuka();
     $("btnShare").disabled = $("btnDl").disabled = !ada;
-    $("btnKartu").disabled = !ada || !kursiSaya();
+    $("btnKartu").disabled = !terbukaSaya() || !kursiSaya();
     // Tombol nonaktif selalu memberi alasan (tooltip) → kursor "dilarang" tidak membingungkan.
     const kunci = !H.kursi ? t("opensAt", { jam: jamTxt() }) : t("pressDraw");
     $("btnShare").title = $("btnDl").title = ada ? "" : kunci;
-    $("btnKartu").title = !ada ? kunci : !kursiSaya() ? t("pickFirst") : "";
+    $("btnKartu").title = !ada ? kunci : !kursiSaya() ? t("pickFirst") : !terbukaSaya() ? t("pressDraw") : "";
     $("prev").title = H.prev ? "" : t("firstDraw");
     $("next").title = H.next ? "" : t("notYet");
     document.querySelectorAll(".seg[data-sort] button").forEach((b) => (b.title = ada ? "" : kunci));
@@ -449,12 +453,13 @@ async function panggilScript(id, tgl) {
     if (k.nama) {
       intip = null;
       if (k.nama === nama) return;
-      nama = k.nama; $("nama").value = nama;
+      // Nama di kursi ini sudah terlihat di peta → anggap sudah terbuka, tanpa tombol "Ambil nomor" lagi.
+      nama = k.nama; $("nama").value = nama; store.set(kunciSaya(), "1");
       render(); renderKursi(true);
       return;
     }
     intip = intip === no ? null : no;
-    renderMap(kursiSaya() && terbuka() ? kursiSaya() : null);
+    renderMap(kursiSaya() && terbukaSaya() ? kursiSaya() : null);
     renderDaftar();
   }
 
@@ -466,7 +471,7 @@ async function panggilScript(id, tgl) {
     if (!nama) { msg.textContent = t(otomatis() ? "pickMsg" : "pickDrawMsg"); return; }
     const no = kursiSaya();
     if (!no) { msg.textContent = t("notIn"); return; }
-    if (!terbuka()) { seat.classList.add("mode-btn"); num.textContent = "??"; return; }
+    if (!terbukaSaya()) { seat.classList.add("mode-btn"); num.textContent = "??"; return; }
     const tetap = H.kursi[no - 1].tetap;
     $("mPos").textContent = t("posOf", { no, n: H.kursi.length }) + (tetap ? ` · ${t("fixed")}` : "");
     $("mWkt").textContent = `${fmt(H.tgl, { weekday: "short", day: "numeric", month: "short" })} · ${jamTxt()}`;
@@ -564,7 +569,7 @@ async function panggilScript(id, tgl) {
   $("btnDraw").onclick = () => {
     if (mengacak) return;
     const no = kursiSaya(), N = I.jumlahKursi;
-    const selesai = () => { mengacak = false; store.set(kunciBuka(), "1"); render(); renderKursi(false); const num = $("num"); num.classList.remove("pop"); void num.offsetWidth; num.classList.add("pop"); };
+    const selesai = () => { mengacak = false; store.set(kunciBuka(), "1"); store.set(kunciSaya(), "1"); render(); renderKursi(false); const num = $("num"); num.classList.remove("pop"); void num.offsetWidth; num.classList.add("pop"); };
     if (!no || matchMedia("(prefers-reduced-motion: reduce)").matches) { selesai(); return; }
     mengacak = true;
     $("btnDraw").disabled = $("nama").disabled = true;

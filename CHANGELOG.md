@@ -6,6 +6,10 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Manual mode on a shared phone: each person now presses "Draw number" and sees the shuffle for their own name. Before, only the first person did.
+
 ## [1.1.6] - 2026-11-16
 
 ### Changed
