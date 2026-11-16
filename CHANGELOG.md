@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-11-16
+
 ### Changed
 
 - "Your name" is now a search box. Type a few letters to filter the list, then tap your name. Arrow keys, Enter and Esc also work.
