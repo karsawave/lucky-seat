@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-11-16
+
 ### Fixed
 
 - Tapping a seat on the map no longer shows the name for a moment before it blurs.
