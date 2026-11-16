@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-16
+
 ### Added
 
 - Optional `panggilan` / `nickname` column in the Members tab. When filled, the site shows only the nickname, so the real name never leaves the sheet. Fixed Seats can use the nickname.
