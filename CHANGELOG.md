@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-16
+
 ### Changed
 
 - "Copy invite link" moved from the page footer to the links under the card. The footer now links to the setup guide.
