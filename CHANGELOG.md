@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.6] - 2026-11-16
+
 ### Changed
 
 - Manual mode: pressing "Draw number" now runs a short shuffle across the seat map that slows down and stops on your seat. The list and share buttons open after it stops.
