@@ -211,12 +211,14 @@
     // Gelar dibuang; inisial di depan ("R. Andi", "M Rizky") dilewati selama masih ada kata lain.
     const kata = (n) => { const k = n.split(" ").filter((w) => !GELAR.test(w)); while (k.length > 1 && /^[a-z]\.?$/i.test(k[0])) k.shift(); return k; };
     const out = {};
-    // Nama depan + inisial kata kedua bila ada: "Ahmad Rofiq" → "Ahmad R.", "Siti" → "Siti".
-    uniq.forEach((n) => { const k = kata(n); out[n] = k[1] ? k[0] + " " + k[1][0].toUpperCase() + "." : k[0] || n; });
+    // Nama depan + inisial tiap kata berikutnya: "Ahmad Rofiq" → "Ahmad R.", "Ahmad Rofiq Hidayat" → "Ahmad R. H.".
+    // len = panjang singkatan kata kedua (diperpanjang bila bentrok: "Budi Sa." / "Budi Se.").
+    const susun = (k, len) => [k[0], ...k.slice(1).map((w, i) => w[0].toUpperCase() + (i ? "" : w.slice(1, len).toLowerCase()) + ".")].join(" ");
+    uniq.forEach((n) => { const k = kata(n); out[n] = k.length ? susun(k, 1) : n; });
     const hitung = () => { const c = {}; Object.values(out).forEach((v) => (c[v] = (c[v] || 0) + 1)); return c; };
     for (let len = 1; len <= 3; len++) {
       const c = hitung();
-      uniq.forEach((n) => { const k = kata(n); if (c[out[n]] > 1 && k[1]) out[n] = `${k[0]} ${k[1][0].toUpperCase()}${k[1].slice(1, len).toLowerCase()}.`; });
+      uniq.forEach((n) => { const k = kata(n); if (c[out[n]] > 1 && k[1]) out[n] = susun(k, len); });
     }
     const c = hitung(), urut = {};
     uniq.forEach((n) => { if (c[out[n]] > 1) { urut[out[n]] = (urut[out[n]] || 0) + 1; out[n] += " " + urut[out[n]]; } });

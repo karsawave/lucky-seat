@@ -6,6 +6,16 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- "Your name" is now a search box. Type a few letters to filter the list, then tap your name. Arrow keys, Enter and Esc also work.
+- Tapping a seat on the map blurs the name while the number shuffles, then shows it together with the number.
+- Names with three or more words get an initial for each extra word ("Ahmad Rofiq Hidayat" shows as "Ahmad R. H.").
+
+### Apps Script
+
+- Apps Script: create a New version in Manage deployments to get the new name format with Option 2.
+
 ## [1.4.0] - 2026-11-16
 
 ### Changed

@@ -19,7 +19,7 @@
 
 // Versi API skrip ini (bilangan bulat). Naikkan HANYA bila isi Code.gs berubah dan admin perlu deploy ulang.
 // Website meminta minimal CODE_GS_API (version.js); bila lebih kecil, admin melihat peringatan deploy ulang.
-const API_VERSION = 4;
+const API_VERSION = 5;
 const TAB_ANGGOTA = 'Anggota';
 const TAB_PENGATURAN = 'Pengaturan';
 const TAB_RIWAYAT = 'Riwayat';
@@ -306,15 +306,16 @@ function namaDepan(list) {
   // Gelar dibuang; inisial di depan ("R. Andi", "M Rizky") dilewati selama masih ada kata lain.
   const kata = (n) => { const k = n.split(' ').filter((w) => !GELAR.test(w)); while (k.length > 1 && /^[a-z]\.?$/i.test(k[0])) k.shift(); return k; };
   const out = {};
-  // Nama depan + inisial kata kedua bila ada: "Ahmad Rofiq" → "Ahmad R.", "Siti" → "Siti".
-  uniq.forEach((n) => { const k = kata(n); out[n] = k[1] ? k[0] + " " + k[1][0].toUpperCase() + "." : k[0] || n; });
+  // Nama depan + inisial tiap kata berikutnya: "Ahmad Rofiq" → "Ahmad R.", "Ahmad Rofiq Hidayat" → "Ahmad R. H.".
+  // len = panjang singkatan kata kedua (diperpanjang bila bentrok: "Budi Sa." / "Budi Se.").
+  const susun = (k, len) => [k[0]].concat(k.slice(1).map((w, i) => w[0].toUpperCase() + (i ? '' : w.slice(1, len).toLowerCase()) + '.')).join(' ');
+  uniq.forEach((n) => { const k = kata(n); out[n] = k.length ? susun(k, 1) : n; });
   const hitung = (o) => { const c = {}; Object.values(o).forEach((v) => (c[v] = (c[v] || 0) + 1)); return c; };
-  // Bila bentrok, tambahkan huruf awal kata berikutnya secukupnya: "Budi Sa." / "Budi Se."
   for (let len = 1; len <= 3; len++) {
     const c = hitung(out);
     uniq.forEach((n) => {
       const k = kata(n);
-      if (c[out[n]] > 1 && k[1]) out[n] = k[0] + ' ' + k[1][0].toUpperCase() + k[1].slice(1, len).toLowerCase() + '.';
+      if (c[out[n]] > 1 && k[1]) out[n] = susun(k, len);
     });
   }
   const c = hitung(out);
