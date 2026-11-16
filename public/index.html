@@ -28,7 +28,10 @@
       </div>
       <div class="who">
         <label class="label" for="nama" data-i18n="yourName">Nama kamu</label>
-        <select id="nama"></select>
+        <div class="cari">
+          <input id="nama" class="cari-in" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="namaList" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="done">
+          <ul id="namaList" class="cari-list" role="listbox" hidden></ul>
+        </div>
       </div>
       <div class="seat" id="seat" aria-live="polite">
         <div>

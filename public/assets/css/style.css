@@ -85,9 +85,24 @@ header.top>div:first-child{min-width:0}
 
 .who{margin-top:var(--s5)}
 .who label{margin-bottom:var(--s2)}
-select{width:100%;background:var(--field);border:1px solid var(--line);border-radius:6px;height:48px;padding:0 40px 0 var(--s4);font-weight:800;font-size:18px;appearance:none;
+select,.cari-in{width:100%;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;height:48px;padding:0 40px 0 var(--s4);font-weight:800;font-size:18px;appearance:none;
   background-image:linear-gradient(45deg,transparent 50%,var(--mute) 50%),linear-gradient(-45deg,transparent 50%,var(--mute) 50%);
   background-position:calc(100% - 22px) 55%,calc(100% - 16px) 55%;background-size:6px 6px;background-repeat:no-repeat}
+/* Pilihan nama yang bisa dicari: ketik untuk menyaring, daftar melayang di bawah kotak. */
+.cari{position:relative}
+.cari-in::placeholder{color:var(--ink);opacity:1}
+.cari-in:focus::placeholder{color:var(--mute)}
+.cari-in:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cari-in:disabled{opacity:.55}
+.cari-list{position:absolute;z-index:20;left:0;right:0;top:calc(100% + var(--s1));margin:0;padding:var(--s1) 0;list-style:none;max-height:min(320px,50vh);overflow:auto;
+  background:var(--surface);border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 24px color-mix(in srgb,var(--ink) 18%,transparent)}
+.cari-list li{display:flex;align-items:center;min-height:44px;padding:0 var(--s4);font-weight:700;cursor:pointer}
+.cari-list li[aria-selected="true"]{background:color-mix(in srgb,var(--info) 10%,var(--surface))}
+.cari-list li.cur{color:var(--accent)}
+/* Nama disamarkan selama angka kursi diacak (ketuk nomor di peta). */
+.cari-in,.map-info{transition:filter .2s}
+.samar{filter:blur(6px)}
+.cari-list li.none{color:var(--mute);font-weight:500;cursor:default}
 
 .seat{display:grid;grid-template-columns:auto 1fr;align-items:end;gap:var(--s4);margin-top:var(--s5)}
 .seat .num{font:700 clamp(84px,26vw,120px)/.85 var(--mono);color:var(--accent);letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}

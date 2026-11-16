@@ -488,9 +488,15 @@ async function panggilScript(id, tgl) {
     renderMap(no);
     num.classList.remove("dim");
     if (!animasi || matchMedia("(prefers-reduced-motion: reduce)").matches) { num.textContent = pad2(no); return; }
+    // Nama (kotak nama + teks di bawah peta) disamarkan selama angka diacak, lalu muncul bersama nomornya.
+    const samar = [$("nama"), $("mapInfo")];
+    samar.forEach((el) => el.classList.add("samar"));
     let i = 0; const r = setInterval(() => {
       num.textContent = pad2(1 + Math.floor(Math.random() * H.kursi.length));
-      if (++i > 14) { clearInterval(r); num.textContent = pad2(no); num.classList.remove("pop"); void num.offsetWidth; num.classList.add("pop"); }
+      if (++i > 14) {
+        clearInterval(r); num.textContent = pad2(no); num.classList.remove("pop"); void num.offsetWidth; num.classList.add("pop");
+        samar.forEach((el) => el.classList.remove("samar"));
+      }
     }, 60);
   }
 
@@ -512,8 +518,8 @@ async function panggilScript(id, tgl) {
   }
 
   function isiNama() {
-    $("nama").innerHTML = `<option value="">${t("pickOpt")}</option>` +
-      I.anggota.map((p) => `<option${p === nama ? " selected" : ""}>${esc(p)}</option>`).join("");
+    $("nama").placeholder = t("pickOpt");
+    if (document.activeElement !== $("nama")) $("nama").value = nama;
   }
 
   async function buka(tgl) {
@@ -574,7 +580,49 @@ async function panggilScript(id, tgl) {
 
   // ---------- Init ----------
   isiNama();
-  $("nama").onchange = (e) => { nama = e.target.value; store.set("ls-nama", nama); render(); };
+  // ---------- Cari nama (combobox) ----------
+  // Ketik untuk menyaring (tanpa beda huruf besar/kecil & aksen). Panah atas/bawah, Enter memilih, Esc batal.
+  const inNama = $("nama"), listNama = $("namaList");
+  const rata = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  let cocok = [], aktifIdx = -1;
+  function tutupNama() {
+    listNama.hidden = true; inNama.setAttribute("aria-expanded", "false"); inNama.removeAttribute("aria-activedescendant");
+    inNama.value = nama;
+  }
+  function saringNama(q) {
+    const x = rata(q.trim());
+    cocok = x ? I.anggota.filter((p) => rata(p).includes(x)) : I.anggota.slice();
+    aktifIdx = cocok.length ? Math.max(0, cocok.indexOf(nama)) : -1;
+    listNama.innerHTML = cocok.length
+      ? cocok.map((p, i) => `<li id="opsi${i}" role="option" data-i="${i}" class="${p === nama ? "cur" : ""}" aria-selected="${i === aktifIdx}">${esc(p)}</li>`).join("")
+      : `<li class="none" role="option" aria-disabled="true">${t("noMatch")}</li>`;
+    listNama.hidden = false; inNama.setAttribute("aria-expanded", "true");
+    tandaiNama();
+  }
+  function tandaiNama() {
+    listNama.querySelectorAll("li[data-i]").forEach((li) => li.setAttribute("aria-selected", +li.dataset.i === aktifIdx));
+    const li = $("opsi" + aktifIdx);
+    if (li) { inNama.setAttribute("aria-activedescendant", li.id); li.scrollIntoView({ block: "nearest" }); }
+    else inNama.removeAttribute("aria-activedescendant");
+  }
+  function pilihNama(p) {
+    tutupNama();
+    if (p && p !== nama) { nama = p; store.set("ls-nama", nama); render(); }
+    inNama.value = nama; inNama.blur();
+  }
+  inNama.onfocus = () => { inNama.value = ""; saringNama(""); };
+  inNama.oninput = () => saringNama(inNama.value);
+  inNama.onblur = () => { if (!listNama.hidden) tutupNama(); };
+  inNama.onkeydown = (e) => {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      if (listNama.hidden) return saringNama(inNama.value);
+      if (cocok.length) { aktifIdx = (aktifIdx + (e.key === "ArrowDown" ? 1 : -1) + cocok.length) % cocok.length; tandaiNama(); }
+    } else if (e.key === "Enter") { e.preventDefault(); if (cocok[aktifIdx]) pilihNama(cocok[aktifIdx]); }
+    else if (e.key === "Escape") { tutupNama(); inNama.blur(); }
+  };
+  // mousedown (bukan click) supaya pilihan terjadi sebelum kotak kehilangan fokus.
+  listNama.onmousedown = (e) => { const li = e.target.closest("li[data-i]"); e.preventDefault(); if (li) pilihNama(cocok[+li.dataset.i]); };
   // Manual: sel aktif melompat acak di peta kursi (makin lama makin pelan), lalu berhenti di kursi milik
   // pengguna. Hasil (daftar, tombol bagikan) baru terbuka setelah animasi selesai.
   // Hasil tetap sama di semua HP; animasi hanya cara membukanya.

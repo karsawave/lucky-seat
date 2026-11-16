@@ -46,7 +46,7 @@ const TIPE = { html: "text/html", js: "text/javascript", css: "text/css", svg: "
 
   const pg = await ctx.newPage();
   await pg.goto(SITUS + "?s=" + ID);
-  await pg.waitForSelector("#nama option:nth-child(3)", { state: "attached" });
+  await pg.waitForSelector(".ticket:not([aria-busy])");
   await pg.evaluate(() => document.fonts.ready);
   const kotak = (s) => pg.evaluate((s) => { const r = document.querySelector(s).getBoundingClientRect(); return { x: r.x, y: r.y + scrollY, w: r.width, h: r.height }; }, s);
   const tk = await kotak(".ticket");
@@ -55,7 +55,9 @@ const TIPE = { html: "text/html", js: "text/javascript", css: "text/css", svg: "
   const foto = (n) => pg.screenshot({ path: path.join(OUT, n + ".png"), clip: atas });
 
   await foto("t0");
-  await pg.selectOption("#nama", NAMA);
+  // Kotak nama bisa dicari: ketik nama, lalu Enter memilih hasil pertama.
+  await pg.fill("#nama", NAMA);
+  await pg.press("#nama", "Enter");
   await pg.waitForTimeout(200);
   meta.btn = await kotak("#btnDraw");
   await foto("t1");
