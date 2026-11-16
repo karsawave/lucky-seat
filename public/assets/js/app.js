@@ -557,7 +557,35 @@ async function panggilScript(id, tgl) {
   // ---------- Init ----------
   isiNama();
   $("nama").onchange = (e) => { nama = e.target.value; store.set("ls-nama", nama); render(); };
-  $("btnDraw").onclick = () => { store.set(kunciBuka(), "1"); render(); renderKursi(true); };
+  // Manual: sel aktif melompat acak di peta kursi (makin lama makin pelan), lalu berhenti di kursi milik
+  // pengguna. Hasil (daftar, tombol bagikan) baru terbuka setelah animasi selesai.
+  // Hasil tetap sama di semua HP; animasi hanya cara membukanya.
+  let mengacak = false;
+  $("btnDraw").onclick = () => {
+    if (mengacak) return;
+    const no = kursiSaya(), N = I.jumlahKursi;
+    const selesai = () => { mengacak = false; store.set(kunciBuka(), "1"); render(); renderKursi(false); const num = $("num"); num.classList.remove("pop"); void num.offsetWidth; num.classList.add("pop"); };
+    if (!no || matchMedia("(prefers-reduced-motion: reduce)").matches) { selesai(); return; }
+    mengacak = true;
+    $("btnDraw").disabled = $("nama").disabled = true;
+    const num = $("num"), sel = $("map").children;
+    num.classList.remove("dim");
+    let langkah = 0, jeda = 50, akhir = -1;
+    const putar = () => {
+      if (akhir >= 0 && sel[akhir]) sel[akhir].classList.remove("me");
+      const terakhir = jeda > 320;
+      let x = terakhir ? no - 1 : Math.floor(Math.random() * N);
+      if (!terakhir && x === akhir) x = (x + 1) % N;
+      akhir = x;
+      if (sel[x]) sel[x].classList.add("me");
+      num.textContent = pad2(x + 1);
+      if (terakhir) { setTimeout(selesai, 400); return; }
+      langkah++;
+      if (langkah > 12) jeda = Math.round(jeda * 1.18);
+      setTimeout(putar, jeda);
+    };
+    putar();
+  };
   $("map").onclick = (e) => { const b = e.target.closest("button[data-no]"); if (b && !b.disabled) pilihIntip(+b.dataset.no); };
   $("prev").onclick = () => buka(H.prev);
   $("next").onclick = () => buka(H.next);
