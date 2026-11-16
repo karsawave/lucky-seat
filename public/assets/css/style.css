@@ -101,7 +101,8 @@ select,.cari-in{width:100%;color:var(--ink);background:var(--field);border:1px s
 .cari-list li.cur{color:var(--accent)}
 /* Nama disamarkan selama angka kursi diacak (ketuk nomor di peta). */
 .cari-in,.map-info{transition:filter .2s}
-.samar{filter:blur(6px)}
+/* Masuk tanpa transisi (nama tidak sempat terbaca), keluar pelan saat nomor berhenti. */
+.samar{filter:blur(8px);transition:none}
 .cari-list li.none{color:var(--mute);font-weight:500;cursor:default}
 
 .seat{display:grid;grid-template-columns:auto 1fr;align-items:end;gap:var(--s4);margin-top:var(--s5)}
