@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-16
+
 ### Fixed
 
 - Names that start with an initial ("R. Andi Wijaya", "M Rizky") now show the first real name ("Andi", "Rizky") instead of "R.".
