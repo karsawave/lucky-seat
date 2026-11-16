@@ -8,5 +8,6 @@ Jam Undian,07:00,"Jam nomor kursi dibuka, format 07:00, menurut Zona Waktu. Aman
 Zona Waktu,Asia/Jakarta,"Zona jam undian untuk semua anggota: Asia/Jakarta (WIB), Asia/Makassar (WITA), Asia/Jayapura (WIT), zona lain, atau +7. Kosong = WIB. Aman diubah kapan saja."
 Jumlah Kursi,24,"Jumlah kursi bernomor, minimal sama dengan jumlah anggota. Mengubah ini mengubah semua hasil (Opsi 1)."
 Cara Ambil,Manual,Manual = tekan Ambil nomor. Otomatis = langsung tampil di jam undian. Aman diubah kapan saja.
+Daftar Dibuka,,"Khusus mode Manual. Sebelum jam ini (mis. 09:00) tiap anggota hanya melihat kursinya sendiri, lalu daftar lengkap terbuka untuk semua. Kosong = daftar lengkap terbuka setelah kamu ambil nomor. Aman diubah kapan saja."
 Kursi Tetap,,"Anggota yang tidak ikut diacak, format Nama: nomor, pisahkan dengan koma (mis. Vina: 3). Kosong = semua diacak. Mengubah ini mengubah semua hasil (Opsi 1)."
 Kunci,LuckySeat-Q7m4x,"Teks rahasia pengacak, ganti dengan teks acak milik tim. Khusus Opsi 1 (Opsi 2 membuat sendiri). Jangan diubah setelah berjalan."

@@ -139,6 +139,21 @@ const SKENARIO = [
       ["Draw Time", "09:30"], ["Time Zone", "+8"], ["Seats", "9"], ["Fixed Seats", "Vina: 7"], ["Key", "Key-2"], ["Language", "English"]],
   },
   {
+    nama: "Daftar Dibuka 09.30 (ID) di WITA",
+    sekarang: "2026-11-25T01:00:00Z", // 09:00 WITA, Rabu
+    tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "K5",
+    anggota: [["nama"], ["Andi"], ["Budi"], ["Citra"], ["Dewi"]],
+    pengaturan: [["pengaturan", "nilai"], ["Tanggal Mulai", "'2026-11-23"], ["Jam Undian", "07:00"], ["Zona Waktu", "Asia/Makassar"],
+      ["Cara Ambil", "Manual"], ["Daftar Dibuka", "09.30"], ["Kunci", "K5"]],
+  },
+  {
+    nama: "List Opens 16:00 (EN)",
+    sekarang: "2026-11-25T03:00:00Z",
+    tabAnggota: "Members", tabPengaturan: "Settings", kunci: "K6",
+    anggota: [["name"], ["Andi"], ["Budi"], ["Citra"]],
+    pengaturan: [["setting", "value"], ["Start Date", "'2026-11-23"], ["Draw Mode", "Manual"], ["List Opens", "16:00"], ["Key", "K6"]],
+  },
+  {
     nama: "akhir pekan: hari aktif = Jumat sebelumnya",
     sekarang: "2026-11-29T05:00:00Z", // Minggu
     tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "K3",
@@ -167,6 +182,14 @@ test("CODE_GS_API di version.js sama dengan API_VERSION di Code.gs, dan dikirim 
   assert.ok(Number.isInteger(gs.api) && gs.api >= 1, "API_VERSION harus bilangan bulat ≥ 1");
   assert.equal(gs.api, ctx.CODE_GS_API);
   assert.equal(gs.panggil("").info.api, gs.api);
+});
+
+test("Daftar Dibuka dihitung di zona tim; kosong = null", async () => {
+  const fx = SKENARIO.find((s) => /WITA/.test(s.nama)), nowMs = Date.parse(fx.sekarang);
+  const r = await jalankanSheet(fx, nowMs)("2026-11-25");
+  assert.equal(new Date(r.hari.daftarBukaMs).toISOString(), "2026-11-25T01:30:00.000Z"); // 09.30 WITA
+  const dasar = SKENARIO[0];
+  assert.equal(jalankanGs(dasar, Date.parse(dasar.sekarang)).panggil("").hari.daftarBukaMs, null);
 });
 
 for (const fx of SKENARIO) {

@@ -6,7 +6,7 @@
     sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
   const ALIAS = { title: "judul", subtitle: "subjudul", team: "subjudul", drawtime: "jamundian", time: "jamundian",
     timezone: "zonawaktu", drawmode: "caraambil", mode: "caraambil", fixedseats: "kursitetap", startdate: "tanggalmulai",
-    start: "tanggalmulai", workdays: "harikerja", seats: "jumlahkursi", numberofseats: "jumlahkursi", key: "kunci", language: "bahasa" };
+    start: "tanggalmulai", workdays: "harikerja", seats: "jumlahkursi", numberofseats: "jumlahkursi", key: "kunci", language: "bahasa", listopens: "daftardibuka" };
   const GELAR = /^(ir|dr|drs|dra|h|hj|prof|st|mr|mrs|ms|bpk|bapak|ibu|bu|pak)\.?$/i;
   const DAY = 86400000;
   // Pesan error ID/EN (isi sama dengan apps-script/Code.gs). Bahasa mengikuti pilihan di halaman.
@@ -175,7 +175,7 @@
   }
 
   function pengaturan(rows, id) {
-    const S = { judul: "Lucky Seat", subjudul: "", jamUndian: 7, menitUndian: 0, tanggalMulai: "", hariKerja: [1, 2, 3, 4, 5], jumlahKursi: 0, kunci: "", caraAmbil: "manual", kursiTetap: [], zona: "Asia/Jakarta", bahasa: "" };
+    const S = { judul: "Lucky Seat", subjudul: "", jamUndian: 7, menitUndian: 0, tanggalMulai: "", hariKerja: [1, 2, 3, 4, 5], jumlahKursi: 0, kunci: "", caraAmbil: "manual", kursiTetap: [], zona: "Asia/Jakarta", bahasa: "", jamDaftar: null, menitDaftar: 0 };
     rows.forEach(([k = "", v = ""]) => {
       k = k.toLowerCase().replace(/[^a-z]/g, ""); k = ALIAS[k] || k; const s = v.trim().replace(/^'/, "");
       if (!s) return;
@@ -194,6 +194,7 @@
       else if (k === "kunci") S.kunci = s;
       else if (k === "caraambil" || k === "ambil") S.caraAmbil = /oto|auto/i.test(s) ? "otomatis" : "manual";
       else if (k === "kursitetap" || k === "tetap") S.kursiTetap = bacaTetap(s);
+      else if (k === "daftardibuka") { const j = s.split(/[.:]/); S.jamDaftar = +j[0] || 0; S.menitDaftar = +j[1] || 0; }
       else if (k === "zonawaktu" || k === "zona") S.zona = s;
       else if (k === "bahasa") S.bahasa = /^(id|ind|indonesia|bahasa)/i.test(s) ? "id" : "en";
     });
@@ -318,7 +319,9 @@
         zonaOffset: offsetMenit(S.Z, msZona(S.Z, berikut, S.jamUndian, S.menitUndian)),
         anggota: Object.values(namaDepan(anggota)).sort((a, b) => a.localeCompare(b, "id")), jumlahKursi: N,
       },
-      hari: { tgl, nomor, buka, prev: prev >= S.tanggalMulai ? prev : null, next: tgl < aktif ? kerjaDekat(tgl, 1) : tgl === aktif ? berikut : null, kursi },
+      hari: { tgl, nomor, buka, prev: prev >= S.tanggalMulai ? prev : null, next: tgl < aktif ? kerjaDekat(tgl, 1) : tgl === aktif ? berikut : null, kursi,
+        // Daftar Dibuka (mode Manual): saat daftar lengkap terbuka untuk semua orang. null = tidak diatur.
+        daftarBukaMs: S.jamDaftar == null ? null : msZona(S.Z, tgl, S.jamDaftar, S.menitDaftar) },
     };
   }
 

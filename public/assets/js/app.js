@@ -389,7 +389,13 @@ async function panggilScript(id, tgl) {
   // Selama nama yang dipilih belum mengambil, daftar, peta, dan tombol bagikan tetap terkunci.
   const kunciSaya = () => `${kunciBuka()}|${nama}`;
   const terbukaSaya = () => !!H.kursi && (otomatis() || H.tgl < I.aktif || (!!nama && !!store.get(kunciSaya())));
-  const terbuka = terbukaSaya;
+  // Daftar lengkap (peta bernama, daftar, bagikan daftar). Dengan "Daftar Dibuka" (H.daftarBukaMs) di mode Manual:
+  // sebelum jam itu tiap orang hanya melihat kursinya sendiri; setelahnya daftar terbuka untuk semua.
+  // Tanpa pengaturan itu: daftar terbuka setelah orang itu menekan "Ambil nomor".
+  const daftarJam = () => H.daftarBukaMs != null && !otomatis() && H.tgl >= I.aktif;
+  const terbuka = () => !!H.kursi && (daftarJam() ? Date.now() + offset >= H.daftarBukaMs : terbukaSaya());
+  const jamDaftarTxt = () => new Intl.DateTimeFormat(T.lang, { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })
+    .format(new Date(H.daftarBukaMs + (I.zonaOffset || 0) * 60000)).replace(":", ".") + ` ${I.zonaLabel || "WIB"}`;
 
   // ---------- Render ----------
   function render() {
@@ -408,13 +414,15 @@ async function panggilScript(id, tgl) {
     $("btnShare").disabled = $("btnDl").disabled = !ada;
     $("btnKartu").disabled = !terbukaSaya() || !kursiSaya();
     // Tombol nonaktif selalu memberi alasan (tooltip) → kursor "dilarang" tidak membingungkan.
-    const kunci = !H.kursi ? t("opensAt", { jam: jamTxt() }) : t("pressDraw");
+    const kunci = !H.kursi ? t("opensAt", { jam: jamTxt() }) : daftarJam() && terbukaSaya() ? t("listOpensAt", { jam: jamDaftarTxt() }) : t("pressDraw");
     $("btnShare").title = $("btnDl").title = ada ? "" : kunci;
-    $("btnKartu").title = !ada ? kunci : !kursiSaya() ? t("pickFirst") : !terbukaSaya() ? t("pressDraw") : "";
+    $("btnKartu").title = !H.kursi ? kunci : !kursiSaya() ? t("pickFirst") : !terbukaSaya() ? t("pressDraw") : "";
+    daftarTadi = ada;
     $("prev").title = H.prev ? "" : t("firstDraw");
     $("next").title = H.next ? "" : t("notYet");
     document.querySelectorAll(".seg[data-sort] button").forEach((b) => (b.title = ada ? "" : kunci));
-    $("aturan").textContent = t(otomatis() ? "ruleAuto" : "ruleManual", { jam: jamTxt(true) });
+    $("aturan").textContent = t(otomatis() ? "ruleAuto" : "ruleManual", { jam: jamTxt(true) })
+      + (daftarJam() ? " " + t("ruleList", { jam: jamDaftarTxt() }) : "");
     history.replaceState(null, "", `${location.pathname}?s=${ID}` + (H.tgl === I.aktif ? "" : "#" + H.tgl));
     renderKursi(false);
     renderDaftar();
@@ -446,7 +454,7 @@ async function panggilScript(id, tgl) {
       const cls = [i + 1 === no ? "me" : "", k && k.tetap ? "t" : "", i + 1 === intip ? "peek" : ""].filter(Boolean).join(" ");
       return `<button type="button" data-no="${i + 1}" class="${cls}"${buka ? ` aria-label="${esc(teksKursi(k))}" aria-pressed="${i + 1 === intip}"` : " disabled"}>${pad2(i + 1)}</button>`;
     }).join("");
-    $("mapInfo").textContent = !buka ? "" : intip ? teksKursi(H.kursi[intip - 1]) : no ? teksKursi(H.kursi[no - 1]) : t("mapHint");
+    $("mapInfo").textContent = !buka ? (no ? teksKursi(H.kursi[no - 1]) : "") : intip ? teksKursi(H.kursi[intip - 1]) : no ? teksKursi(H.kursi[no - 1]) : t("mapHint");
   }
   function pilihIntip(no) {
     const k = H.kursi[no - 1];
@@ -489,8 +497,11 @@ async function panggilScript(id, tgl) {
   // Jumlah baris selalu = jumlah kursi (terkunci → baris placeholder; urut nama → kursi kosong di akhir).
   function renderDaftar() {
     if (!terbuka()) {
-      $("daftar").innerHTML = Array.from({ length: I.jumlahKursi }, (_, i) =>
-        `<li class="ph" aria-hidden="true"><span class="no">${pad2(i + 1)}</span><span class="nm" style="width:${40 + (i * 37) % 31}%"></span></li>`).join("");
+      // Sebelum Daftar Dibuka: hanya baris milik sendiri yang terlihat (bila sudah mengambil).
+      const saya = terbukaSaya() ? kursiSaya() : null;
+      $("daftar").innerHTML = Array.from({ length: I.jumlahKursi }, (_, i) => i + 1 === saya
+        ? `<li class="me"><span class="no">${pad2(saya)}</span><span class="nm">${esc(nama)}</span>${H.kursi[i].tetap ? `<span class="tag">${t("fixed")}</span>` : ""}</li>`
+        : `<li class="ph" aria-hidden="true"><span class="no">${pad2(i + 1)}</span><span class="nm" style="width:${40 + (i * 37) % 31}%"></span></li>`).join("");
       return;
     }
     let L = H.kursi;
@@ -520,8 +531,10 @@ async function panggilScript(id, tgl) {
   }
 
   // ---------- Countdown ----------
-  let memuatUlang = false;
+  let memuatUlang = false, daftarTadi = false;
   function tick() {
+    // Daftar Dibuka tercapai saat halaman terbuka → tampilkan daftar tanpa muat ulang.
+    if (H.kursi && !mengacak && terbuka() !== daftarTadi) { render(); if (daftarTadi) toast(t("listOpened")); }
     const s = Math.max(0, Math.floor((I.bukaBerikutMs - (Date.now() + offset)) / 1000));
     const h = Math.floor(s / 3600);
     $("cd").textContent = (h >= 24 ? `${Math.floor(h / 24)}${t("dayUnit")} ` : "") + `${pad2(h % 24)}:${pad2(Math.floor(s / 60) % 60)}:${pad2(s % 60)}`;

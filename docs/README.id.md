@@ -170,6 +170,7 @@ Semua pengaturan ada di tab **`Pengaturan`**, kolom B:
 | **Zona Waktu** | `Asia/Jakarta` | WIB, `Asia/Makassar` (WITA), `Asia/Jayapura` (WIT), atau `+7` | ✅ Kapan saja |
 | **Jumlah Kursi** | `24` | Minimal sama dengan jumlah anggota | ⚠️ Mengubah semua hasil* |
 | **Cara Ambil** | `Manual` | `Manual` = tekan tombol, `Otomatis` = langsung tampil | ✅ Kapan saja |
+| **Daftar Dibuka** | `09:00` | Mode Manual: sebelum jam ini tiap anggota hanya melihat kursinya sendiri. Kosong = daftar lengkap terbuka setelah kamu ambil nomor | ✅ Kapan saja |
 | **Kursi Tetap** | `Vina: 3, Budi: 7` | Anggota yang tidak ikut diacak | ⚠️ Mengubah semua hasil* |
 | **Kunci** | `TimKu-x8Qp2` | Teks rahasia pengacak (Opsi 1 saja) | ⛔ Jangan setelah berjalan |
 

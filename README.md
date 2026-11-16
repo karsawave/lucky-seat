@@ -170,6 +170,7 @@ All settings live in the **`Settings`** tab, column B:
 | **Time Zone** | `Asia/Jakarta` | e.g. `Asia/Jakarta`, `Europe/London`, or `+7` | ✅ Anytime |
 | **Seats** | `24` | At least the number of members | ⚠️ Changes all results* |
 | **Draw Mode** | `Manual` | `Manual` = press a button, `Automatic` = shown right at draw time | ✅ Anytime |
+| **List Opens** | `09:00` | Manual mode: before this time each member sees only their own seat. Empty = the full list opens after you draw | ✅ Anytime |
 | **Fixed Seats** | `Vina: 3, Budi: 7` | Members left out of the draw | ⚠️ Changes all results* |
 | **Key** | `MyTeam-x8Qp2` | Secret text for the shuffle (Option 1 only) | ⛔ Not after it starts |
 

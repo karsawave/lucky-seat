@@ -19,7 +19,7 @@
 
 // Versi API skrip ini (bilangan bulat). Naikkan HANYA bila isi Code.gs berubah dan admin perlu deploy ulang.
 // Website meminta minimal CODE_GS_API (version.js); bila lebih kecil, admin melihat peringatan deploy ulang.
-const API_VERSION = 1;
+const API_VERSION = 2;
 const TAB_ANGGOTA = 'Anggota';
 const TAB_PENGATURAN = 'Pengaturan';
 const TAB_RIWAYAT = 'Riwayat';
@@ -30,7 +30,7 @@ const HARI = { minggu: 0, senin: 1, selasa: 2, rabu: 3, kamis: 4, jumat: 5, sabt
   sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
 const ALIAS = { title: 'judul', subtitle: 'subjudul', team: 'subjudul', drawtime: 'jamundian', time: 'jamundian',
   timezone: 'zonawaktu', drawmode: 'caraambil', mode: 'caraambil', fixedseats: 'kursitetap', startdate: 'tanggalmulai',
-  start: 'tanggalmulai', workdays: 'harikerja', seats: 'jumlahkursi', numberofseats: 'jumlahkursi', key: 'kunci', language: 'bahasa' };
+  start: 'tanggalmulai', workdays: 'harikerja', seats: 'jumlahkursi', numberofseats: 'jumlahkursi', key: 'kunci', language: 'bahasa', listopens: 'daftardibuka' };
 // Bahasa pesan: ?lang= dari website, lalu baris "Bahasa" di Pengaturan, default English.
 let LANG = '';
 const PESAN = {
@@ -147,7 +147,9 @@ function handle(p) {
       zonaLabel: labelZona(new Date(bukaBerikutMs)), zonaOffset: offsetMenit(new Date(bukaBerikutMs)),
       anggota: Object.values(namaDepan(anggota)).sort(), jumlahKursi: N,
     },
-    hari: { tgl: tgl, nomor: nomor, buka: buka, prev: prev >= S.tanggalMulai ? prev : null, next: tgl < aktif ? kerjaDekat(tgl, 1) : (tgl === aktif ? berikut : null), kursi: kursi },
+    hari: { tgl: tgl, nomor: nomor, buka: buka, prev: prev >= S.tanggalMulai ? prev : null, next: tgl < aktif ? kerjaDekat(tgl, 1) : (tgl === aktif ? berikut : null), kursi: kursi,
+      // Daftar Dibuka (mode Manual): saat daftar lengkap terbuka untuk semua orang. null = tidak diatur.
+      daftarBukaMs: S.jamDaftar == null ? null : msZona(tgl, S.jamDaftar, S.menitDaftar) },
   };
 }
 
@@ -240,7 +242,7 @@ function aturTetap(list, N, dariPengaturan) {
 }
 
 function pengaturan() {
-  const S = { judul: 'Lucky Seat', subjudul: '', jamUndian: 7, menitUndian: 0, tanggalMulai: '', hariKerja: [1, 2, 3, 4, 5], jumlahKursi: 0, caraAmbil: 'manual', kursiTetap: [], bahasa: '' };
+  const S = { judul: 'Lucky Seat', subjudul: '', jamUndian: 7, menitUndian: 0, tanggalMulai: '', hariKerja: [1, 2, 3, 4, 5], jumlahKursi: 0, caraAmbil: 'manual', kursiTetap: [], bahasa: '', jamDaftar: null, menitDaftar: 0 };
   const sh = SpreadsheetApp.getActive().getSheetByName(TAB_PENGATURAN) || SpreadsheetApp.getActive().getSheetByName('Settings');
   if (sh && sh.getLastRow() >= 1) {
     const vals = sh.getRange(1, 1, sh.getLastRow(), 2).getValues();
@@ -267,6 +269,10 @@ function pengaturan() {
       } else if (k === 'jumlahkursi' || k === 'kursi') S.jumlahKursi = parseInt(s, 10) || 0;
       else if (k === 'caraambil' || k === 'ambil') S.caraAmbil = /oto|auto/i.test(s) ? 'otomatis' : 'manual';
       else if (k === 'kursitetap' || k === 'tetap') S.kursiTetap = bacaTetap(s);
+      else if (k === 'daftardibuka') {
+        if (v instanceof Date) { S.jamDaftar = +fmtSel(v, 'H'); S.menitDaftar = +fmtSel(v, 'm'); }
+        else { const j = s.split(/[.:]/); S.jamDaftar = +j[0] || 0; S.menitDaftar = +j[1] || 0; }
+      }
       else if (k === 'zonawaktu' || k === 'zona') S.zona = s;
       else if (k === 'bahasa') S.bahasa = /^(id|ind|indonesia|bahasa)/i.test(s) ? 'id' : 'en';
     });

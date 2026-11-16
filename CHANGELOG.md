@@ -6,6 +6,14 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- New setting `Daftar Dibuka` / `List Opens` (Manual mode). Before this time each member sees only their own seat after drawing; at this time the full list opens for everyone, without a reload. Leave it empty to keep the current behaviour.
+
+### Apps Script
+
+- Apps Script: create a New version in Manage deployments to use `List Opens` with Option 2.
+
 ## [1.1.8] - 2026-11-16
 
 ### Fixed
