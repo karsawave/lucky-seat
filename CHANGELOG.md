@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-11-16
+
 ### Removed
 
 - The "Admin" link in the footer of the draw page, so members no longer see it. Admins open the setup screen by adding `?admin` to the site address.
