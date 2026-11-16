@@ -6,6 +6,10 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- After the `List Opens` time, tapping a seat or pressing "Draw number" shows the name and number at once, with no shuffle or blur.
+
 ## [1.6.1] - 2026-11-16
 
 ### Fixed

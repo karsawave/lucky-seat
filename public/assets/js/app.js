@@ -393,6 +393,8 @@ async function panggilScript(id, tgl) {
   // sebelum jam itu tiap orang hanya melihat kursinya sendiri; setelahnya daftar terbuka untuk semua.
   // Tanpa pengaturan itu: daftar terbuka setelah orang itu menekan "Ambil nomor".
   const daftarJam = () => H.daftarBukaMs != null && !otomatis() && H.tgl >= I.aktif;
+  // Setelah Daftar Dibuka lewat, semua nama sudah terlihat → tanpa animasi acak & efek samar.
+  const tanpaAnimasi = () => matchMedia("(prefers-reduced-motion: reduce)").matches || (daftarJam() && Date.now() + offset >= H.daftarBukaMs);
   const terbuka = () => !!H.kursi && (daftarJam() ? Date.now() + offset >= H.daftarBukaMs : terbukaSaya());
   const jamDaftarTxt = () => new Intl.DateTimeFormat(T.lang, { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })
     .format(new Date(H.daftarBukaMs + (I.zonaOffset || 0) * 60000)).replace(":", ".") + ` ${I.zonaLabel || "WIB"}`;
@@ -487,7 +489,7 @@ async function panggilScript(id, tgl) {
     seat.classList.add("mode-info");
     renderMap(no);
     num.classList.remove("dim");
-    if (!animasi || matchMedia("(prefers-reduced-motion: reduce)").matches) { num.textContent = pad2(no); return; }
+    if (!animasi || tanpaAnimasi()) { num.textContent = pad2(no); return; }
     // Nama (kotak nama + teks di bawah peta) disamarkan selama angka diacak, lalu muncul bersama nomornya.
     const samar = [$("nama"), $("mapInfo")];
     samar.forEach((el) => el.classList.add("samar"));
@@ -631,7 +633,7 @@ async function panggilScript(id, tgl) {
     if (mengacak) return;
     const no = kursiSaya(), N = I.jumlahKursi;
     const selesai = () => { mengacak = false; store.set(kunciBuka(), "1"); store.set(kunciSaya(), "1"); render(); renderKursi(false); const num = $("num"); num.classList.remove("pop"); void num.offsetWidth; num.classList.add("pop"); };
-    if (!no || matchMedia("(prefers-reduced-motion: reduce)").matches) { selesai(); return; }
+    if (!no || tanpaAnimasi()) { selesai(); return; }
     mengacak = true;
     $("btnDraw").disabled = $("nama").disabled = true;
     const num = $("num"), sel = $("map").children;
