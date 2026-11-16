@@ -19,7 +19,7 @@
 
 // Versi API skrip ini (bilangan bulat). Naikkan HANYA bila isi Code.gs berubah dan admin perlu deploy ulang.
 // Website meminta minimal CODE_GS_API (version.js); bila lebih kecil, admin melihat peringatan deploy ulang.
-const API_VERSION = 2;
+const API_VERSION = 3;
 const TAB_ANGGOTA = 'Anggota';
 const TAB_PENGATURAN = 'Pengaturan';
 const TAB_RIWAYAT = 'Riwayat';
@@ -301,7 +301,8 @@ function tabRiwayat() {
 // ---------- Nama depan (unik) ----------
 function namaDepan(list) {
   const uniq = list.filter((n, i) => list.indexOf(n) === i);
-  const kata = (n) => n.split(' ').filter((w) => !GELAR.test(w));
+  // Gelar dibuang; inisial di depan ("R. Andi", "M Rizky") dilewati selama masih ada kata lain.
+  const kata = (n) => { const k = n.split(' ').filter((w) => !GELAR.test(w)); while (k.length > 1 && /^[a-z]\.?$/i.test(k[0])) k.shift(); return k; };
   const out = {};
   uniq.forEach((n) => (out[n] = kata(n)[0] || n));
   // Bila nama depan bentrok, tambahkan inisial kata berikutnya: "Budi S."

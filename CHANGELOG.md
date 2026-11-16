@@ -6,6 +6,14 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Names that start with an initial ("R. Andi Wijaya", "M Rizky") now show the first real name ("Andi", "Rizky") instead of "R.".
+
+### Apps Script
+
+- Apps Script: create a New version in Manage deployments to get the name fix with Option 2.
+
 ## [1.2.0] - 2026-11-16
 
 ### Added

@@ -154,6 +154,13 @@ const SKENARIO = [
     pengaturan: [["setting", "value"], ["Start Date", "'2026-11-23"], ["Draw Mode", "Manual"], ["List Opens", "16:00"], ["Key", "K6"]],
   },
   {
+    nama: "inisial di depan nama dilewati (R. Andi, M Rizky, Dr. A. Budi)",
+    sekarang: "2026-11-25T03:00:00Z",
+    tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "K7",
+    anggota: [["nama"], ["R. Andi Wijaya"], ["M Rizky"], ["Dr. A. Budi Santoso"], ["Siti R."], ["R."]],
+    pengaturan: [["pengaturan", "nilai"], ["Tanggal Mulai", "'2026-11-23"], ["Kunci", "K7"]],
+  },
+  {
     nama: "akhir pekan: hari aktif = Jumat sebelumnya",
     sekarang: "2026-11-29T05:00:00Z", // Minggu
     tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "K3",
@@ -190,6 +197,12 @@ test("Daftar Dibuka dihitung di zona tim; kosong = null", async () => {
   assert.equal(new Date(r.hari.daftarBukaMs).toISOString(), "2026-11-25T01:30:00.000Z"); // 09.30 WITA
   const dasar = SKENARIO[0];
   assert.equal(jalankanGs(dasar, Date.parse(dasar.sekarang)).panggil("").hari.daftarBukaMs, null);
+});
+
+test("nama depan melewati inisial di depan", async () => {
+  const fx = SKENARIO.find((s) => /inisial/.test(s.nama));
+  const r = await jalankanSheet(fx, Date.parse(fx.sekarang))("");
+  assert.deepEqual([...r.info.anggota].sort(), ["Andi", "Budi", "R.", "Rizky", "Siti"]);
 });
 
 for (const fx of SKENARIO) {

@@ -206,7 +206,8 @@
 
   function namaDepan(list) {
     const uniq = list.filter((n, i) => list.indexOf(n) === i);
-    const kata = (n) => n.split(" ").filter((w) => !GELAR.test(w));
+    // Gelar dibuang; inisial di depan ("R. Andi", "M Rizky") dilewati selama masih ada kata lain.
+    const kata = (n) => { const k = n.split(" ").filter((w) => !GELAR.test(w)); while (k.length > 1 && /^[a-z]\.?$/i.test(k[0])) k.shift(); return k; };
     const out = {};
     uniq.forEach((n) => (out[n] = kata(n)[0] || n));
     const hitung = () => { const c = {}; Object.values(out).forEach((v) => (c[v] = (c[v] || 0) + 1)); return c; };
