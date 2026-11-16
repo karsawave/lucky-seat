@@ -71,6 +71,8 @@ You need Node ≥ 18 with Playwright and Chromium, ffmpeg, and python3 with nump
 
 Publish finished videos in GitHub Releases, not in the repo: they run to several MB each.
 
+To make a new version in another style while keeping the same standards, use the prompt in [`prompt-template.md`](prompt-template.md) (Indonesian).
+
 ---
 
 **Bahasa Indonesia, singkat:** semua versi video dibuat dari `promo.html`. Jalankan `capture.js id` atau `capture.js en` untuk mengambil layar asli, lalu `render.js` dengan `--lang`, `--ratio` dan `--cut`. Musik latar dibuat oleh `music.py` (gaya `marimba`). Hasilnya ada di `build/` dan tidak masuk git.
