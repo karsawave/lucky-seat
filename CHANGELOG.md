@@ -6,6 +6,10 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Manual mode: the seat list, seat map and share buttons stay locked until the selected person presses "Draw number". Before, they opened as soon as anyone on the same phone had drawn.
+
 ## [1.1.7] - 2026-11-16
 
 ### Fixed

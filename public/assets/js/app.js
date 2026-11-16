@@ -385,11 +385,11 @@ async function panggilScript(id, tgl) {
   const otomatis = () => I.caraAmbil === "otomatis";
   // Cara Ambil (tab Pengaturan): Otomatis → hasil langsung terlihat di jam undian.
   // Manual → hasil (kursi pribadi, daftar, tombol bagikan) terbuka setelah "Ambil nomor" ditekan di perangkat ini.
-  const terbuka = () => !!H.kursi && (otomatis() || H.tgl < I.aktif || !!store.get(kunciBuka()));
-  // Tanda per nama: di HP yang dipakai bergantian, tiap orang tetap menekan "Ambil nomor" (dan melihat animasinya) sendiri.
-  // Daftar tetap terbuka begitu ada satu orang yang sudah mengambil di HP ini.
+  // Tanda per tanggal + nama: di HP yang dipakai bergantian, tiap orang menekan "Ambil nomor" sendiri.
+  // Selama nama yang dipilih belum mengambil, daftar, peta, dan tombol bagikan tetap terkunci.
   const kunciSaya = () => `${kunciBuka()}|${nama}`;
-  const terbukaSaya = () => !!H.kursi && (otomatis() || H.tgl < I.aktif || !!store.get(kunciSaya()));
+  const terbukaSaya = () => !!H.kursi && (otomatis() || H.tgl < I.aktif || (!!nama && !!store.get(kunciSaya())));
+  const terbuka = terbukaSaya;
 
   // ---------- Render ----------
   function render() {
