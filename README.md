@@ -60,6 +60,9 @@ No app to install, no accounts, and no server of your own.
 | 🔁 No repeats | Where possible, nobody gets the same seat as on the previous workday. |
 | ⏰ Draw time | Seat numbers open at a set time, in your team's time zone. |
 | 📌 Fixed seats | Give specific members a fixed seat that isn't part of the draw. |
+| 🎁 Personal reveal | In Manual mode, each member presses **Draw number** to reveal their own seat. With **List Opens**, the full list stays hidden until a set time. |
+| 🔒 Short names | The site shows only the first name plus initials (`Ahmad R. H.`), or a nickname you choose. |
+| 🔎 Name search | Type a few letters to find your name in a long list. |
 | 💬 Share to WhatsApp | Send the seat list or a personal card to the group in one click. |
 | 🖼️ Save as image | Download the seat list as a JPG. |
 | 🌐 Two languages | English (default) and Indonesian, switchable anytime. |
@@ -181,9 +184,12 @@ The exact setting names are in the `Settings-EN.csv` template, with a descriptio
 ## How to use it (for members)
 
 1. Open the **invite link** from your admin in the WhatsApp group.
-2. Pick **your name** from the list.
-3. Press **Draw number** (or the number shows right away if the admin chose *Automatic* mode).
+2. Tap **Your name** and type a few letters to find yourself, then tap your name.
+3. Press **Draw number**. The seat map shuffles and stops on your seat. In *Automatic* mode the number shows right away.
 4. Check where your seat is on the mini map, and share your card if you like.
+5. If the admin set **List Opens**, the full seat list opens at that time for everyone. Before that, you see only your own seat.
+
+Sharing one phone? Each person picks their own name and presses **Draw number**. The phone remembers who has drawn, per day.
 
 > 💡 Save the invite link (for example, add it to your phone's home screen) so it's easy to open every day.
 
@@ -275,6 +281,9 @@ lucky-seat/
 | **Apps Script returns no data** | Access must be **Anyone** and the URL must end in `/exec`. |
 | **Edited `Code.gs` but nothing changed** | **Manage deployments** → pencil icon → **New version** → **Deploy**. |
 | **CSV import failed** | Download `Settings-paste-EN.tsv`, open it in Notepad, copy everything, and paste into cell A1. |
+| **The seat list shows gray rows** | In Manual mode, press **Draw number** first. If **List Opens** is set, the full list opens at that time. |
+| **A seat says "empty"** | **Seats** is higher than the number of members. Leave **Seats** empty, or set it to the member count. |
+| **My name looks different after an update** | Names now show as first name plus initials, or the nickname. Pick your name again once. |
 | **Blank page when opened from a file** | Run it through a local server or GitHub Pages (see above). |
 
 ## FAQ
@@ -287,6 +296,9 @@ No. They open the invite link and pick their name.
 
 **What if someone new joins?**
 Add their name to the `Members` tab. The invite link stays the same.
+
+**Which names does the site show?**
+Only the first name plus the initial of each following word (`Ahmad Rofiq Hidayat` shows as `Ahmad R. H.`). Titles such as `Dr.` and leading initials such as `R.` are skipped. Fill the optional `nickname` column to show a nickname instead. With Option 1, anyone who opens the shared sheet can still read the full names. With Option 2, full names never leave the sheet.
 
 **Can the draw be rigged?**
 Results are calculated from the secret **Key** and the date, so they're the same for everyone who opens the link and can't be re-rolled from a member's phone.

@@ -60,6 +60,9 @@ Tidak perlu install aplikasi, tidak perlu akun, dan tidak perlu server sendiri.
 | 🔁 Tidak mengulang | Sebisa mungkin tidak ada yang dapat kursi sama dengan hari kerja sebelumnya. |
 | ⏰ Jam undian | Nomor dibuka otomatis pada jam tertentu, sesuai zona waktu tim. |
 | 📌 Kursi tetap | Anggota tertentu bisa diberi kursi tetap (tidak ikut diacak). |
+| 🎁 Buka sendiri | Di mode Manual, tiap anggota menekan **Ambil nomor** untuk membuka kursinya sendiri. Dengan **Daftar Dibuka**, daftar lengkap tetap tersembunyi sampai jam tertentu. |
+| 🔒 Nama singkat | Situs hanya menampilkan nama depan + inisial (`Ahmad R. H.`), atau nama panggilan pilihanmu. |
+| 🔎 Cari nama | Ketik beberapa huruf untuk menemukan namamu di daftar panjang. |
 | 💬 Bagikan ke WhatsApp | Kirim daftar kursi atau kartu pribadi ke grup dengan satu klik. |
 | 🖼️ Simpan gambar | Unduh daftar kursi sebagai gambar JPG. |
 | 🌐 Dua bahasa | English (bawaan) dan Indonesia, bisa diganti kapan saja. |
@@ -180,9 +183,12 @@ Semua pengaturan ada di tab **`Pengaturan`**, kolom B:
 ## Cara pakai (untuk anggota)
 
 1. Buka **link undangan** dari admin di grup WhatsApp.
-2. Pilih **nama kamu** di daftar.
-3. Tekan **Ambil nomor** (atau nomor langsung tampil jika admin memilih mode *Otomatis*).
+2. Ketuk **Nama kamu**, ketik beberapa huruf untuk mencari, lalu ketuk namamu.
+3. Tekan **Ambil nomor**. Peta kursi diacak lalu berhenti di kursimu. Di mode *Otomatis*, nomor langsung tampil.
 4. Lihat posisi kursi di peta kecil, dan bagikan kartumu bila perlu.
+5. Bila admin mengisi **Daftar Dibuka**, daftar kursi lengkap terbuka untuk semua pada jam itu. Sebelumnya, kamu hanya melihat kursimu sendiri.
+
+Satu HP dipakai bergantian? Tiap orang memilih namanya sendiri lalu menekan **Ambil nomor**. HP mencatat siapa yang sudah mengambil, per hari.
 
 > 💡 Simpan link undangan (misalnya tambahkan ke layar utama HP) supaya mudah dibuka setiap hari.
 
@@ -274,6 +280,9 @@ lucky-seat/
 | **Apps Script tidak memberi data** | Akses harus **Siapa saja** dan URL berakhiran `/exec`. |
 | **Mengubah `Code.gs` tetapi tidak berefek** | **Kelola deployment** → ikon pensil → **Versi baru** → **Terapkan**. |
 | **Impor CSV gagal** | Unduh `Settings-paste-ID.tsv`, buka di Notepad, salin semua, tempel di sel A1. |
+| **Daftar kursi berupa baris abu-abu** | Di mode Manual, tekan **Ambil nomor** dulu. Bila **Daftar Dibuka** diisi, daftar lengkap terbuka pada jam itu. |
+| **Ada kursi bertulisan "kosong"** | **Jumlah Kursi** lebih besar dari jumlah anggota. Kosongkan **Jumlah Kursi**, atau isi sama dengan jumlah anggota. |
+| **Namaku berubah setelah pembaruan** | Nama sekarang tampil sebagai nama depan + inisial, atau nama panggilan. Pilih namamu sekali lagi. |
 | **Halaman kosong saat dibuka dari file** | Jalankan lewat server lokal atau GitHub Pages (lihat di atas). |
 
 ## FAQ
@@ -286,6 +295,9 @@ Tidak. Cukup buka link undangan dan pilih nama.
 
 **Bagaimana jika ada anggota baru?**
 Tambahkan nama di tab `Anggota`. Link undangan tetap sama.
+
+**Nama apa yang tampil di situs?**
+Hanya nama depan + inisial tiap kata berikutnya (`Ahmad Rofiq Hidayat` tampil sebagai `Ahmad R. H.`). Gelar seperti `Dr.` dan inisial di depan seperti `R.` dilewati. Isi kolom opsional `panggilan` untuk menampilkan nama panggilan. Di Opsi 1, siapa pun yang membuka sheet yang dibagikan tetap bisa membaca nama lengkap. Di Opsi 2, nama lengkap tidak pernah keluar dari sheet.
 
 **Apakah hasil undian bisa dicurangi?**
 Hasil dihitung dari **Kunci** rahasia dan tanggal, sehingga sama untuk semua orang yang membuka dan tidak bisa diatur ulang dari HP anggota.
