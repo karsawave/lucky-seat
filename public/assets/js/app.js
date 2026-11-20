@@ -91,7 +91,7 @@ async function panggilScript(id, tgl) {
   const ikon = (k) => `<svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IKON[k]}</svg>`;
   const tautan = (href, k, teks) => `<a href="${esc(href)}">${ikon(k)}<span>${esc(teks)}</span></a>`;
   const kaki = (kiri = "", kanan = "") =>
-    `<div class="foot"><span>${kiri}</span><span>${kanan}</span></div><p class="ver" id="ver">Lucky Seat v${esc(APP_VERSION)}</p>`;
+    `<div class="foot"><span>${kiri}</span><span>${kanan}</span></div><p class="ver" id="ver">Lucky Seat v${esc(APP_VERSION)}</p><p class="credit"><span>${esc(t("madeBy"))}</span> <a href="https://karsawave.com" target="_blank" rel="noopener">Karsawave.com</a><span aria-hidden="true">·</span><a href="https://github.com/karsawave/lucky-seat" target="_blank" rel="noopener" aria-label="GitHub"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.29-1.69-1.29-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.27 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg><span>GitHub</span></a></p>`;
   // Tujuan "Halaman undian" dari layar admin: sumber terakhir di perangkat ini, atau halaman awal.
   const keUndian = (id) => tautan(id ? `${dasar()}?s=${id}` : dasar(), "back", t("backToDraw"));
 

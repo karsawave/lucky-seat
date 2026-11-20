@@ -6,6 +6,9 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Footer credit: "Made by Karsawave.com" and a GitHub link to the source code.
+
 ## [1.8.2] - 2026-11-20
 
 ### Changed
