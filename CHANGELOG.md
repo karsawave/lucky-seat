@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-11-20
+
 ### Added
 
 - `Skipped Seats` / `Kursi Dilewati` setting: seat numbers left out of the draw (e.g. `5, 9, 12-14`). They stay empty and show as "not in use". Without `Seats`, enough seats are added to fit every member. Setting it changes all results in Option 1.
