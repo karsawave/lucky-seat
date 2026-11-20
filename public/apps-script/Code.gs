@@ -19,7 +19,7 @@
 
 // Versi API skrip ini (bilangan bulat). Naikkan HANYA bila isi Code.gs berubah dan admin perlu deploy ulang.
 // Website meminta minimal CODE_GS_API (version.js); bila lebih kecil, admin melihat peringatan deploy ulang.
-const API_VERSION = 6;
+const API_VERSION = 7;
 const TAB_ANGGOTA = 'Anggota';
 const TAB_PENGATURAN = 'Pengaturan';
 const TAB_RIWAYAT = 'Riwayat';
@@ -30,7 +30,8 @@ const HARI = { minggu: 0, senin: 1, selasa: 2, rabu: 3, kamis: 4, jumat: 5, sabt
   sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
 const ALIAS = { title: 'judul', subtitle: 'subjudul', team: 'subjudul', drawtime: 'jamundian', time: 'jamundian',
   timezone: 'zonawaktu', drawmode: 'caraambil', mode: 'caraambil', fixedseats: 'kursitetap', startdate: 'tanggalmulai',
-  start: 'tanggalmulai', workdays: 'harikerja', seats: 'jumlahkursi', numberofseats: 'jumlahkursi', key: 'kunci', language: 'bahasa', listopens: 'daftardibuka' };
+  start: 'tanggalmulai', workdays: 'harikerja', seats: 'jumlahkursi', numberofseats: 'jumlahkursi', key: 'kunci', language: 'bahasa', listopens: 'daftardibuka',
+  skippedseats: 'kursidilewati', skipseats: 'kursidilewati' };
 // Bahasa pesan: ?lang= dari website, lalu baris "Bahasa" di Pengaturan, default English.
 let LANG = '';
 const PESAN = {
@@ -48,6 +49,10 @@ const PESAN = {
     "fixedConflict": "Kursi tetap {nama} berbeda di tab Anggota ({a}) dan Pengaturan ({b}).",
     "fixedTooHigh": "Kursi tetap {no} ({nama}) melebihi jumlah kursi {n}.",
     "fixedDup": "Kursi tetap {no} dipakai dua orang ({a} & {b}).",
+    "fixedSkipped": "Kursi tetap {no} ({nama}) ada di \"Kursi Dilewati\".",
+    "skipUnreadable": "\"Kursi Dilewati\" tidak terbaca: \"{x}\". Contoh: 5, 9, 12-14",
+    "skipTooHigh": "Kursi dilewati {no} melebihi jumlah kursi {n}.",
+    "tooFewFree": "Anggota {a} orang, kursi yang diundi hanya {n} ({x} dilewati). Perbesar \"Jumlah Kursi\" atau kurangi \"Kursi Dilewati\".",
     "scriptNoNet": "Tidak bisa terhubung. Cek internet, atau pastikan Web App di-deploy dengan akses \"Siapa saja\".",
     "scriptNoData": "Server tidak memberi data. Pastikan link Web App benar & akses \"Siapa saja\".",
     "serverError": "Terjadi kesalahan di server."
@@ -66,6 +71,10 @@ const PESAN = {
     "fixedConflict": "Fixed seat for {nama} differs between the Members tab ({a}) and Settings ({b}).",
     "fixedTooHigh": "Fixed seat {no} ({nama}) is higher than the number of seats {n}.",
     "fixedDup": "Fixed seat {no} is used by two people ({a} & {b}).",
+    "fixedSkipped": "Fixed seat {no} ({nama}) is in \"Skipped Seats\".",
+    "skipUnreadable": "Can't read \"Skipped Seats\": \"{x}\". Example: 5, 9, 12-14",
+    "skipTooHigh": "Skipped seat {no} is higher than the number of seats {n}.",
+    "tooFewFree": "{a} members but only {n} seats to draw ({x} skipped). Increase \"Seats\" or remove some \"Skipped Seats\".",
     "scriptNoNet": "Can't connect. Check your internet, or make sure the Web App is deployed with access \"Anyone\".",
     "scriptNoData": "The server returned no data. Make sure the Web App link is right and access is \"Anyone\".",
     "serverError": "Something went wrong on the server."
@@ -100,9 +109,10 @@ function handle(p) {
   if (!anggota.length) throw E('membersEmpty');
   const ganda = anggota.filter((n, i) => anggota.indexOf(n) !== i);
   if (ganda.length) throw E('dupNames', { n: ganda.length });
-  const N = S.jumlahKursi || anggota.length;
+  const lewat = S.kursiLewat, N = aturKursi(S.jumlahKursi, anggota.length, lewat);
   if (anggota.length > N) throw E('tooFewSeats', { a: anggota.length, n: N });
   const tetap = aturTetap(ikut, N, S.kursiTetap);
+  Object.keys(tetap).forEach((a) => { if (lewat.indexOf(tetap[a]) >= 0) throw E('fixedSkipped', { no: tetap[a], nama: a }); });
 
   const now = new Date();
   const hariIni = fmt(now, 'yyyy-MM-dd');
@@ -131,8 +141,9 @@ function handle(p) {
     const depan = namaDepan(nama.concat(anggota), petaPanggilan(ikut));
     const jumlah = Math.max(N, ...nama.map((n) => peta[n]));
     kursi = [];
-    for (let i = 1; i <= jumlah; i++) kursi.push({ no: i, nama: null });
-    nama.forEach((n) => { kursi[peta[n] - 1].nama = depan[n]; if (tetap[n] === peta[n]) kursi[peta[n] - 1].tetap = true; });
+    for (let i = 1; i <= jumlah; i++) kursi.push(lewat.indexOf(i) >= 0 ? { no: i, nama: null, lewat: true } : { no: i, nama: null });
+    // Arsip lama boleh berisi nama di kursi yang kini dilewati: nama menang.
+    nama.forEach((n) => { const k = kursi[peta[n] - 1]; k.nama = depan[n]; delete k.lewat; if (tetap[n] === peta[n]) k.tetap = true; });
   }
 
   let nomor = 0;
@@ -170,7 +181,7 @@ function hasilHari(tgl, S, anggota, tetap, N, isKerja, kerjaDekat) {
     for (let t = S.tanggalMulai; t <= tgl; t = geser(t, 1)) {
       if (!isKerja(t)) continue;
       if (!arsip[t]) {
-        arsip[t] = undi(t, S.kunci, anggota, tetap, N, prev);
+        arsip[t] = undi(t, S.kunci, anggota, tetap, N, prev, S.kursiLewat);
         baru.push(["'" + t, JSON.stringify(arsip[t])]);
       }
       prev = arsip[t];
@@ -180,8 +191,8 @@ function hasilHari(tgl, S, anggota, tetap, N, isKerja, kerjaDekat) {
   return arsip[tgl];
 }
 
-function undi(tgl, kunci, anggota, tetap, N, prev) {
-  const terpakai = Object.keys(tetap).map((a) => tetap[a]);
+function undi(tgl, kunci, anggota, tetap, N, prev, lewat) {
+  const terpakai = Object.keys(tetap).map((a) => tetap[a]).concat(lewat || []);
   const pool = []; for (let i = 1; i <= N; i++) if (terpakai.indexOf(i) < 0) pool.push(i);
   const acak = anggota.filter((a) => !tetap[a]);
   let best = null, skorBest = Infinity;
@@ -225,6 +236,27 @@ function bacaTetap(s) {
   });
 }
 
+// "5, 9, 12-14" → [5, 9, 12, 13, 14]: nomor kursi yang tidak ikut diundi (selalu kosong).
+function bacaLewat(s) {
+  const out = [];
+  s.replace(/\s*[-–]\s*/g, '-').split(/[,;\s]+/).filter(Boolean).forEach((x) => {
+    const m = x.match(/^0*(\d+)(?:-0*(\d+))?$/);
+    if (!m) throw E('skipUnreadable', { x: x });
+    const a = Math.min(+m[1], +(m[2] || m[1])), b = Math.min(Math.max(+m[1], +(m[2] || m[1])), a + 999);
+    for (let i = a; i <= b; i++) if (i > 0 && out.indexOf(i) < 0) out.push(i);
+  });
+  return out.sort((a, b) => a - b);
+}
+
+// Jumlah kursi + validasi Kursi Dilewati. Tanpa "Jumlah Kursi": kursi secukupnya untuk semua anggota.
+function aturKursi(jumlah, a, lewat) {
+  let N = jumlah || a;
+  if (!jumlah) while (N - lewat.filter((no) => no <= N).length < a) N++;
+  lewat.forEach((no) => { if (no > N) throw E('skipTooHigh', { no: no, n: N }); });
+  if (lewat.length && a > N - lewat.length) throw E('tooFewFree', { a: a, n: N - lewat.length, x: lewat.length });
+  return N;
+}
+
 function aturTetap(list, N, dariPengaturan) {
   const tunggal = (x) => (x.length === 1 ? x[0] : null);
   const tetap = {}, dipakai = {};
@@ -247,7 +279,7 @@ function aturTetap(list, N, dariPengaturan) {
 }
 
 function pengaturan() {
-  const S = { judul: 'Lucky Seat', subjudul: '', jamUndian: 7, menitUndian: 0, tanggalMulai: '', hariKerja: [1, 2, 3, 4, 5], jumlahKursi: 0, caraAmbil: 'manual', kursiTetap: [], bahasa: '', jamDaftar: null, menitDaftar: 0 };
+  const S = { judul: 'Lucky Seat', subjudul: '', jamUndian: 7, menitUndian: 0, tanggalMulai: '', hariKerja: [1, 2, 3, 4, 5], jumlahKursi: 0, caraAmbil: 'manual', kursiTetap: [], kursiLewat: [], bahasa: '', jamDaftar: null, menitDaftar: 0 };
   const sh = SpreadsheetApp.getActive().getSheetByName(TAB_PENGATURAN) || SpreadsheetApp.getActive().getSheetByName('Settings');
   if (sh && sh.getLastRow() >= 1) {
     const vals = sh.getRange(1, 1, sh.getLastRow(), 2).getValues();
@@ -274,6 +306,7 @@ function pengaturan() {
       } else if (k === 'jumlahkursi' || k === 'kursi') S.jumlahKursi = parseInt(s, 10) || 0;
       else if (k === 'caraambil' || k === 'ambil') S.caraAmbil = /oto|auto/i.test(s) ? 'otomatis' : 'manual';
       else if (k === 'kursitetap' || k === 'tetap') S.kursiTetap = bacaTetap(s);
+      else if (k === 'kursidilewati' || k === 'dilewati') S.kursiLewat = bacaLewat(s);
       else if (k === 'daftardibuka') {
         if (v instanceof Date) { S.jamDaftar = +fmtSel(v, 'H'); S.menitDaftar = +fmtSel(v, 'm'); }
         else { const j = s.split(/[.:]/); S.jamDaftar = +j[0] || 0; S.menitDaftar = +j[1] || 0; }

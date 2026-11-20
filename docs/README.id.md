@@ -176,6 +176,7 @@ Semua pengaturan ada di tab **`Pengaturan`**, kolom B:
 | **Cara Ambil** | `Manual` | `Manual` = tekan tombol, `Otomatis` = langsung tampil | ✅ Kapan saja |
 | **Daftar Dibuka** | `09:00` | Mode Manual: sebelum jam ini tiap anggota hanya melihat kursinya sendiri. Kosong = daftar lengkap terbuka setelah kamu ambil nomor | ✅ Kapan saja |
 | **Kursi Tetap** | `Vina: 3, Budi: 7` | Anggota yang tidak ikut diacak | ⚠️ Mengubah semua hasil* |
+| **Kursi Dilewati** | `5, 9, 12-14` | Nomor kursi yang tidak ikut diundi, selalu kosong | ⚠️ Mengubah semua hasil* |
 | **Kunci** | `TimKu-x8Qp2` | Teks rahasia pengacak (Opsi 1 saja) | ⛔ Jangan setelah berjalan |
 
 \* Khusus Opsi 1: hasil undian dihitung ulang dari pengaturan, jadi hasil hari-hari sebelumnya ikut berubah.

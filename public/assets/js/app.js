@@ -347,7 +347,7 @@ async function panggilScript(id, tgl) {
       const c = Math.floor(i / rows), r = i % rows, x = 110 + c * colW, y = top + 50 + r * RH;
       g.fillStyle = MUTE; g.font = `700 34px ${FM}`; g.fillText(pad2(s.no), x, y + 46);
       g.fillStyle = s.nama ? INK : MUTE; g.font = `${s.nama ? 800 : 500} 38px ${FD}`;
-      g.fillText(s.nama || t("empty"), x + 76, y + 46, colW - 100);
+      g.fillText(s.nama || t(s.lewat ? "skipped" : "empty"), x + 76, y + 46, colW - 100);
       if (r < rows - 1) { g.fillStyle = LINE; g.fillRect(x, y + RH - 4, colW - 30, 2); }
     });
     g.fillStyle = MUTE; g.font = `500 26px ${FM}`; g.fillText(situs(), 90, Ht - 70);
@@ -515,7 +515,7 @@ async function panggilScript(id, tgl) {
     let L = H.kursi;
     if (sortBy === "nama") L = [...L].sort((a, b) => (!a.nama) - (!b.nama) || (a.nama && b.nama ? a.nama.localeCompare(b.nama, T.lang) : a.no - b.no));
     $("daftar").innerHTML = L.map((s) =>
-      `<li class="${s.nama ? "" : "kosong"} ${s.nama && s.nama === nama ? "me" : ""} ${s.no === intip ? "peek" : ""}"><span class="no">${pad2(s.no)}</span><span class="nm">${s.nama ? esc(s.nama) : t("empty")}</span>${s.tetap ? `<span class="tag">${t("fixed")}</span>` : ""}</li>`
+      `<li class="${s.nama ? "" : "kosong"} ${s.nama && s.nama === nama ? "me" : ""} ${s.no === intip ? "peek" : ""}"><span class="no">${pad2(s.no)}</span><span class="nm">${s.nama ? esc(s.nama) : t(s.lewat ? "skipped" : "empty")}</span>${s.tetap ? `<span class="tag">${t("fixed")}</span>` : ""}</li>`
     ).join("");
   }
 

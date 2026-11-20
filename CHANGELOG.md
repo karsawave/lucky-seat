@@ -6,6 +6,15 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `Skipped Seats` / `Kursi Dilewati` setting: seat numbers left out of the draw (e.g. `5, 9, 12-14`). They stay empty and show as "not in use". Without `Seats`, enough seats are added to fit every member. Setting it changes all results in Option 1.
+- The Members templates now include the `abaikan` / `ignore` column (`Yes` = left out of the draw, a number = fixed seat) and a `notes` column that explains it.
+
+### Apps Script
+
+- Supports `Skipped Seats`. Create a New version in Manage deployments. Archived days keep their results.
+
 ## [1.7.1] - 2026-11-16
 
 ### Removed

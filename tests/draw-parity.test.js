@@ -122,6 +122,20 @@ function normal(r) {
 const tgl = (s) => s;
 const SKENARIO = [
   {
+    nama: "kursi dilewati: rentang + kursi tetap, 12 kursi",
+    sekarang: "2026-11-25T03:00:00Z",
+    tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "K-lewat",
+    anggota: [["nama"], ["Andi Saputra"], ["Budi Santoso"], ["Citra Lestari"], ["Dewi Anggraini"], ["Eko Prasetyo"], ["Fajar Nugroho"], ["Gita Permata"], ["Hadi Wijaya"]],
+    pengaturan: [["pengaturan", "nilai"], ["Tanggal Mulai", "'2026-11-02"], ["Jumlah Kursi", "12"], ["Kursi Dilewati", "3, 7 - 9"], ["Kursi Tetap", "Andi: 1"], ["Kunci", "K-lewat"]],
+  },
+  {
+    nama: "skipped seats tanpa Jumlah Kursi (EN)",
+    sekarang: "2026-11-25T03:00:00Z",
+    tabAnggota: "Members", tabPengaturan: "Settings", kunci: "K-skip",
+    anggota: [["name"], ["Andi Saputra"], ["Budi Santoso"], ["Citra Lestari"], ["Dewi Anggraini"], ["Eko Prasetyo"]],
+    pengaturan: [["setting", "value"], ["Start Date", "'2026-11-02"], ["Skipped Seats", "2;4"], ["Key", "K-skip"]],
+  },
+  {
     nama: "dasar: 8 anggota, 10 kursi, WIB, jam 07:00, sudah buka",
     sekarang: "2026-11-25T03:00:00Z", // 10:00 WIB, Rabu
     tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "Kunci-Rahasia-1",
@@ -218,6 +232,17 @@ test("kolom panggilan menggantikan nama asli", async () => {
   assert.deepEqual([...r.info.anggota].sort(), ["Bebe 1", "Bebe 2", "Dewi L.", "Opik", "Siti A.", "Siti Am."]);
   assert.equal(r.hari.kursi[0].nama, "Opik"); // Kursi Tetap boleh memakai nama panggilan
   assert.ok(!JSON.stringify(r).includes("Rofiq"), "nama asli tidak boleh keluar");
+});
+
+test("Kursi Dilewati selalu kosong dan ditandai", async () => {
+  const fx = SKENARIO.find((s) => /rentang/.test(s.nama));
+  const r = await jalankanSheet(fx, Date.parse(fx.sekarang))("");
+  assert.deepEqual(r.hari.kursi.filter((k) => k.lewat).map((k) => k.no), [3, 7, 8, 9]);
+  assert.ok(r.hari.kursi.filter((k) => k.lewat).every((k) => !k.nama));
+  const en = SKENARIO.find((s) => /Skipped/i.test(s.nama));
+  const r2 = await jalankanSheet(en, Date.parse(en.sekarang))("");
+  assert.equal(r2.info.jumlahKursi, 7); // 5 anggota + 2 kursi dilewati
+  assert.deepEqual(r2.hari.kursi.filter((k) => k.lewat).map((k) => k.no), [2, 4]);
 });
 
 for (const fx of SKENARIO) {

@@ -6,7 +6,8 @@
     sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
   const ALIAS = { title: "judul", subtitle: "subjudul", team: "subjudul", drawtime: "jamundian", time: "jamundian",
     timezone: "zonawaktu", drawmode: "caraambil", mode: "caraambil", fixedseats: "kursitetap", startdate: "tanggalmulai",
-    start: "tanggalmulai", workdays: "harikerja", seats: "jumlahkursi", numberofseats: "jumlahkursi", key: "kunci", language: "bahasa", listopens: "daftardibuka" };
+    start: "tanggalmulai", workdays: "harikerja", seats: "jumlahkursi", numberofseats: "jumlahkursi", key: "kunci", language: "bahasa", listopens: "daftardibuka",
+    skippedseats: "kursidilewati", skipseats: "kursidilewati" };
   const GELAR = /^(ir|dr|drs|dra|h|hj|prof|st|mr|mrs|ms|bpk|bapak|ibu|bu|pak)\.?$/i;
   const DAY = 86400000;
   // Pesan error ID/EN (isi sama dengan apps-script/Code.gs). Bahasa mengikuti pilihan di halaman.
@@ -25,6 +26,10 @@
       "fixedConflict": "Kursi tetap {nama} berbeda di tab Anggota ({a}) dan Pengaturan ({b}).",
       "fixedTooHigh": "Kursi tetap {no} ({nama}) melebihi jumlah kursi {n}.",
       "fixedDup": "Kursi tetap {no} dipakai dua orang ({a} & {b}).",
+      "fixedSkipped": "Kursi tetap {no} ({nama}) ada di \"Kursi Dilewati\".",
+      "skipUnreadable": "\"Kursi Dilewati\" tidak terbaca: \"{x}\". Contoh: 5, 9, 12-14",
+      "skipTooHigh": "Kursi dilewati {no} melebihi jumlah kursi {n}.",
+      "tooFewFree": "Anggota {a} orang, kursi yang diundi hanya {n} ({x} dilewati). Perbesar \"Jumlah Kursi\" atau kurangi \"Kursi Dilewati\".",
       "scriptNoNet": "Tidak bisa terhubung. Cek internet, atau pastikan Web App di-deploy dengan akses \"Siapa saja\".",
       "scriptNoData": "Server tidak memberi data. Pastikan link Web App benar & akses \"Siapa saja\".",
       "serverError": "Terjadi kesalahan di server."
@@ -43,6 +48,10 @@
       "fixedConflict": "Fixed seat for {nama} differs between the Members tab ({a}) and Settings ({b}).",
       "fixedTooHigh": "Fixed seat {no} ({nama}) is higher than the number of seats {n}.",
       "fixedDup": "Fixed seat {no} is used by two people ({a} & {b}).",
+      "fixedSkipped": "Fixed seat {no} ({nama}) is in \"Skipped Seats\".",
+      "skipUnreadable": "Can't read \"Skipped Seats\": \"{x}\". Example: 5, 9, 12-14",
+      "skipTooHigh": "Skipped seat {no} is higher than the number of seats {n}.",
+      "tooFewFree": "{a} members but only {n} seats to draw ({x} skipped). Increase \"Seats\" or remove some \"Skipped Seats\".",
       "scriptNoNet": "Can't connect. Check your internet, or make sure the Web App is deployed with access \"Anyone\".",
       "scriptNoData": "The server returned no data. Make sure the Web App link is right and access is \"Anyone\".",
       "serverError": "Something went wrong on the server."
@@ -157,6 +166,25 @@
       return { nama: m[1].trim(), no: +m[2] };
     });
   }
+  // "5, 9, 12-14" → [5, 9, 12, 13, 14]: nomor kursi yang tidak ikut diundi (selalu kosong).
+  function bacaLewat(s) {
+    const out = [];
+    s.replace(/\s*[-–]\s*/g, "-").split(/[,;\s]+/).filter(Boolean).forEach((x) => {
+      const m = x.match(/^0*(\d+)(?:-0*(\d+))?$/);
+      if (!m) throw E("skipUnreadable", { x });
+      const a = Math.min(+m[1], +(m[2] || m[1])), b = Math.min(Math.max(+m[1], +(m[2] || m[1])), a + 999);
+      for (let i = a; i <= b; i++) if (i > 0 && out.indexOf(i) < 0) out.push(i);
+    });
+    return out.sort((a, b) => a - b);
+  }
+  // Jumlah kursi + validasi Kursi Dilewati. Tanpa "Jumlah Kursi": kursi secukupnya untuk semua anggota.
+  function aturKursi(jumlah, a, lewat) {
+    let N = jumlah || a;
+    if (!jumlah) while (N - lewat.filter((no) => no <= N).length < a) N++;
+    lewat.forEach((no) => { if (no > N) throw E("skipTooHigh", { no, n: N }); });
+    if (lewat.length && a > N - lewat.length) throw E("tooFewFree", { a, n: N - lewat.length, x: lewat.length });
+    return N;
+  }
   // Nama → nomor kursi tetap (divalidasi). Sumber: kolom "abaikan" (angka) + baris "Kursi Tetap" di Pengaturan.
   function aturTetap(list, N, dariPengaturan = []) {
     const tunggal = (x) => (x.length === 1 ? x[0] : null);
@@ -180,7 +208,7 @@
   }
 
   function pengaturan(rows, id) {
-    const S = { judul: "Lucky Seat", subjudul: "", jamUndian: 7, menitUndian: 0, tanggalMulai: "", hariKerja: [1, 2, 3, 4, 5], jumlahKursi: 0, kunci: "", caraAmbil: "manual", kursiTetap: [], zona: "Asia/Jakarta", bahasa: "", jamDaftar: null, menitDaftar: 0 };
+    const S = { judul: "Lucky Seat", subjudul: "", jamUndian: 7, menitUndian: 0, tanggalMulai: "", hariKerja: [1, 2, 3, 4, 5], jumlahKursi: 0, kunci: "", caraAmbil: "manual", kursiTetap: [], kursiLewat: [], zona: "Asia/Jakarta", bahasa: "", jamDaftar: null, menitDaftar: 0 };
     rows.forEach(([k = "", v = ""]) => {
       k = k.toLowerCase().replace(/[^a-z]/g, ""); k = ALIAS[k] || k; const s = v.trim().replace(/^'/, "");
       if (!s) return;
@@ -199,6 +227,7 @@
       else if (k === "kunci") S.kunci = s;
       else if (k === "caraambil" || k === "ambil") S.caraAmbil = /oto|auto/i.test(s) ? "otomatis" : "manual";
       else if (k === "kursitetap" || k === "tetap") S.kursiTetap = bacaTetap(s);
+      else if (k === "kursidilewati" || k === "dilewati") S.kursiLewat = bacaLewat(s);
       else if (k === "daftardibuka") { const j = s.split(/[.:]/); S.jamDaftar = +j[0] || 0; S.menitDaftar = +j[1] || 0; }
       else if (k === "zonawaktu" || k === "zona") S.zona = s;
       else if (k === "bahasa") S.bahasa = /^(id|ind|indonesia|bahasa)/i.test(s) ? "id" : "en";
@@ -272,10 +301,11 @@
     if (!anggota.length) throw E("membersEmpty");
     const ganda = anggota.filter((n, i) => anggota.indexOf(n) !== i);
     if (ganda.length) throw E("dupNames", { n: ganda.length });
-    const N = S.jumlahKursi || anggota.length;
+    const lewat = S.kursiLewat, N = aturKursi(S.jumlahKursi, anggota.length, lewat);
     if (anggota.length > N) throw E("tooFewSeats", { a: anggota.length, n: N });
-    // Tanpa kursi tetap: pool = semua kursi & acak = semua anggota → hasil sama seperti sebelumnya.
+    // Tanpa kursi tetap/dilewati: pool = semua kursi & acak = semua anggota → hasil sama seperti sebelumnya.
     const tetap = aturTetap(ikut.map((a) => ({ ...a })), N, S.kursiTetap), acak = anggota.filter((n) => !tetap[n]);
+    Object.keys(tetap).forEach((a) => { if (lewat.includes(tetap[a])) throw E("fixedSkipped", { no: tetap[a], nama: a }); });
 
     // Jam dinding saat ini di zona resmi tim (bukan zona HP) → semua HP buka bersamaan.
     const nowMs = Date.now(), w = new Date(nowMs + offsetMenit(S.Z, nowMs) * 60000);
@@ -299,7 +329,7 @@
     if (buka) {
       // hitung berurutan dari awal; hindari kursi sama dengan hari kerja sebelumnya
       const semua = Array.from({ length: N }, (_, i) => i + 1);
-      const terpakai = Object.values(tetap), pool = semua.filter((no) => !terpakai.includes(no));
+      const terpakai = Object.values(tetap).concat(lewat), pool = semua.filter((no) => !terpakai.includes(no));
       let prev = null, hasil = null;
       for (let t = S.tanggalMulai; t <= tgl; t = geser(t, 1)) {
         if (!isKerja(t)) continue;
@@ -312,7 +342,7 @@
         prev = hasil = best;
       }
       const depan = namaDepan(anggota, petaPanggilan(ikut));
-      kursi = semua.map((no) => ({ no, nama: null }));
+      kursi = semua.map((no) => (lewat.includes(no) ? { no, nama: null, lewat: true } : { no, nama: null }));
       acak.forEach((a, i) => (kursi[hasil[i] - 1].nama = depan[a]));
       Object.keys(tetap).forEach((a) => Object.assign(kursi[tetap[a] - 1], { nama: depan[a], tetap: true }));
     }
