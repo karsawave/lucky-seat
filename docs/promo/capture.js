@@ -41,7 +41,7 @@ const TIPE = { html: "text/html", js: "text/javascript", css: "text/css", svg: "
   await ctx.route(/docs\.google\.com/, (r) => {
     const u = decodeURIComponent(r.request().url());
     const f = /Anggota|Members/.test(u) ? "Members-ID.csv" : "Settings-ID.csv";
-    r.fulfill({ status: 200, contentType: "text/csv", body: fs.readFileSync(path.join(TPL, f), "utf8").replace("Subjudul,DTPSD", "Subjudul," + TIM).replace(new RegExp("^" + GANTI + "$", "m"), NAMA) });
+    r.fulfill({ status: 200, contentType: "text/csv", body: fs.readFileSync(path.join(TPL, f), "utf8").replace("Subjudul,DTPSD", "Subjudul," + TIM).replace(new RegExp("^" + GANTI + "(?=,|$)", "m"), NAMA) });
   });
 
   const pg = await ctx.newPage();
