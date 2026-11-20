@@ -62,7 +62,9 @@ const TIPE = { html: "text/html", js: "text/javascript", css: "text/css", svg: "
   meta.btn = await kotak("#btnDraw");
   await foto("t1");
   await pg.click("#btnDraw");
-  await pg.waitForTimeout(1500);
+  // Tunggu animasi acak selesai (kotak nama aktif lagi), bukan jeda tetap: animasinya ±3 detik.
+  await pg.waitForFunction(() => !document.getElementById("nama").disabled);
+  await pg.waitForTimeout(300);
   meta.final = await pg.evaluate(() => document.getElementById("num").textContent);
   meta.num = await kotak("#num");
   // Gulungan seperti animasi aplikasi: 15 angka acak (urutan tetap agar bisa diulang)
