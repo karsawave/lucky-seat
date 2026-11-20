@@ -6,6 +6,12 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.8.1] - 2026-11-20
+
+### Fixed
+
+- The Settings paste templates (TSV) keep the Key / Kunci name and its value in separate cells again.
+
 ## [1.8.0] - 2026-11-20
 
 ### Added
