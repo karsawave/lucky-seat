@@ -1,7 +1,7 @@
 // Render video promo: promo.html → MP4 (frame PNG dialirkan langsung ke ffmpeg) + audio dari sfx.py.
 // Pakai:
 //   node docs/promo/render.js --lang id --ratio 9x16 --cut 25            → build/lucky-seat-id-9x16-25s.mp4
-//     (--music marimba|ceria|lofi|tech|none, bawaan marimba)
+//     (--music marimba|ceria|lofi|tech|none, bawaan marimba; audio dipakai ulang dari build/audio/)
 //   node docs/promo/render.js --lang en --still 2 --out cover.png        → sampul (hook + nama merek)
 //   node docs/promo/render.js --lang id --preview 2,9.5,20               → beberapa PNG untuk diperiksa
 //   node docs/promo/render.js --lang en --ratio 16x9 --gif 7.9,15.4       → GIF demo (720 px, 15 fps)
@@ -50,13 +50,20 @@ const FONTS = ['500 40px "Archivo"', '800 40px "Archivo"', '500 40px "IBM Plex M
     ff.stdin.end(); await new Promise((r) => ff.on("close", r)); await b.close(); console.log(out); return;
   }
 
+  // Audio disimpan di build/audio/ dengan nama dari isinya, jadi versi yang isinya sama memakai file yang sama:
+  // efek suara bergantung pada seluruh timeline (bahasa + durasi), musik hanya pada durasi dan ketukan.
   const audio = await pg.evaluate(() => window.AUDIO);
-  const json = path.join(BUILD, name + ".audio.json"), wav = path.join(BUILD, name + ".wav");
+  const AUD = path.join(BUILD, "audio"); fs.mkdirSync(AUD, { recursive: true });
+  const sidik = (o) => require("crypto").createHash("sha1").update(JSON.stringify(o)).digest("hex").slice(0, 8);
+  const json = path.join(AUD, `timeline-${sidik(audio)}.json`);
   fs.writeFileSync(json, JSON.stringify(audio));
-  execFileSync("python3", [path.join(__dirname, "sfx.py"), json, wav]);
+  const wav = path.join(AUD, `sfx-${lang}-${cut}s-${sidik(audio)}.wav`);
+  if (!fs.existsSync(wav)) execFileSync("python3", [path.join(__dirname, "sfx.py"), json, wav]);
   // Musik latar (music.py) di bawah efek suara; --music none untuk tanpa musik
-  const gaya = arg("music", "marimba"), mus = path.join(BUILD, name + ".music.wav");
-  if (gaya !== "none") execFileSync("python3", [path.join(__dirname, "music.py"), json, mus, gaya]);
+  const gaya = arg("music", "marimba");
+  const mus = path.join(AUD, `music-${gaya}-${cut}s-${sidik([audio.dur, audio.beatFrom, audio.beatTo, gaya])}.wav`);
+  if (gaya !== "none" && !fs.existsSync(mus)) execFileSync("python3", [path.join(__dirname, "music.py"), json, mus, gaya]);
+  fs.unlinkSync(json);
 
   const out = arg("out", path.join(BUILD, name + ".mp4"));
   const ff = spawn("ffmpeg", ["-loglevel", "error", "-y", "-f", "image2pipe", "-framerate", String(fps), "-i", "-", "-i", wav, ...(gaya !== "none" ? ["-i", mus, "-filter_complex",

@@ -27,7 +27,7 @@ flowchart LR
 - `promo.html` is the timeline. Options in the URL: `lang=id|en`, `ratio=9x16|16x9`, `cut=25|15`, `cover=1`.
 - `sfx.py` builds the sound effects from the timeline: a 120 BPM beat, ticks while the number rolls, taps, and a ding when it stops.
 - `music.py` composes the background music from the same timeline: an intro under the hook, a 120 BPM groove, and a closing chord on the end card. The videos use the `marimba` style; `ceria`, `lofi` and `tech` are alternatives (`--music <style>`, or `--music none`). Sound effects and music are synthesized, so there are no music rights to clear and no credit line is needed.
-- `render.js` sends each frame as PNG straight to ffmpeg (H.264, 60 fps, CRF 14, AAC 256 kbps).
+- `render.js` sends each frame as PNG straight to ffmpeg (H.264, 60 fps, CRF 14, AAC 256 kbps). It keeps the sound files in `build/audio/`, named after what shapes them, and reuses them: the music depends only on the length, the sound effects on the language and the length. So `build/` itself holds only the videos and covers.
 
 ## Render
 
