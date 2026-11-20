@@ -24,6 +24,8 @@
   <img src="docs/demo-en.gif" width="720" alt="A member picks their name, taps Draw number, and gets seat 19.">
 </p>
 
+<p align="center">Promo video (25 s): <a href="https://github.com/karsawave/lucky-seat/releases/download/v1.9.0/lucky-seat-en-9x16-25s.mp4">vertical</a> · <a href="https://github.com/karsawave/lucky-seat/releases/download/v1.9.0/lucky-seat-en-16x9-25s.mp4">landscape</a> · <a href="https://github.com/karsawave/lucky-seat/releases/tag/v1.9.0">all versions</a></p>
+
 ---
 
 ## Table of contents

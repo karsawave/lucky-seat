@@ -24,6 +24,8 @@
   <img src="demo-id.gif" width="720" alt="Anggota memilih nama, menekan Ambil nomor, lalu mendapat kursi 19.">
 </p>
 
+<p align="center">Video promo (25 dtk): <a href="https://github.com/karsawave/lucky-seat/releases/download/v1.9.0/lucky-seat-id-9x16-25s.mp4">vertikal</a> · <a href="https://github.com/karsawave/lucky-seat/releases/download/v1.9.0/lucky-seat-id-16x9-25s.mp4">horizontal</a> · <a href="https://github.com/karsawave/lucky-seat/releases/tag/v1.9.0">semua versi</a></p>
+
 ---
 
 ## Daftar isi
