@@ -11,4 +11,4 @@ Draw Mode	Manual	Manual = press Draw number. Automatic = shown right at draw tim
 List Opens		Manual mode only. Before this time (e.g. 09:00) each member sees only their own seat; then the full list opens for everyone. Empty = the full list opens after you draw. Safe to change anytime.
 Fixed Seats		Members excluded from shuffling, format Name: number, separated by commas (e.g. Vina: 3). You can also use the ignore column in the Members tab. Empty = everyone is shuffled. Changing this changes all results (Option 1).
 Skipped Seats		Seat numbers left out of the draw and always empty, separated by commas, ranges allowed (e.g. 5, 9, 12-14). Empty = all seats are drawn. Changing this changes all results (Option 1).
-KeyLuckySeat-Q7m4x	Secret shuffle text, replace with your own random text. Option 1 only (Option 2 makes its own). Do not change once running.
+Key	LuckySeat-Q7m4x	Secret shuffle text, replace with your own random text. Option 1 only (Option 2 makes its own). Do not change once running.
