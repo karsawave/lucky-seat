@@ -15,7 +15,7 @@ const arg = (k, d) => { const i = process.argv.indexOf("--" + k); return i > 0 ?
 const lang = arg("lang", "id"), ratio = arg("ratio", "9x16"), cut = arg("cut", "25"), fps = +arg("fps", "60");
 const BUILD = path.join(__dirname, "build");
 const name = `lucky-seat-${lang}-${ratio}-${cut}s`;
-const FONTS = ['500 40px "Bricolage Grotesque"', '800 40px "Bricolage Grotesque"', '500 40px "JetBrains Mono"', '700 40px "JetBrains Mono"'];
+const FONTS = ['500 40px "Archivo"', '800 40px "Archivo"', '500 40px "IBM Plex Mono"', '700 40px "IBM Plex Mono"'];
 
 (async () => {
   const b = await chromium.launch();

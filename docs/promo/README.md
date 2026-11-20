@@ -37,7 +37,7 @@ You need Node ≥ 18 with Playwright and Chromium, ffmpeg, and python3 with nump
 
    ```bash
    mkdir -p docs/promo/build/fonts && cd docs/promo/build/fonts
-   curl -sS -A "Mozilla/5.0 Chrome/120" "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&family=JetBrains+Mono:wght@500;700&display=swap" -o f.css
+   curl -sS -A "Mozilla/5.0 Chrome/120" "https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&family=IBM+Plex+Mono:wght@500;700&display=swap" -o f.css
    i=0; for u in $(grep -o "https://[^)]*" f.css | sort -u); do i=$((i+1)); curl -sS "$u" -o f$i.woff2; sed -i "s#$u#f$i.woff2#g" f.css; done
    ```
 

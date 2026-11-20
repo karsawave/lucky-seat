@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="build/fonts/f.css">
 <style>
 :root{--paper:#f4efe6;--surface:#fffdf8;--ink:#1c1a17;--mute:#7a7266;--line:#e2d9c8;--accent:#d9432f;--accent-d:#ef6a4f;--wa:#1f8f4e;
-  --display:"Bricolage Grotesque",sans-serif;--mono:"JetBrains Mono",monospace;
+  --display:"Archivo",sans-serif;--mono:"IBM Plex Mono",monospace;
   --W:1080px;--H:1920px;
   --x:90px;--xr:150px;      /* margin kiri; kanan lebih lebar = aman dari tombol Reels/TikTok */
   --safe:270px;             /* batas atas aman (tab "Untuk Anda"/"Following") */
@@ -15,7 +15,7 @@
 html,body{width:var(--W);height:var(--H);overflow:hidden;background:var(--ink);font-family:var(--display);font-weight:500;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
 #stage{position:relative;width:var(--W);height:var(--H);overflow:hidden;background:var(--ink)}
 .sc{position:absolute;inset:0;display:none;overflow:hidden;will-change:transform}
-.b{font-weight:800;letter-spacing:-.035em;line-height:1.02;text-wrap:balance}
+.b{font-weight:800;letter-spacing:-.015em;line-height:1.02;text-wrap:balance}
 #brT,#endT{white-space:nowrap}
 .lab{font:500 var(--lab)/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
 .body{font-size:var(--body);line-height:1.25;text-wrap:balance}
@@ -31,7 +31,7 @@ html,body{width:var(--W);height:var(--H);overflow:hidden;background:var(--ink);f
 #hWin{position:absolute;left:0;right:0;top:540px;height:760px;overflow:hidden;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 17%,#000 83%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 17%,#000 83%,transparent 100%)}
 #hReel{position:absolute;left:0;right:0;top:0}
-#hReel div{height:760px;display:grid;place-items:center;font:700 600px/1 var(--mono);letter-spacing:-.07em}
+#hReel div{height:760px;display:grid;place-items:center;font:700 600px/1 var(--mono);letter-spacing:-.02em}
 #hSub{position:absolute;left:0;right:0;top:1300px;text-align:center;font-size:64px}
 /* sampul (?cover=1): nama merek di bawah, masih di dalam potongan 3:4 grid profil */
 #hBrand{display:none;position:absolute;left:0;right:0;top:1470px;text-align:center;font-size:96px}

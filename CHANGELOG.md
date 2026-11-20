@@ -6,6 +6,9 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- New typefaces: Archivo for text and IBM Plex Mono for numbers and codes (both SIL Open Font License). The JPG share images use them too.
+
 ## [1.8.1] - 2026-11-20
 
 ### Fixed

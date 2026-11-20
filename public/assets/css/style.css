@@ -9,7 +9,7 @@
   /* Skala jarak 4-poin. Dekat = berkaitan (label→isian 8), kelompok 24, antar-bagian 48. */
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
   --pad:var(--s5); /* padding dalam kartu, kiri-kanan selalu sama */
-  --display:"Bricolage Grotesque",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  --display:"Archivo",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
 }
 /* Tema: ikut sistem, kecuali pengguna memilih sendiri (html[data-theme]). */
 :root{color-scheme:light}

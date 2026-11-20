@@ -321,7 +321,7 @@ async function panggilScript(id, tgl) {
   // Sengaja SELALU tema terang (tidak ikut mode gelap): gambar dibagikan ke WhatsApp dan harus tampil sama
   // untuk semua penerima. Nilai = token terang di style.css (:root); ubah keduanya bersamaan.
   const PAPER = "#f4efe6", SURF = "#fffdf8", INK = "#1c1a17", MUTE = "#7a7266", LINE = "#e2d9c8", ACC = "#d9432f";
-  const FD = '"Bricolage Grotesque", sans-serif', FM = '"JetBrains Mono", monospace';
+  const FD = '"Archivo", sans-serif', FM = '"IBM Plex Mono", monospace';
   const situs = () => (location.host + location.pathname).replace(/\/(index\.html)?$/, "") || "lucky seat";
   function kanvas(W, Ht) {
     const cv = document.createElement("canvas"); cv.width = W; cv.height = Ht;
