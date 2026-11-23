@@ -329,5 +329,9 @@ header.top:has(.brand){align-items:center}
 .credit .ic{width:14px;height:14px}
 .ver.is-warn{color:var(--warn)}
 /* Di panduan, .guide p membatasi lebar (68ch) → versi tidak lagi di tengah halaman. Lepas batasnya. */
-.guide .ver{max-width:none;margin:var(--s4) 0 0}.callout.is-warn{border-color:color-mix(in srgb,var(--warn) 40%,var(--surface));background:color-mix(in srgb,var(--warn) 10%,var(--surface));color:var(--warn)}
+.guide .ver{max-width:none;margin:var(--s4) 0 0}
+/* Sama untuk baris credit: lepas batas lebar & gaya link prosa panduan agar identik dengan halaman utama. */
+.guide .credit{max-width:none;margin:var(--s2) 0 0}
+.guide .credit a:not([class]){color:var(--info);text-decoration:none}
+.guide .credit a:not([class]):hover{text-decoration:underline}.callout.is-warn{border-color:color-mix(in srgb,var(--warn) 40%,var(--surface));background:color-mix(in srgb,var(--warn) 10%,var(--surface));color:var(--warn)}
 .hint{margin:0;font-size:13px;line-height:1.5;color:var(--mute)}

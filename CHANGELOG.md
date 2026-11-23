@@ -10,6 +10,10 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 - Seat list: fixed seats show a pin icon instead of the "Fixed" label. The label stays as the tooltip and for screen readers.
 
+### Fixed
+
+- Setup guide: the "Made by" line is centered and its links match the main page.
+
 ## [1.9.0] - 2026-11-20
 
 ### Added
