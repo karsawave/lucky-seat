@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-11-23
+
 ### Added
 
 - Settings: **Limited Seats** (`Kursi Terbatas`) lets a member draw only from chosen seats, e.g. `Adi {8, 18, 23-24}`. Other members still get any free seat.
