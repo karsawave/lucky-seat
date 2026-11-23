@@ -84,11 +84,14 @@ async function panggilScript(id, tgl) {
   // Aksi milik kartu (salin, unduh, dll.) tetap di .links di bawah kartu, bukan di sini.
   const IKON = {
     back: '<path d="M15 6l-6 6 6 6"/>',
+    pin: '<path d="M9 4h6M10 4v6l-3 4h10l-3-4V4M12 14v6"/>',
     admin: '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
     guide: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/>',
     retry: '<path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/>',
   };
   const ikon = (k) => `<svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IKON[k]}</svg>`;
+  // Penanda kursi tetap: ikon pin, teksnya untuk pembaca layar & tooltip.
+  const tagTetap = () => `<span class="tag ikon" role="img" aria-label="${esc(t("fixed"))}" title="${esc(t("fixed"))}">${ikon("pin")}</span>`;
   const tautan = (href, k, teks) => `<a href="${esc(href)}">${ikon(k)}<span>${esc(teks)}</span></a>`;
   const kaki = (kiri = "", kanan = "") =>
     `<div class="foot"><span>${kiri}</span><span>${kanan}</span></div><p class="ver" id="ver">Lucky Seat v${esc(APP_VERSION)}</p><p class="credit"><span>${esc(t("madeBy"))}</span> <a href="https://karsawave.com" target="_blank" rel="noopener">Karsawave.com</a><span aria-hidden="true">·</span><a href="https://github.com/karsawave/lucky-seat" target="_blank" rel="noopener" aria-label="GitHub"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.29-1.69-1.29-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.27 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg><span>GitHub</span></a></p>`;
@@ -508,14 +511,14 @@ async function panggilScript(id, tgl) {
       // Sebelum Daftar Dibuka: hanya baris milik sendiri yang terlihat (bila sudah mengambil).
       const saya = terbukaSaya() ? kursiSaya() : null;
       $("daftar").innerHTML = Array.from({ length: I.jumlahKursi }, (_, i) => i + 1 === saya
-        ? `<li class="me"><span class="no">${pad2(saya)}</span><span class="nm">${esc(nama)}</span>${H.kursi[i].tetap ? `<span class="tag">${t("fixed")}</span>` : ""}</li>`
+        ? `<li class="me"><span class="no">${pad2(saya)}</span><span class="nm">${esc(nama)}</span>${H.kursi[i].tetap ? tagTetap() : ""}</li>`
         : `<li class="ph" aria-hidden="true"><span class="no">${pad2(i + 1)}</span><span class="nm" style="width:${40 + (i * 37) % 31}%"></span></li>`).join("");
       return;
     }
     let L = H.kursi;
     if (sortBy === "nama") L = [...L].sort((a, b) => (!a.nama) - (!b.nama) || (a.nama && b.nama ? a.nama.localeCompare(b.nama, T.lang) : a.no - b.no));
     $("daftar").innerHTML = L.map((s) =>
-      `<li class="${s.nama ? "" : "kosong"} ${s.nama && s.nama === nama ? "me" : ""} ${s.no === intip ? "peek" : ""}"><span class="no">${pad2(s.no)}</span><span class="nm">${s.nama ? esc(s.nama) : t(s.lewat ? "skipped" : "empty")}</span>${s.tetap ? `<span class="tag">${t("fixed")}</span>` : ""}</li>`
+      `<li class="${s.nama ? "" : "kosong"} ${s.nama && s.nama === nama ? "me" : ""} ${s.no === intip ? "peek" : ""}"><span class="no">${pad2(s.no)}</span><span class="nm">${s.nama ? esc(s.nama) : t(s.lewat ? "skipped" : "empty")}</span>${s.tetap ? tagTetap() : ""}</li>`
     ).join("");
   }
 

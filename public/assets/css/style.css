@@ -149,6 +149,8 @@ select,.cari-in{width:100%;color:var(--ink);background:var(--field);border:1px s
 /* Satu baris tetap (20px) → kartu tidak melompat saat teks berganti. */
 .map-info{margin:var(--s2) 0 0;min-height:20px;font-size:13px;line-height:20px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .seats .tag{margin-left:auto;font:500 11px var(--mono);color:var(--mute);border:1px solid var(--line);border-radius:3px;padding:2px var(--s1)}
+.seats .tag.ikon{display:inline-flex;align-items:center;border:0;padding:0}
+.seats .tag.ikon .ic{width:14px;height:14px}
 .btn-draw{background:var(--ink);color:var(--paper);font-weight:800;height:48px;padding:0 var(--s5);border-radius:6px;white-space:nowrap}
 .btn-draw:hover{opacity:.85} .btn-draw:active{transform:translateY(1px)}
 .pop{animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
@@ -327,6 +329,5 @@ header.top:has(.brand){align-items:center}
 .credit .ic{width:14px;height:14px}
 .ver.is-warn{color:var(--warn)}
 /* Di panduan, .guide p membatasi lebar (68ch) → versi tidak lagi di tengah halaman. Lepas batasnya. */
-.guide .ver{max-width:none;margin:var(--s4) 0 0}
-.callout.is-warn{border-color:color-mix(in srgb,var(--warn) 40%,var(--surface));background:color-mix(in srgb,var(--warn) 10%,var(--surface));color:var(--warn)}
+.guide .ver{max-width:none;margin:var(--s4) 0 0}.callout.is-warn{border-color:color-mix(in srgb,var(--warn) 40%,var(--surface));background:color-mix(in srgb,var(--warn) 10%,var(--surface));color:var(--warn)}
 .hint{margin:0;font-size:13px;line-height:1.5;color:var(--mute)}
