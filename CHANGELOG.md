@@ -6,6 +6,8 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.9.1] - 2026-11-23
+
 ### Changed
 
 - Seat list: fixed seats show a pin icon instead of the "Fixed" label. The label stays as the tooltip and for screen readers.
