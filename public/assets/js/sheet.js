@@ -7,7 +7,7 @@
   const ALIAS = { title: "judul", subtitle: "subjudul", team: "subjudul", drawtime: "jamundian", time: "jamundian",
     timezone: "zonawaktu", drawmode: "caraambil", mode: "caraambil", fixedseats: "kursitetap", startdate: "tanggalmulai",
     start: "tanggalmulai", workdays: "harikerja", seats: "jumlahkursi", numberofseats: "jumlahkursi", key: "kunci", language: "bahasa", listopens: "daftardibuka",
-    skippedseats: "kursidilewati", skipseats: "kursidilewati" };
+    skippedseats: "kursidilewati", skipseats: "kursidilewati", limitedseats: "kursiterbatas", limitsstart: "batasanmulai" };
   const GELAR = /^(ir|dr|drs|dra|h|hj|prof|st|mr|mrs|ms|bpk|bapak|ibu|bu|pak)\.?$/i;
   const DAY = 86400000;
   // Pesan error ID/EN (isi sama dengan apps-script/Code.gs). Bahasa mengikuti pilihan di halaman.
@@ -27,6 +27,12 @@
       "fixedTooHigh": "Kursi tetap {no} ({nama}) melebihi jumlah kursi {n}.",
       "fixedDup": "Kursi tetap {no} dipakai dua orang ({a} & {b}).",
       "fixedSkipped": "Kursi tetap {no} ({nama}) ada di \"Kursi Dilewati\".",
+      "limitUnreadable": "\"Kursi Terbatas\" tidak terbaca: \"{x}\". Contoh: Adi {8, 18, 23-24}",
+      "limitUnknown": "Kursi Terbatas: nama \"{nama}\" tidak ada di tab Anggota.",
+      "limitFixed": "{nama} punya kursi tetap dan kursi terbatas. Pilih salah satu.",
+      "limitTooHigh": "Kursi terbatas {no} ({nama}) melebihi jumlah kursi {n}.",
+      "limitEmpty": "Semua kursi terbatas {nama} sudah tetap atau dilewati. Tambah nomor lain.",
+      "limitImpossible": "Kursi terbatas {nama} selalu habis dipakai anggota terbatas lain. Tambah nomor kursi.",
       "skipUnreadable": "\"Kursi Dilewati\" tidak terbaca: \"{x}\". Contoh: 5, 9, 12-14",
       "skipTooHigh": "Kursi dilewati {no} melebihi jumlah kursi {n}.",
       "tooFewFree": "Anggota {a} orang, kursi yang diundi hanya {n} ({x} dilewati). Perbesar \"Jumlah Kursi\" atau kurangi \"Kursi Dilewati\".",
@@ -49,6 +55,12 @@
       "fixedTooHigh": "Fixed seat {no} ({nama}) is higher than the number of seats {n}.",
       "fixedDup": "Fixed seat {no} is used by two people ({a} & {b}).",
       "fixedSkipped": "Fixed seat {no} ({nama}) is in \"Skipped Seats\".",
+      "limitUnreadable": "Can't read \"Limited Seats\": \"{x}\". Example: Adi {8, 18, 23-24}",
+      "limitUnknown": "Limited Seats: name \"{nama}\" is not in the Members tab.",
+      "limitFixed": "{nama} has both a fixed seat and limited seats. Keep one.",
+      "limitTooHigh": "Limited seat {no} ({nama}) is higher than the number of seats {n}.",
+      "limitEmpty": "All limited seats of {nama} are fixed or skipped. Add other numbers.",
+      "limitImpossible": "Limited seats of {nama} are always taken by other limited members. Add more seat numbers.",
       "skipUnreadable": "Can't read \"Skipped Seats\": \"{x}\". Example: 5, 9, 12-14",
       "skipTooHigh": "Skipped seat {no} is higher than the number of seats {n}.",
       "tooFewFree": "{a} members but only {n} seats to draw ({x} skipped). Increase \"Seats\" or remove some \"Skipped Seats\".",
@@ -207,19 +219,92 @@
     return tetap;
   }
 
+  // "Adi {8, 18, 23-24}; Budi {1-5}" → [{nama:"Adi", no:[8,18,23,24]}, ...]
+  function bacaBatas(s) {
+    const out = [];
+    const sisa = s.replace(/([^{};\n]*?)\s*[:=]?\s*\{([^}]*)\}/g, (x, nama, isi) => {
+      nama = nama.replace(/^[\s,;]+/, "").trim();
+      let no = [];
+      try { no = bacaLewat(isi); } catch (e) { no = []; }
+      if (!nama || !no.length) throw E("limitUnreadable", { x: x.replace(/^[\s,;]+/, "") });
+      out.push({ nama: nama, no: no });
+      return "";
+    });
+    if (sisa.replace(/[\s,;]/g, "")) throw E("limitUnreadable", { x: sisa.replace(/^[\s,;]+|[\s,;]+$/g, "") });
+    return out;
+  }
+
+  // Nama → daftar kursi yang boleh (divalidasi). Kursi tetap orang lain & kursi dilewati dibuang.
+  function aturBatas(list, N, dari, tetap, lewat) {
+    const tunggal = (x) => (x.length === 1 ? x[0] : null);
+    const depan = namaDepan(list.map((a) => a.nama), petaPanggilan(list));
+    const kursiTetap = Object.keys(tetap).map((a) => tetap[a]);
+    const batas = {};
+    (dari || []).forEach((t) => {
+      const cari = t.nama.toLowerCase();
+      const a = list.find((x) => x.nama.toLowerCase() === cari) || list.find((x) => depan[x.nama].toLowerCase() === cari)
+        || tunggal(list.filter((x) => depan[x.nama].split(" ")[0].toLowerCase() === cari));
+      if (!a) throw E("limitUnknown", { nama: t.nama });
+      if (tetap[a.nama]) throw E("limitFixed", { nama: t.nama });
+      t.no.forEach((no) => { if (no > N) throw E("limitTooHigh", { no: no, nama: t.nama, n: N }); });
+      const boleh = t.no.filter((no) => kursiTetap.indexOf(no) < 0 && (lewat || []).indexOf(no) < 0);
+      if (!boleh.length) throw E("limitEmpty", { nama: t.nama });
+      batas[a.nama] = boleh;
+    });
+    // Cek semua anggota terbatas bisa dapat kursi sekaligus (pencocokan dua sisi).
+    const pemilik = {};
+    const coba = (a, lihat) => batas[a].some((no) => {
+      if (lihat[no]) return false;
+      lihat[no] = true;
+      if (!pemilik[no] || coba(pemilik[no], lihat)) { pemilik[no] = a; return true; }
+      return false;
+    });
+    Object.keys(batas).forEach((a) => { if (!coba(a, {})) throw E("limitImpossible", { nama: depan[a] }); });
+    return batas;
+  }
+
+  // Hasil acak k (urutan kursi) → kursi per anggota acak. Tanpa batasan: k apa adanya (hasil lama tidak berubah).
+  // Dengan batasan: anggota terbatas dapat kursi lebih dulu, diutamakan sesuai urutan k; sisanya urut k.
+  function pasang(k, acak, batas) {
+    const terbatas = acak.filter((a) => batas[a]);
+    if (!terbatas.length) return k;
+    terbatas.sort((a, b) => batas[a].length - batas[b].length || acak.indexOf(a) - acak.indexOf(b));
+    const rank = {};
+    k.forEach((no, i) => (rank[no] = i));
+    const pemilik = {};
+    const coba = (a, lihat) => batas[a].slice().sort((x, y) => rank[x] - rank[y]).some((no) => {
+      if (lihat[no]) return false;
+      lihat[no] = true;
+      if (!pemilik[no] || coba(pemilik[no], lihat)) { pemilik[no] = a; return true; }
+      return false;
+    });
+    terbatas.forEach((a) => coba(a, {}));
+    const dapat = {};
+    Object.keys(pemilik).forEach((no) => (dapat[pemilik[no]] = +no));
+    const sisa = k.filter((no) => !pemilik[no]);
+    let j = 0;
+    return acak.map((a) => dapat[a] || sisa[j++]);
+  }
+
+  // "2026-11-24" atau "24/11/2026" → "2026-11-24"; lainnya "".
+  function bacaTgl(s) {
+    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (m) return `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
+    if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))) return `${m[3]}-${pad(m[2])}-${pad(m[1])}`;
+    return "";
+  }
+
   function pengaturan(rows, id) {
-    const S = { judul: "Lucky Seat", subjudul: "", jamUndian: 7, menitUndian: 0, tanggalMulai: "", hariKerja: [1, 2, 3, 4, 5], jumlahKursi: 0, kunci: "", caraAmbil: "manual", kursiTetap: [], kursiLewat: [], zona: "Asia/Jakarta", bahasa: "", jamDaftar: null, menitDaftar: 0 };
+    const S = { judul: "Lucky Seat", subjudul: "", jamUndian: 7, menitUndian: 0, tanggalMulai: "", hariKerja: [1, 2, 3, 4, 5], jumlahKursi: 0, kunci: "", caraAmbil: "manual", kursiTetap: [], kursiLewat: [], kursiBatas: [], batasMulai: "", zona: "Asia/Jakarta", bahasa: "", jamDaftar: null, menitDaftar: 0 };
     rows.forEach(([k = "", v = ""]) => {
       k = k.toLowerCase().replace(/[^a-z]/g, ""); k = ALIAS[k] || k; const s = v.trim().replace(/^'/, "");
       if (!s) return;
       if (k === "judul") S.judul = s;
       else if (k === "subjudul" || k === "tim") S.subjudul = s;
       else if (k === "jamundian" || k === "jam") { const j = s.split(/[.:]/); S.jamUndian = +j[0] || 0; S.menitUndian = +j[1] || 0; }
-      else if (k === "tanggalmulai" || k === "mulai") {
-        let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-        if (m) S.tanggalMulai = `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
-        else if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))) S.tanggalMulai = `${m[3]}-${pad(m[2])}-${pad(m[1])}`;
-      } else if (k === "harikerja") {
+      else if (k === "tanggalmulai" || k === "mulai") S.tanggalMulai = bacaTgl(s) || S.tanggalMulai;
+      else if (k === "batasanmulai") S.batasMulai = bacaTgl(s);
+      else if (k === "harikerja") {
         const h = s.toLowerCase().replace(/'/g, "").split(/[,;\s]+/).filter(Boolean)
           .map((x) => (/^\d$/.test(x) ? +x : HARI[x])).filter((x) => x >= 0);
         if (h.length) S.hariKerja = h;
@@ -228,6 +313,7 @@
       else if (k === "caraambil" || k === "ambil") S.caraAmbil = /oto|auto/i.test(s) ? "otomatis" : "manual";
       else if (k === "kursitetap" || k === "tetap") S.kursiTetap = bacaTetap(s);
       else if (k === "kursidilewati" || k === "dilewati") S.kursiLewat = bacaLewat(s);
+      else if (k === "kursiterbatas") S.kursiBatas = bacaBatas(s);
       else if (k === "daftardibuka") { const j = s.split(/[.:]/); S.jamDaftar = +j[0] || 0; S.menitDaftar = +j[1] || 0; }
       else if (k === "zonawaktu" || k === "zona") S.zona = s;
       else if (k === "bahasa") S.bahasa = /^(id|ind|indonesia|bahasa)/i.test(s) ? "id" : "en";
@@ -306,6 +392,7 @@
     // Tanpa kursi tetap/dilewati: pool = semua kursi & acak = semua anggota → hasil sama seperti sebelumnya.
     const tetap = aturTetap(ikut.map((a) => ({ ...a })), N, S.kursiTetap), acak = anggota.filter((n) => !tetap[n]);
     Object.keys(tetap).forEach((a) => { if (lewat.includes(tetap[a])) throw E("fixedSkipped", { no: tetap[a], nama: a }); });
+    const batas = aturBatas(ikut, N, S.kursiBatas, tetap, lewat);
 
     // Jam dinding saat ini di zona resmi tim (bukan zona HP) → semua HP buka bersamaan.
     const nowMs = Date.now(), w = new Date(nowMs + offsetMenit(S.Z, nowMs) * 60000);
@@ -333,9 +420,11 @@
       let prev = null, hasil = null;
       for (let t = S.tanggalMulai; t <= tgl; t = geser(t, 1)) {
         if (!isKerja(t)) continue;
+        // Kursi Terbatas hanya berlaku sejak "Batasan Mulai" → hari sebelumnya tidak berubah.
+        const b = t >= S.batasMulai ? batas : {};
         let best = null, skorBest = Infinity;
         for (let n = 0; n < 60 && skorBest > 0; n++) {
-          const k = shuffle(pool, `${S.kunci}|${t}|${n}`);
+          const k = pasang(shuffle(pool, `${S.kunci}|${t}|${n}`), acak, b);
           const skor = prev ? acak.filter((a, i) => prev[i] === k[i]).length : 0;
           if (skor < skorBest) { best = k; skorBest = skor; }
         }

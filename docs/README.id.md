@@ -179,6 +179,8 @@ Semua pengaturan ada di tab **`Pengaturan`**, kolom B:
 | **Daftar Dibuka** | `09:00` | Mode Manual: sebelum jam ini tiap anggota hanya melihat kursinya sendiri. Kosong = daftar lengkap terbuka setelah kamu ambil nomor | ✅ Kapan saja |
 | **Kursi Tetap** | `Vina: 3, Budi: 7` | Anggota yang tidak ikut diacak | ⚠️ Mengubah semua hasil* |
 | **Kursi Dilewati** | `5, 9, 12-14` | Nomor kursi yang tidak ikut diundi, selalu kosong | ⚠️ Mengubah semua hasil* |
+| **Kursi Terbatas** | `Adi {8, 18, 23-24}; Budi {1-5}` | Anggota yang hanya boleh dapat kursi ini | ✅ Dengan **Batasan Mulai** |
+| **Batasan Mulai** | `'2026-11-24` | Hari pertama Kursi Terbatas berlaku. Hasil hari sebelumnya tidak berubah. Kosong = sejak Tanggal Mulai | ✅ Isi dengan hari yang belum lewat |
 | **Kunci** | `TimKu-x8Qp2` | Teks rahasia pengacak (Opsi 1 saja) | ⛔ Jangan setelah berjalan |
 
 \* Khusus Opsi 1: hasil undian dihitung ulang dari pengaturan, jadi hasil hari-hari sebelumnya ikut berubah.

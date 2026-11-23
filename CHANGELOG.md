@@ -6,6 +6,15 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Settings: **Limited Seats** (`Kursi Terbatas`) lets a member draw only from chosen seats, e.g. `Adi {8, 18, 23-24}`. Other members still get any free seat.
+- Settings: **Limits Start** (`Batasan Mulai`) sets the first day Limited Seats apply. Results before that day stay the same.
+
+### Apps Script
+
+- Apps Script: create a New version in Manage deployments. Archived days in `Riwayat` never change.
+
 ## [1.9.1] - 2026-11-23
 
 ### Changed

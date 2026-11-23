@@ -179,6 +179,8 @@ All settings live in the **`Settings`** tab, column B:
 | **List Opens** | `09:00` | Manual mode: before this time each member sees only their own seat. Empty = the full list opens after you draw | ✅ Anytime |
 | **Fixed Seats** | `Vina: 3, Budi: 7` | Members left out of the draw | ⚠️ Changes all results* |
 | **Skipped Seats** | `5, 9, 12-14` | Seat numbers left out of the draw, always empty | ⚠️ Changes all results* |
+| **Limited Seats** | `Adi {8, 18, 23-24}; Budi {1-5}` | Members who may only get these seats | ✅ With **Limits Start** |
+| **Limits Start** | `'2026-11-24` | First day Limited Seats apply. Earlier days keep their results. Empty = from Start Date | ✅ Set it to a future day |
 | **Key** | `MyTeam-x8Qp2` | Secret text for the shuffle (Option 1 only) | ⛔ Not after it starts |
 
 \* Option 1 only: results are recalculated from the settings, so past days change too.

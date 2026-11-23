@@ -189,6 +189,29 @@ const SKENARIO = [
     pengaturan: [["pengaturan", "nilai"], ["Tanggal Mulai", "'2026-11-16"], ["Jumlah Kursi", "5"], ["Kunci", "K3"], ["Jam Undian", "06:15"]],
   },
   {
+    nama: "kursi terbatas: Adi {8,18,23-24} + Batasan Mulai, kursi tetap & dilewati",
+    sekarang: "2026-12-09T03:00:00Z",
+    tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "K-batas",
+    anggota: [["nama"], ["Adi Nugroho"], ["Budi Santoso"], ["Citra Lestari"], ["Dewi Anggraini"], ["Eko Prasetyo"], ["Fajar Nugroho"],
+      ["Gita Permata"], ["Hadi Wijaya"], ["Indah Sari"], ["Joko Susilo"], ["Kiki Amelia"], ["Lina Marlina"]],
+    pengaturan: [["pengaturan", "nilai"], ["Tanggal Mulai", "'2026-11-02"], ["Jumlah Kursi", "25"], ["Kursi Tetap", "Lina: 18"],
+      ["Kursi Dilewati", "5"], ["Kursi Terbatas", "Adi {8,18,23-24}; Budi {8, 23}, Citra: {1-3}"], ["Batasan Mulai", "'2026-11-16"], ["Kunci", "K-batas"]],
+  },
+  {
+    nama: "Limited Seats (EN) tanpa Limits Start",
+    sekarang: "2026-11-25T03:00:00Z",
+    tabAnggota: "Members", tabPengaturan: "Settings", kunci: "K-lim",
+    anggota: [["name"], ["Andi"], ["Budi"], ["Citra"], ["Dewi"], ["Eko"]],
+    pengaturan: [["setting", "value"], ["Start Date", "'2026-11-02"], ["Seats", "8"], ["Limited Seats", "Andi {7, 8}; Budi {8}"], ["Key", "K-lim"]],
+  },
+  {
+    nama: "error: kursi terbatas tidak bisa dipenuhi",
+    sekarang: "2026-11-25T03:00:00Z",
+    tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "K-mustahil",
+    anggota: [["nama"], ["A"], ["B"], ["C"]],
+    pengaturan: [["pengaturan", "nilai"], ["Tanggal Mulai", "'2026-11-16"], ["Kursi Terbatas", "A {1}; B {1}"], ["Kunci", "K-mustahil"]],
+  },
+  {
     nama: "error: kursi kurang dari anggota (pesan sama)",
     sekarang: "2026-11-25T03:00:00Z",
     tabAnggota: "Anggota", tabPengaturan: "Pengaturan", kunci: "K4",
@@ -243,6 +266,37 @@ test("Kursi Dilewati selalu kosong dan ditandai", async () => {
   const r2 = await jalankanSheet(en, Date.parse(en.sekarang))("");
   assert.equal(r2.info.jumlahKursi, 7); // 5 anggota + 2 kursi dilewati
   assert.deepEqual(r2.hari.kursi.filter((k) => k.lewat).map((k) => k.no), [2, 4]);
+});
+
+test("Kursi Terbatas: hanya di kursi yang diizinkan, sejak Batasan Mulai", async () => {
+  const fx = SKENARIO.find((s) => /Adi \{8/.test(s.nama)), nowMs = Date.parse(fx.sekarang);
+  const sheet = jalankanSheet(fx, nowMs);
+  const izin = { "Adi N.": [8, 23, 24], "Budi S.": [8, 23], "Citra L.": [1, 2, 3] }; // 18 = kursi tetap Lina
+  for (let t = Date.parse("2026-11-16T00:00:00Z"); t <= Date.parse("2026-12-09T00:00:00Z"); t += 86400000) {
+    const r = await sheet(new Date(t).toISOString().slice(0, 10));
+    if (!r.hari.buka) continue;
+    for (const [nama, no] of Object.entries(izin)) assert.ok(no.includes(r.hari.kursi.find((k) => k.nama === nama).no), `${nama} ${r.hari.tgl}`);
+  }
+});
+
+test("Kursi Terbatas tidak mengubah hari sebelum Batasan Mulai", async () => {
+  const fx = SKENARIO.find((s) => /Adi \{8/.test(s.nama)), nowMs = Date.parse(fx.sekarang);
+  const tanpa = { ...fx, pengaturan: fx.pengaturan.filter((r) => !/terbatas|batasan/i.test(r[0])) };
+  const a = jalankanSheet(fx, nowMs), b = jalankanSheet(tanpa, nowMs);
+  for (const t of ["2026-11-02", "2026-11-06", "2026-11-13"]) assert.deepEqual((await a(t)).hari, (await b(t)).hari, t);
+  assert.notDeepEqual((await a("2026-12-09")).hari, (await b("2026-12-09")).hari);
+});
+
+test("Kursi Terbatas: pesan error", async () => {
+  const fx = SKENARIO.find((s) => /dipenuhi/.test(s.nama));
+  const r = await jalankanSheet(fx, Date.parse(fx.sekarang))("");
+  assert.match(r.error, /always taken/);
+  const salah = (nilai) => ({ ...fx, pengaturan: [["pengaturan", "nilai"], ["Tanggal Mulai", "'2026-11-16"], ["Kursi Terbatas", nilai]] });
+  const cek = async (nilai, re) => assert.match((await jalankanSheet(salah(nilai), Date.parse(fx.sekarang))("")).error, re, nilai);
+  await cek("Zed {1}", /not in the Members/);
+  await cek("A {9}", /higher than/);
+  await cek("A 1, 2", /Can't read/);
+  await cek("A {x}", /Can't read/);
 });
 
 for (const fx of SKENARIO) {
